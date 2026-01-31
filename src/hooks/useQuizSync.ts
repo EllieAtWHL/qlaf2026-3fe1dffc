@@ -24,8 +24,8 @@ export const useQuizSync = (_isHost: boolean = false) => {
       .on('broadcast', { event: 'state-update' }, ({ payload }) => {
         console.log('[QuizSync] Received state update:', payload);
         
-        // Apply the state update
-        if (payload.action && payload.data !== undefined) {
+        // Apply the state update - only require action, data is optional
+        if (payload?.action) {
           applyStateUpdate(payload.action, payload.data);
         }
       })
