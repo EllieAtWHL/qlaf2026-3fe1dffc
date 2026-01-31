@@ -60,63 +60,114 @@ export const useQuizSync = (_isHost: boolean = false) => {
 // Apply state updates received from broadcast - uses store directly
 function applyStateUpdate(action: string, data: any) {
   const store = useQuizStore.getState();
+  console.log('[QuizSync] Applying action:', action, 'Current state:', store.gameState);
   
   switch (action) {
     case 'startGame':
-      store.startGame();
+      useQuizStore.setState({ gameState: 'round-transition', currentRoundIndex: 0 });
       break;
     case 'startRound':
-      store.startRound();
+      useQuizStore.setState({ gameState: 'round' });
       break;
     case 'nextRound':
-      store.nextRound();
+      if (store.currentRoundIndex < 10) {
+        useQuizStore.setState({ 
+          currentRoundIndex: store.currentRoundIndex + 1, 
+          gameState: 'round-transition',
+          currentQuestionIndex: 0,
+          showAnswer: false,
+        });
+      }
       break;
     case 'previousRound':
-      store.previousRound();
+      if (store.currentRoundIndex > 0) {
+        useQuizStore.setState({ 
+          currentRoundIndex: store.currentRoundIndex - 1,
+          gameState: 'round-transition',
+          currentQuestionIndex: 0,
+          showAnswer: false,
+        });
+      }
       break;
     case 'goToRound':
-      store.goToRound(data.index);
+      useQuizStore.setState({ 
+        currentRoundIndex: data.index,
+        gameState: 'round-transition',
+        currentQuestionIndex: 0,
+        showAnswer: false,
+      });
       break;
     case 'showScores':
-      store.showScores();
+      useQuizStore.setState({ gameState: 'scores' });
       break;
     case 'showTransition':
-      store.showTransition();
+      useQuizStore.setState({ gameState: 'round-transition' });
       break;
     case 'showFinal':
-      store.showFinal();
+      useQuizStore.setState({ gameState: 'final' });
       break;
     case 'startTimer':
-      store.startTimer();
+      useQuizStore.setState({ isTimerRunning: true });
       break;
     case 'pauseTimer':
-      store.pauseTimer();
+      useQuizStore.setState({ isTimerRunning: false });
       break;
     case 'resetTimer':
-      store.resetTimer(data?.duration);
+      useQuizStore.setState({ 
+        timerValue: data?.duration ?? 60, 
+        isTimerRunning: false 
+      });
       break;
     case 'updateTeamScore':
-      store.updateTeamScore(data.teamId, data.roundIndex, data.score);
+      const teamsForUpdate = [...store.teams];
+      const teamToUpdate = teamsForUpdate.find(t => t.id === data.teamId);
+      if (teamToUpdate) {
+        teamToUpdate.scores[data.roundIndex] = data.score;
+        teamToUpdate.totalScore = teamToUpdate.scores.reduce((a, b) => a + b, 0);
+        useQuizStore.setState({ teams: teamsForUpdate });
+      }
       break;
     case 'addToTeamScore':
-      store.addToTeamScore(data.teamId, data.points);
+      const teamsForAdd = [...store.teams];
+      const teamToAdd = teamsForAdd.find(t => t.id === data.teamId);
+      if (teamToAdd) {
+        teamToAdd.scores[store.currentRoundIndex] += data.points;
+        teamToAdd.totalScore = teamToAdd.scores.reduce((a, b) => a + b, 0);
+        useQuizStore.setState({ teams: teamsForAdd });
+      }
       break;
     case 'advanceF1Car':
-      store.advanceF1Car(data.teamId, data.amount);
+      const newPositions = [...store.f1Positions];
+      newPositions[data.teamId - 1] = Math.min(100, newPositions[data.teamId - 1] + data.amount);
+      useQuizStore.setState({ f1Positions: newPositions });
       break;
     case 'toggleAnswer':
-      store.toggleAnswer();
+      useQuizStore.setState({ showAnswer: !store.showAnswer });
       break;
     case 'nextQuestion':
-      store.nextQuestion();
+      if (store.currentQuestionIndex < store.questions.length - 1) {
+        useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex + 1, showAnswer: false });
+      }
       break;
     case 'previousQuestion':
-      store.previousQuestion();
+      if (store.currentQuestionIndex > 0) {
+        useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex - 1, showAnswer: false });
+      }
       break;
     case 'resetGame':
-      store.resetGame();
+      useQuizStore.setState({
+        gameState: 'welcome',
+        currentRoundIndex: 0,
+        isTimerRunning: false,
+        timerValue: 60,
+        currentQuestionIndex: 0,
+        showAnswer: false,
+        f1Positions: [0, 0, 0],
+      });
       break;
     default:
       console.warn('[QuizSync] Unknown action:', action);
   }
+  
+  console.log('[QuizSync] New state:', useQuizStore.getState().gameState);
 }
