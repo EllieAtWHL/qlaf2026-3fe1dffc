@@ -3,9 +3,10 @@ import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { 
   Play, Pause, RotateCcw, ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
-  SkipForward, Clock
+  SkipForward, Clock, Wifi, WifiOff
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useQuizSync } from '@/hooks/useQuizSync';
 
 export const CoHostInterface = () => {
   const {
@@ -32,7 +33,75 @@ export const CoHostInterface = () => {
     resetGame,
   } = useQuizStore();
 
+  const { broadcastAction } = useQuizSync(true);
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
+  const [isConnected, setIsConnected] = useState(true);
+
+  // Wrapper functions that both update local state AND broadcast to main display
+  const syncedStartGame = () => {
+    startGame();
+    broadcastAction('startGame');
+  };
+
+  const syncedStartRound = () => {
+    startRound();
+    broadcastAction('startRound');
+  };
+
+  const syncedNextRound = () => {
+    nextRound();
+    broadcastAction('nextRound');
+  };
+
+  const syncedPreviousRound = () => {
+    previousRound();
+    broadcastAction('previousRound');
+  };
+
+  const syncedGoToRound = (index: number) => {
+    goToRound(index);
+    broadcastAction('goToRound', { index });
+  };
+
+  const syncedShowScores = () => {
+    showScores();
+    broadcastAction('showScores');
+  };
+
+  const syncedShowTransition = () => {
+    showTransition();
+    broadcastAction('showTransition');
+  };
+
+  const syncedStartTimer = () => {
+    startTimer();
+    broadcastAction('startTimer');
+  };
+
+  const syncedPauseTimer = () => {
+    pauseTimer();
+    broadcastAction('pauseTimer');
+  };
+
+  const syncedResetTimer = (duration?: number) => {
+    resetTimer(duration);
+    broadcastAction('resetTimer', { duration });
+  };
+
+  const syncedToggleAnswer = () => {
+    toggleAnswer();
+    broadcastAction('toggleAnswer');
+  };
+
+  const syncedResetGame = () => {
+    resetGame();
+    broadcastAction('resetGame');
+  };
+
+  const syncedAdvanceF1Car = (teamId: number, amount: number) => {
+    advanceF1Car(teamId, amount);
+    broadcastAction('advanceF1Car', { teamId, amount });
+  };
   const currentRound = ROUNDS[currentRoundIndex];
 
   // Initialize score inputs when round changes
@@ -49,6 +118,7 @@ export const CoHostInterface = () => {
     setScoreInputs(prev => ({ ...prev, [key]: value }));
     const numValue = parseInt(value) || 0;
     updateTeamScore(teamId, currentRoundIndex, numValue);
+    broadcastAction('updateTeamScore', { teamId, roundIndex: currentRoundIndex, score: numValue });
   };
 
   const adjustScore = (teamId: number, delta: number) => {
@@ -77,12 +147,18 @@ export const CoHostInterface = () => {
               QLAF 2026
             </h1>
           </div>
-          <button
-            onClick={resetGame}
-            className="p-2 rounded-lg bg-destructive/20 text-destructive"
-          >
-            <Home className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${isConnected ? 'bg-qlaf-success/20 text-qlaf-success' : 'bg-destructive/20 text-destructive'}`}>
+              {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
+              {isConnected ? 'Synced' : 'Offline'}
+            </div>
+            <button
+              onClick={syncedResetGame}
+              className="p-2 rounded-lg bg-destructive/20 text-destructive"
+            >
+              <Home className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </motion.div>
 
@@ -99,7 +175,7 @@ export const CoHostInterface = () => {
         <div className="grid grid-cols-2 gap-2">
           {gameState === 'welcome' && (
             <button
-              onClick={startGame}
+              onClick={syncedStartGame}
               className="col-span-2 control-btn bg-qlaf-success text-white"
             >
               Start Game
@@ -109,26 +185,26 @@ export const CoHostInterface = () => {
           {gameState !== 'welcome' && (
             <>
               <button
-                onClick={showTransition}
+                onClick={syncedShowTransition}
                 className="control-btn bg-primary/20 text-primary border border-primary/30"
               >
                 Show Round
               </button>
               <button
-                onClick={startRound}
+                onClick={syncedStartRound}
                 className="control-btn bg-qlaf-success/20 text-qlaf-success border border-qlaf-success/30"
               >
                 Play Round
               </button>
               <button
-                onClick={showScores}
+                onClick={syncedShowScores}
                 className="control-btn bg-qlaf-gold/20 text-qlaf-gold border border-qlaf-gold/30"
               >
                 <Trophy className="w-4 h-4 inline mr-2" />
                 Scores
               </button>
               <button
-                onClick={toggleAnswer}
+                onClick={syncedToggleAnswer}
                 className={`control-btn ${showAnswer ? 'bg-accent/20 text-accent border-accent/30' : 'bg-muted text-muted-foreground'} border`}
               >
                 {showAnswer ? <Eye className="w-4 h-4 inline mr-2" /> : <EyeOff className="w-4 h-4 inline mr-2" />}
@@ -152,7 +228,7 @@ export const CoHostInterface = () => {
         
         <div className="flex gap-2">
           <button
-            onClick={previousRound}
+            onClick={syncedPreviousRound}
             disabled={currentRoundIndex === 0}
             className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
           >
@@ -160,7 +236,7 @@ export const CoHostInterface = () => {
             Prev
           </button>
           <button
-            onClick={nextRound}
+            onClick={syncedNextRound}
             disabled={currentRoundIndex === ROUNDS.length - 1}
             className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
           >
@@ -174,7 +250,7 @@ export const CoHostInterface = () => {
           {ROUNDS.map((round, index) => (
             <button
               key={round.id}
-              onClick={() => goToRound(index)}
+              onClick={() => syncedGoToRound(index)}
               className={`p-2 rounded text-xs font-display ${
                 index === currentRoundIndex 
                   ? 'bg-primary text-primary-foreground' 
@@ -209,19 +285,19 @@ export const CoHostInterface = () => {
           
           <div className="grid grid-cols-3 gap-2">
             <button
-              onClick={isTimerRunning ? pauseTimer : startTimer}
+              onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
               className={`control-btn ${isTimerRunning ? 'bg-qlaf-warning' : 'bg-qlaf-success'} text-white`}
             >
               {isTimerRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             </button>
             <button
-              onClick={() => resetTimer()}
+              onClick={() => syncedResetTimer()}
               className="control-btn bg-secondary text-foreground"
             >
               <RotateCcw className="w-5 h-5" />
             </button>
             <button
-              onClick={() => resetTimer(30)}
+              onClick={() => syncedResetTimer(30)}
               className="control-btn bg-secondary text-foreground text-sm"
             >
               30s
@@ -299,13 +375,13 @@ export const CoHostInterface = () => {
                 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => advanceF1Car(team.id, 5)}
+                    onClick={() => syncedAdvanceF1Car(team.id, 5)}
                     className="control-btn py-2 px-4 bg-qlaf-success/20 text-qlaf-success text-sm"
                   >
                     +5%
                   </button>
                   <button
-                    onClick={() => advanceF1Car(team.id, 10)}
+                    onClick={() => syncedAdvanceF1Car(team.id, 10)}
                     className="control-btn py-2 px-4 bg-qlaf-success/30 text-qlaf-success text-sm"
                   >
                     +10%
