@@ -1,73 +1,132 @@
-# Welcome to your Lovable project
+# QLAF 2026 - Quiz Application
 
-## Project info
+A modern, interactive quiz game application built with React and TypeScript, featuring multiple game rounds, real-time scoring, and a delightful user experience.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🎯 What is QLAF?
 
-## How can I edit this code?
+QLAF (Question of a League like A Fan) is a comprehensive quiz platform designed for engaging multiplayer quiz experiences. The application features:
 
-There are several ways of editing your application.
+- **Multiple Game Rounds**: World Rankings, Just One, Picture Board, and more
+- **Real-time Scoring**: Track team and individual scores dynamically
+- **Co-host Interface**: Dedicated interface for quiz moderators
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Sound Effects**: Enhanced audio experience using Howler.js
+- **Team-based Gameplay**: Support for both team and individual rounds
 
-**Use Lovable**
+## 🏗️ Project Origins
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+This project was initially built using [Lovable](https://lovable.dev) - an AI-powered development platform that helped create the foundation of this quiz application. The original Lovable project provided the initial structure and core functionality, which has since been enhanced and extended with additional features, custom rounds, and improved functionality.
 
-Changes made via Lovable will be committed automatically to this repo.
+The project has evolved significantly from its Lovable origins, with extensive customization, new game modes, and a comprehensive documentation suite to support ongoing development and maintenance.
 
-**Use your preferred IDE**
+## 🚀 Quick Start
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Follow these steps:
+### Installation & Development
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Step 1: Clone the repository
+git clone https://github.com/EllieAtWHL/qlaf2026-3fe1dffc.git
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Step 2: Navigate to the project directory
+cd qlaf2026-3fe1dffc
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Step 3: Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Step 4: Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📚 Documentation
 
-**Use GitHub Codespaces**
+Comprehensive documentation is available in the `/docs` directory:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- **[Round Management](docs/round-management.md)** - Understanding and managing quiz rounds
+- **[Co-host Interface](docs/co-host-interface.md)** - Guide for quiz moderators
+- **[World Rankings](docs/world-rankings.md)** - Specifics about the rankings game mode
+- **[Just One Technical Guide](docs/just-one-technical-guide.md)** - Technical implementation details
+- **[Picture Board Sync Investigation](docs/2026-01-31-picture-board-sync-investigation.md)** - Technical investigation notes
+- **[Round Transition Flash Fix](docs/round-transition-flash-fix.md)** - UI/UX improvements
 
-## What technologies are used for this project?
+## 🛠️ Technologies Used
 
-This project is built with:
+This project is built with modern web technologies:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **UI Framework**: shadcn/ui + Radix UI components
+- **Styling**: Tailwind CSS
+- **State Management**: Zustand
+- **Backend**: Supabase integration
+- **Audio**: Howler.js + use-sound
+- **Testing**: Vitest + React Testing Library
+- **Routing**: React Router DOM
 
-## How can I deploy this project?
+## 🎮 Game Features
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Available Game Rounds
 
-## Can I connect a custom domain to my Lovable project?
+1. **World Rankings** - Rank items in correct order (sports statistics, historical facts, etc.)
+2. **Just One** - Give unique answers to prompts
+3. **Picture Board** - Visual-based quiz rounds
+4. **Custom Rounds** - Extensible framework for new game types
 
-Yes, you can!
+### Key Components
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Main Display**: Primary game interface for players
+- **Co-host Interface**: Moderator controls and score management
+- **Timer System**: Configurable timers for different rounds
+- **Score Tracking**: Real-time score updates and leaderboard
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🧪 Testing
+
+```sh
+# Run tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+## 🏗️ Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── rounds/         # Game round components
+│   ├── ui/            # Reusable UI components
+│   └── ...
+├── data/              # Game data (questions, rounds)
+├── hooks/             # Custom React hooks
+├── integrations/      # External service integrations
+└── ...
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 Development Notes
+
+- The application uses a component-based architecture with TypeScript for type safety
+- Game data is stored in JSON files for easy modification
+- Supabase is used for real-time data synchronization and persistence
+- The UI is built with accessibility in mind using Radix UI primitives
+
+## 📄 License
+
+This project is private and proprietary.
+
+---
+
+Built with ❤️ for quiz enthusiasts everywhere
