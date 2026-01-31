@@ -1,0 +1,167 @@
+{
+  "world-rankings": {
+    "title": "World Rankings",
+    "questions": [
+      {
+        "id": "wr-1",
+        "type": "ranking",
+        "content": "Rank these countries by Olympic gold medals (most to least)",
+        "options": ["USA", "China", "Great Britain", "Russia"],
+        "answer": ["USA", "China", "Russia", "Great Britain"],
+        "points": 4
+      }
+    ]
+  },
+  "just-one": {
+    "title": "Just One",
+    "questions": [
+      {
+        "id": "jo-1",
+        "type": "single",
+        "content": "Name a sport played with a racket",
+        "answer": ["Tennis", "Badminton", "Squash", "Table Tennis", "Racquetball"],
+        "points": 1
+      }
+    ]
+  },
+  "picture-board": {
+    "title": "Picture Board",
+    "questions": [
+      {
+        "id": "pb-1",
+        "type": "picture",
+        "content": "Identify these sports venues",
+        "imageUrl": "/placeholder.svg",
+        "answer": "Wembley Stadium",
+        "points": 1
+      }
+    ]
+  },
+  "only-connect": {
+    "title": "Only Connect",
+    "questions": [
+      {
+        "id": "oc-1",
+        "type": "connection",
+        "content": "What connects these items?",
+        "options": ["Federer", "Nadal", "Djokovic", "Murray"],
+        "answer": "Grand Slam singles champions",
+        "points": 5
+      }
+    ]
+  },
+  "round-robin": {
+    "title": "Round Robin",
+    "questions": [
+      {
+        "id": "rr-1",
+        "type": "single",
+        "content": "Which country hosted the 2022 FIFA World Cup?",
+        "answer": "Qatar",
+        "points": 1
+      },
+      {
+        "id": "rr-2",
+        "type": "single",
+        "content": "How many players are on a cricket team?",
+        "answer": "11",
+        "points": 1
+      },
+      {
+        "id": "rr-3",
+        "type": "single",
+        "content": "In which sport would you perform a 'slam dunk'?",
+        "answer": "Basketball",
+        "points": 1
+      }
+    ]
+  },
+  "daves-dozen": {
+    "title": "Dave's Dozen",
+    "questions": [
+      {
+        "id": "dd-1",
+        "type": "auction",
+        "content": "Name 12 Premier League teams that have never been relegated",
+        "answer": ["Arsenal", "Liverpool", "Manchester United", "Everton", "Tottenham", "Manchester City", "Chelsea", "Brighton", "Bournemouth", "Brentford", "Nottingham Forest", "Fulham"],
+        "points": 12
+      }
+    ]
+  },
+  "ellies-tellies": {
+    "title": "Ellie's Tellies",
+    "questions": [
+      {
+        "id": "et-1",
+        "type": "picture",
+        "content": "Name the sports personality",
+        "imageUrl": "/placeholder.svg",
+        "answer": "David Beckham",
+        "points": 1
+      }
+    ]
+  },
+  "distinctly-average": {
+    "title": "Distinctly Average",
+    "questions": [
+      {
+        "id": "da-1",
+        "type": "average",
+        "content": "What is the average number of goals scored per match in the Premier League 2023/24?",
+        "answer": "2.85",
+        "points": 3
+      }
+    ]
+  },
+  "wipeout": {
+    "title": "Wipeout",
+    "questions": [
+      {
+        "id": "wo-1",
+        "type": "wipeout",
+        "content": "Which of these have won the Ballon d'Or?",
+        "options": ["Messi", "Ronaldo", "Neymar", "Modric", "Benzema", "Lewandowski", "Kane", "Salah"],
+        "answer": ["Messi", "Ronaldo", "Modric", "Benzema"],
+        "points": 1
+      }
+    ]
+  },
+  "one-minute-round": {
+    "title": "One Minute Round",
+    "questions": [
+      {
+        "id": "omr-1",
+        "type": "quickfire",
+        "content": "Sport with a shuttlecock?",
+        "answer": "Badminton",
+        "points": 1
+      },
+      {
+        "id": "omr-2",
+        "type": "quickfire",
+        "content": "How many holes in a full round of golf?",
+        "answer": "18",
+        "points": 1
+      },
+      {
+        "id": "omr-3",
+        "type": "quickfire",
+        "content": "Which country won the 2023 Rugby World Cup?",
+        "answer": "South Africa",
+        "points": 1
+      }
+    ]
+  },
+  "f1-grand-prix": {
+    "title": "F1 Grand Prix Final",
+    "questions": [
+      {
+        "id": "f1-1",
+        "type": "f1",
+        "content": "Who has the most F1 World Championship titles?",
+        "answer": "Michael Schumacher / Lewis Hamilton (7 each)",
+        "points": 5
+      }
+    ]
+  }
+}
