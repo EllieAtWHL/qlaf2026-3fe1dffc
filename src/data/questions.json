@@ -13,7 +13,6 @@
           { "label": "Henrik Larsson", "sublabel": "Feyenoord → Celtic", "imageUrl": "/images/HenrikLarsson.png", "order": 2, "answer": "£650,000" }
         ]
       },
-
       {
         "id": "wr-2",
         "type": "ranking",
@@ -23,6 +22,28 @@
           { "label": "Shaquille O'Neal", "imageUrl": "/images/ShaquilleONeal.png", "order": 4, "answer": "5,250" },
           { "label": "Kobe Bryant", "imageUrl": "/images/KobeBryant.png", "order": 3, "answer": "5,640" },
           { "label": "Michael Jordan", "imageUrl": "/images/MichaelJordan.png", "order": 1, "answer": "5,987" }
+        ]
+      },      
+      {
+        "id": "wr-3",
+        "type": "ranking",
+        "content": "Rank these events by the cheapest retail ticket available (lowest to highest)",
+        "options": [
+          { "label": "FIFA World Cup 2022 Final", "imageUrl": "/images/FIFAWorldCup.png", "order": 3, "answer": "£440" },
+          { "label": "Paris 2024 Men’s 100m Final", "imageUrl": "/images/Olympic100mFinal.png", "order": 1, "answer": "£106" },
+          { "label": "Superbowl LIX", "imageUrl": "/images/SuperbowlLIX.png", "order": 4, "answer": "£780" },
+          { "label": "World Snooker Championship 2025 Final", "imageUrl": "/images/SnookerFinal2025.png", "order": 2, "answer": "£120" }
+        ]
+      },      
+      {
+        "id": "wr-4",
+        "type": "ranking",
+        "content": "Rank these crickers by most test centuries (highest to lowest)",
+        "options": [
+          { "label": "Ricky Ponting", "imageUrl": "/images/RickyPonting.png", "order": 2, "answer": "41" },
+          { "label": "Kumar Sangakkara", "imageUrl": "/images/KumarSangakkara.png", "order": 4, "answer": "38" },
+          { "label": "Jaques Kallis", "imageUrl": "/images/JaquesKallis.png", "order": 1, "answer": "45" },
+          { "label": "Joe Root", "imageUrl": "/images/JoeRoot.png", "order": 3, "answer": "40" }
         ]
       }
     ]
