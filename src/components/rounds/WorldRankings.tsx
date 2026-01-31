@@ -12,6 +12,25 @@ export const WorldRankings = () => {
 
   // Get options from current question or use empty array
   const options = currentQuestion?.options?.map(normalizeOption) || [];
+  
+  // Determine display order - either original or correct order
+  const getDisplayOrder = () => {
+    if (!showAnswer) {
+      return options;
+    }
+    
+    // Sort options according to their order property
+    const sortedOptions = [...options];
+    sortedOptions.sort((a, b) => {
+      const aOrder = a.order || 999;
+      const bOrder = b.order || 999;
+      return aOrder - bOrder;
+    });
+    
+    return sortedOptions;
+  };
+  
+  const displayOptions = getDisplayOrder();
 
   return (
     <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
@@ -62,46 +81,63 @@ export const WorldRankings = () => {
 
               {/* Items grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {options.map((item, index) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`glass-card rounded-xl p-6 text-center relative ${showAnswer ? 'border-2 border-qlaf-gold' : ''}`}
-                  >
-                    {showAnswer && (
-                      <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-qlaf-gold flex items-center justify-center font-display font-bold text-black z-10">
-                        {(currentQuestion.answer as string[]).indexOf(item.label) + 1}
-                      </div>
-                    )}
-                    {item.imageUrl && (
-                      <img 
-                        src={item.imageUrl} 
-                        alt={item.label}
-                        className="w-full h-20 object-contain mb-4"
-                      />
-                    )}
-                    <p className="font-display text-xl font-bold text-foreground">
-                      {item.label}
-                    </p>
-                  </motion.div>
-                ))}
+                {displayOptions.map((item, index) => {
+                  const originalIndex = options.indexOf(item);
+                  
+                  return (
+                    <motion.div
+                      key={item.label}
+                      layout
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ 
+                        delay: showAnswer ? 0 : originalIndex * 0.1,
+                        layout: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
+                      }}
+                      className={`glass-card rounded-xl p-6 text-center relative ${
+                        showAnswer ? 'border-2 border-qlaf-gold' : ''
+                      }`}
+                    >
+                      {showAnswer && item.order && (
+                        <motion.div 
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.3 + index * 0.1 }}
+                          className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-qlaf-gold flex items-center justify-center font-display font-bold text-black z-10"
+                        >
+                          {item.order}
+                        </motion.div>
+                      )}
+                      {item.imageUrl && (
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.label}
+                          className="w-full h-64 object-contain mb-4"
+                        />
+                      )}
+                      <p className="font-display text-xl font-bold text-foreground">
+                        {item.label}
+                      </p>
+                      {item.sublabel && (
+                        <p className="font-display text-sm text-muted-foreground">
+                          {item.sublabel}
+                        </p>
+                      )}
+                      {showAnswer && item.answer && (
+                        <motion.p 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 + index * 0.1 }}
+                          className="font-display text-sm text-qlaf-gold font-semibold mt-2"
+                        >
+                          {item.answer}
+                        </motion.p>
+                      )}
+                    </motion.div>
+                  );
+                })}
               </div>
 
-              {/* Answer reveal */}
-              {showAnswer && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-8 bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-6 text-center"
-                >
-                  <span className="font-display text-sm text-qlaf-success uppercase tracking-wider">Correct Order</span>
-                  <p className="font-display text-xl md:text-2xl text-qlaf-success mt-2">
-                    {(currentQuestion.answer as string[]).join(' → ')}
-                  </p>
-                </motion.div>
-              )}
             </>
           ) : (
             <div className="text-center">

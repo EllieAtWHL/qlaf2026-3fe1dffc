@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import questionsData from '@/data/questions.json';
 
 export type RoundType = 
   | 'world-rankings'
@@ -94,6 +95,7 @@ interface QuizState {
   nextQuestion: () => void;
   previousQuestion: () => void;
   toggleAnswer: () => void;
+  loadQuestionsForCurrentRound: () => void;
   
   // F1
   updateF1Position: (teamId: number, position: number) => void;
@@ -120,7 +122,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   showAnswer: false,
   f1Positions: [0, 0, 0],
   
-  startGame: () => set({ gameState: 'round-transition', currentRoundIndex: 0 }),
+  startGame: () => {
+    set({ gameState: 'round-transition', currentRoundIndex: 0 });
+    // Load questions for the first round
+    get().loadQuestionsForCurrentRound();
+  },
   
   nextRound: () => {
     const { currentRoundIndex } = get();
@@ -131,6 +137,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         currentQuestionIndex: 0,
         showAnswer: false,
       });
+      // Load questions for the new round
+      get().loadQuestionsForCurrentRound();
     }
   },
   
@@ -147,18 +155,22 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
   
   goToRound: (index: number) => {
-    if (index >= 0 && index < ROUNDS.length) {
-      set({ 
-        currentRoundIndex: index,
-        gameState: 'round-transition',
-        currentQuestionIndex: 0,
-        showAnswer: false,
-      });
-    }
+    set({ 
+      currentRoundIndex: index,
+      gameState: 'round-transition',
+      currentQuestionIndex: 0,
+      showAnswer: false,
+    });
+    // Load questions for the new round
+    get().loadQuestionsForCurrentRound();
   },
   
   showTransition: () => set({ gameState: 'round-transition' }),
-  startRound: () => set({ gameState: 'round' }),
+  startRound: () => {
+    set({ gameState: 'round' });
+    // Load questions for the current round
+    get().loadQuestionsForCurrentRound();
+  },
   showScores: () => set({ gameState: 'scores' }),
   showFinal: () => set({ gameState: 'final' }),
   
@@ -229,6 +241,18 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     if (currentQuestionIndex > 0) {
       set({ currentQuestionIndex: currentQuestionIndex - 1, showAnswer: false });
     }
+  },
+  
+  loadQuestionsForCurrentRound: () => {
+    const { currentRoundIndex } = get();
+    const roundIds = ['world-rankings', 'just-one', 'picture-board', 'only-connect', 'round-robin', 'daves-dozen', 'ellies-tellies', 'distinctly-average', 'wipeout', 'one-minute-round', 'f1-grand-prix'];
+    const currentRoundId = roundIds[currentRoundIndex];
+    
+    // Use imported questions data
+    const data = questionsData as any;
+    const currentRoundData = data[currentRoundId];
+    const questions = currentRoundData?.questions || [];
+    set({ questions });
   },
   
   toggleAnswer: () => set(state => ({ showAnswer: !state.showAnswer })),

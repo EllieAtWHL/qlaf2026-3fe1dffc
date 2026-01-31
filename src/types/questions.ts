@@ -2,7 +2,10 @@ import { RoundType } from '@/store/quizStore';
 
 export interface QuestionOption {
   label: string;
+  sublabel?: string;
   imageUrl?: string;
+  order?: number;
+  answer?: string;
 }
 
 export interface Question {
@@ -11,6 +14,7 @@ export interface Question {
   content: string;
   options?: (string | QuestionOption)[];
   answer: string | string[];
+  correctOrder?: string[];
   imageUrl?: string;
   points: number;
 }

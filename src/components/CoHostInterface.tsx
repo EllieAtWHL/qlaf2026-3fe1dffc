@@ -38,7 +38,7 @@ export const CoHostInterface = () => {
   } = useQuizStore();
 
   const { broadcastAction } = useQuizSync(true);
-  const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion } = useQuestions();
+  const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound } = useQuestions();
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
 
@@ -108,10 +108,23 @@ export const CoHostInterface = () => {
     broadcastAction('advanceF1Car', { teamId, amount });
   };
 
+  const canAdvanceToNextRound = () => {
+    const nextRoundIndex = currentRoundIndex + 1;
+    if (nextRoundIndex < ROUNDS.length) {
+      const nextRoundQuestions = getQuestionsForRound(ROUNDS[nextRoundIndex].id);
+      return nextRoundQuestions.length > 0;
+    }
+    return false;
+  };
+
   const syncedNextQuestion = () => {
     if (hasNextQuestion) {
       nextQuestion();
       broadcastAction('nextQuestion');
+    } else if (canAdvanceToNextRound()) {
+      // Don't call nextQuestion since there are no more questions
+      // Just advance to the next round directly
+      syncedNextRound();
     }
   };
 
@@ -303,9 +316,14 @@ export const CoHostInterface = () => {
               <p className="text-sm text-foreground line-clamp-2">{currentQuestion.content}</p>
               {showAnswer && (
                 <p className="text-sm text-qlaf-success mt-2 font-semibold">
-                  Answer: {Array.isArray(currentQuestion.answer) 
-                    ? currentQuestion.answer.join(', ') 
-                    : currentQuestion.answer}
+                  Answer: {currentQuestion.type === 'ranking' && currentQuestion.options
+                    ? (currentQuestion.options as any[])
+                        .sort((a, b) => (a.order || 999) - (b.order || 999))
+                        .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer})`)
+                        .join(' → ')
+                    : Array.isArray(currentQuestion.answer) 
+                      ? currentQuestion.answer.join(', ') 
+                      : currentQuestion.answer}
                 </p>
               )}
             </div>
@@ -329,11 +347,25 @@ export const CoHostInterface = () => {
             </button>
             <button
               onClick={syncedNextQuestion}
-              disabled={!hasNextQuestion}
+              disabled={!hasNextQuestion && !canAdvanceToNextRound()}
               className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
             >
-              Next Q
-              <ChevronRight className="w-5 h-5 inline" />
+              {hasNextQuestion ? (
+                <>
+                  Next Q
+                  <ChevronRight className="w-5 h-5 inline" />
+                </>
+              ) : canAdvanceToNextRound() ? (
+                <>
+                  Next Round
+                  <ChevronRight className="w-5 h-5 inline" />
+                </>
+              ) : (
+                <>
+                  End
+                  <ChevronRight className="w-5 h-5 inline" />
+                </>
+              )}
             </button>
           </div>
         </motion.div>

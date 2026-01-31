@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuizStore } from '@/store/quizStore';
+import questionsData from '@/data/questions.json';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 const CHANNEL_NAME = 'quiz-sync';
@@ -57,6 +58,19 @@ export const useQuizSync = (_isHost: boolean = false) => {
   return { broadcastAction };
 };
 
+// Helper function to load questions for current round
+function loadQuestionsForCurrentRound() {
+  const store = useQuizStore.getState();
+  const roundIds = ['world-rankings', 'just-one', 'picture-board', 'only-connect', 'round-robin', 'daves-dozen', 'ellies-tellies', 'distinctly-average', 'wipeout', 'one-minute-round', 'f1-grand-prix'];
+  const currentRoundId = roundIds[store.currentRoundIndex];
+  
+  const data = questionsData as any;
+  const currentRoundData = data[currentRoundId];
+  const questions = currentRoundData?.questions || [];
+  
+  useQuizStore.setState({ questions });
+}
+
 // Apply state updates received from broadcast - uses store directly
 function applyStateUpdate(action: string, data: any) {
   const store = useQuizStore.getState();
@@ -65,9 +79,11 @@ function applyStateUpdate(action: string, data: any) {
   switch (action) {
     case 'startGame':
       useQuizStore.setState({ gameState: 'round-transition', currentRoundIndex: 0 });
+      loadQuestionsForCurrentRound();
       break;
     case 'startRound':
       useQuizStore.setState({ gameState: 'round' });
+      loadQuestionsForCurrentRound();
       break;
     case 'nextRound':
       if (store.currentRoundIndex < 10) {
@@ -145,7 +161,11 @@ function applyStateUpdate(action: string, data: any) {
       useQuizStore.setState({ showAnswer: !store.showAnswer });
       break;
     case 'nextQuestion':
-      useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex + 1, showAnswer: false });
+      // Ensure questions are loaded before advancing
+      if (store.questions.length === 0) {
+        loadQuestionsForCurrentRound();
+      }
+      store.nextQuestion();
       break;
     case 'previousQuestion':
       if (store.currentQuestionIndex > 0) {
