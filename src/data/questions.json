@@ -19,10 +19,10 @@
         "type": "ranking",
         "content": "Rank these basketballers by NBA career playoff points scored (highest to lowest)",
         "options": [
-          { "label": "Kareem Abdul-Jabbar", "sublabel": "Milwaukee Bucks / Los Angeles Lakers", "imageUrl": "/images/KareemAbdulJabbar.png", "order": 2, "answer": "5,762" },
-          { "label": "Shaquille O'Neal", "sublabel": "Orlando Magic / Los Angeles Lakers / Miami Heat", "imageUrl": "/images/ShaquilleONeal.png", "order": 4, "answer": "5,250" },
-          { "label": "Kobe Bryant", "sublabel": "Los Angeles Lakers", "imageUrl": "/images/KobeBryant.png", "order": 3, "answer": "5,640" },
-          { "label": "Michael Jordan", "sublabel": "Chicago Bulls / Washington Wizards", "imageUrl": "/images/MichaelJordan.png", "order": 1, "answer": "5,987" }
+          { "label": "Kareem Abdul-Jabbar", "imageUrl": "/images/KareemAbdulJabbar.png", "order": 2, "answer": "5,762" },
+          { "label": "Shaquille O'Neal", "imageUrl": "/images/ShaquilleONeal.png", "order": 4, "answer": "5,250" },
+          { "label": "Kobe Bryant", "imageUrl": "/images/KobeBryant.png", "order": 3, "answer": "5,640" },
+          { "label": "Michael Jordan", "imageUrl": "/images/MichaelJordan.png", "order": 1, "answer": "5,987" }
         ]
       }
     ]
