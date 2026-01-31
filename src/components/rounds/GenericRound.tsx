@@ -3,6 +3,7 @@ import { Timer } from '@/components/Timer';
 import { Scoreboard } from '@/components/Scoreboard';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { useQuestions } from '@/hooks/useQuestions';
+import { normalizeOption } from '@/types/questions';
 
 interface GenericRoundProps {
   roundId: string;
@@ -67,18 +68,30 @@ export const GenericRound = ({ roundId }: GenericRoundProps) => {
                 {/* Options if available */}
                 {currentQuestion.options && (
                   <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {currentQuestion.options.map((option, index) => (
-                      <motion.div
-                        key={option}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * index }}
-                        className="glass-card p-4 rounded-xl text-lg font-display"
-                      >
-                        <span className="text-primary mr-2">{String.fromCharCode(65 + index)}.</span>
-                        {option}
-                      </motion.div>
-                    ))}
+                    {currentQuestion.options.map((option, index) => {
+                      const normalized = normalizeOption(option);
+                      return (
+                        <motion.div
+                          key={normalized.label}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 * index }}
+                          className="glass-card p-4 rounded-xl text-lg font-display flex items-center gap-4"
+                        >
+                          {normalized.imageUrl && (
+                            <img 
+                              src={normalized.imageUrl} 
+                              alt={normalized.label}
+                              className="w-12 h-8 object-cover rounded shadow-md"
+                            />
+                          )}
+                          <div>
+                            <span className="text-primary mr-2">{String.fromCharCode(65 + index)}.</span>
+                            {normalized.label}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
                   </div>
                 )}
               </motion.div>
