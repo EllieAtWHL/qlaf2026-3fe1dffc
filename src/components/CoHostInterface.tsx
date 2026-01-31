@@ -3,15 +3,17 @@ import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { 
   Play, Pause, RotateCcw, ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
-  SkipForward, Clock, Wifi, WifiOff
+  SkipForward, Clock, Wifi, WifiOff, HelpCircle
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useQuizSync } from '@/hooks/useQuizSync';
+import { useQuestions } from '@/hooks/useQuestions';
 
 export const CoHostInterface = () => {
   const {
     gameState,
     currentRoundIndex,
+    currentQuestionIndex,
     isTimerRunning,
     timerValue,
     teams,
@@ -30,10 +32,13 @@ export const CoHostInterface = () => {
     updateTeamScore,
     advanceF1Car,
     toggleAnswer,
+    nextQuestion,
+    previousQuestion,
     resetGame,
   } = useQuizStore();
 
   const { broadcastAction } = useQuizSync(true);
+  const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion } = useQuestions();
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
 
@@ -102,6 +107,21 @@ export const CoHostInterface = () => {
     advanceF1Car(teamId, amount);
     broadcastAction('advanceF1Car', { teamId, amount });
   };
+
+  const syncedNextQuestion = () => {
+    if (hasNextQuestion) {
+      nextQuestion();
+      broadcastAction('nextQuestion');
+    }
+  };
+
+  const syncedPreviousQuestion = () => {
+    if (hasPreviousQuestion) {
+      previousQuestion();
+      broadcastAction('previousQuestion');
+    }
+  };
+
   const currentRound = ROUNDS[currentRoundIndex];
 
   // Initialize score inputs when round changes
@@ -262,6 +282,62 @@ export const CoHostInterface = () => {
           ))}
         </div>
       </motion.div>
+
+      {/* Question Controls */}
+      {totalQuestions > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+              <HelpCircle className="w-4 h-4" />
+              Question {currentQuestionIndex + 1}/{totalQuestions}
+            </h3>
+          </div>
+          
+          {currentQuestion && (
+            <div className="bg-secondary/30 rounded-lg p-3 mb-3">
+              <p className="text-sm text-foreground line-clamp-2">{currentQuestion.content}</p>
+              {showAnswer && (
+                <p className="text-sm text-qlaf-success mt-2 font-semibold">
+                  Answer: {Array.isArray(currentQuestion.answer) 
+                    ? currentQuestion.answer.join(', ') 
+                    : currentQuestion.answer}
+                </p>
+              )}
+            </div>
+          )}
+          
+          <div className="flex gap-2">
+            <button
+              onClick={syncedPreviousQuestion}
+              disabled={!hasPreviousQuestion}
+              className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
+            >
+              <ChevronLeft className="w-5 h-5 inline" />
+              Prev Q
+            </button>
+            <button
+              onClick={syncedToggleAnswer}
+              className={`flex-1 control-btn ${showAnswer ? 'bg-qlaf-success text-white' : 'bg-accent/20 text-accent'}`}
+            >
+              {showAnswer ? <Eye className="w-4 h-4 inline mr-1" /> : <EyeOff className="w-4 h-4 inline mr-1" />}
+              {showAnswer ? 'Hide' : 'Show'}
+            </button>
+            <button
+              onClick={syncedNextQuestion}
+              disabled={!hasNextQuestion}
+              className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
+            >
+              Next Q
+              <ChevronRight className="w-5 h-5 inline" />
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* Timer Controls */}
       {currentRound?.timerDuration && (

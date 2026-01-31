@@ -145,14 +145,15 @@ function applyStateUpdate(action: string, data: any) {
       useQuizStore.setState({ showAnswer: !store.showAnswer });
       break;
     case 'nextQuestion':
-      if (store.currentQuestionIndex < store.questions.length - 1) {
-        useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex + 1, showAnswer: false });
-      }
+      useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex + 1, showAnswer: false });
       break;
     case 'previousQuestion':
       if (store.currentQuestionIndex > 0) {
         useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex - 1, showAnswer: false });
       }
+      break;
+    case 'goToQuestion':
+      useQuizStore.setState({ currentQuestionIndex: data.index, showAnswer: false });
       break;
     case 'resetGame':
       useQuizStore.setState({
