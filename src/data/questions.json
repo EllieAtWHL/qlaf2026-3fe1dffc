@@ -204,13 +204,63 @@
   },
   "picture-board": {
     "title": "Picture Board",
-    "questions": [
+    "boards": [
       {
-        "id": "pb-1",
-        "type": "picture",
-        "content": "Identify these sports venues",
-        "imageUrl": "/placeholder.svg",
-        "answer": "Wembley Stadium"
+        "id": "board-1",
+        "name": "Sporting A",
+        "imageUrl": "/images/picture-board/boardA.png",
+        "pictures": [
+          { "id": 1, "answer": "Bob and Mike Bryan", "imageUrl": "/images/picture-board/BobMikeBryan.png" },
+          { "id": 2, "answer": "Jack Leach", "imageUrl": "/images/picture-board/JackLeach.png" },
+          { "id": 3, "answer": "Jordan Ayew", "imageUrl": "/images/picture-board/JordanAyew.png" },
+          { "id": 4, "answer": "Keeley Hodgkinson", "imageUrl": "/images/picture-board/KeelyHodgkinson.png" },
+          { "id": 5, "answer": "Tony McCoy", "imageUrl": "/images/picture-board/TonyMcCoy.png" },
+          { "id": 6, "answer": "Carolina Kluft", "imageUrl": "/images/picture-board/CarolinaKluft.png" },
+          { "id": 7, "answer": "Andy Murray", "imageUrl": "/images/picture-board/AndyMurray.png" },
+          { "id": 8, "answer": "LeBron James", "imageUrl": "/images/picture-board/LeBronJames.png" },
+          { "id": 9, "answer": "Aggie Beevers-Jones", "imageUrl": "/images/picture-board/AggieBeeversJones.png" },
+          { "id": 10, "answer": "Liam Lawson", "imageUrl": "/images/picture-board/LiamLawson.png" },
+          { "id": 11, "answer": "Gary Lineker", "imageUrl": "/images/picture-board/GaryLineker.png" },
+          { "id": 12, "answer": "Lindsey Vonn", "imageUrl": "/images/picture-board/LindseyVonn.png" }
+        ]
+      },
+      {
+        "id": "board-2",
+        "name": "B Sports",
+        "imageUrl": "/images/picture-board/boardB.jpg",
+        "pictures": [
+          { "id": 1, "answer": "Glenn Hoddle", "imageUrl": "/images/picture-board/GlennHoddle.png" },
+          { "id": 2, "answer": "Dinara Safina", "imageUrl": "/images/picture-board/DinaraSafina.png" },
+          { "id": 3, "answer": "Luke Littler", "imageUrl": "/images/picture-board/LukeLittler.png" },
+          { "id": 4, "answer": "Ross Barkley", "imageUrl": "/images/picture-board/RossBarkley.png" },
+          { "id": 5, "answer": "Allyson Felix", "imageUrl": "/images/picture-board/AllysonFelix.png" },
+          { "id": 6, "answer": "Chris Woakes", "imageUrl": "/images/picture-board/ChrisWoakes.png" },
+          { "id": 7, "answer": "Frankie Dettori", "imageUrl": "/images/picture-board/FrankieDettori.png" },
+          { "id": 8, "answer": "Michael Phelps", "imageUrl": "/images/picture-board/MichaelPhelps.png" },
+          { "id": 9, "answer": "Trinity Rodman", "imageUrl": "/images/picture-board/TrinityRodman.png" },
+          { "id": 10, "answer": "Jack Doohan", "imageUrl": "/images/picture-board/JackDoohan.png" },
+          { "id": 11, "answer": "David Haye", "imageUrl": "/images/picture-board/DavidHaye.png" },
+          { "id": 12, "answer": "Jessica and Jennifer Gadirova", "imageUrl": "/images/picture-board/JessicaJenniferGadirova.png" }
+        ]
+      },
+      {
+        "id": "board-3",
+        "name": "C Sport",
+        "imageUrl": "/images/picture-board/boardC.jpg",
+        "pictures": [
+          { "id": 1, "answer": "Football", "imageUrl": "/images/picture-board/football.jpg" },
+          { "id": 2, "answer": "Basketball", "imageUrl": "/images/picture-board/basketball.jpg" },
+          { "id": 3, "answer": "Tennis Racket", "imageUrl": "/images/picture-board/tennis-racket.jpg" },
+          { "id": 4, "answer": "Golf Club", "imageUrl": "/images/picture-board/golf-club.jpg" },
+          { "id": 5, "answer": "Cricket Bat", "imageUrl": "/images/picture-board/cricket-bat.jpg" },
+          { "id": 6, "answer": "Rugby Ball", "imageUrl": "/images/picture-board/rugby-ball.jpg" },
+          { "id": 7, "answer": "Hockey Stick", "imageUrl": "/images/picture-board/hockey-stick.jpg" },
+          { "id": 8, "answer": "Baseball Bat", "imageUrl": "/images/picture-board/baseball-bat.jpg" },
+          { "id": 9, "answer": "Boxing Gloves", "imageUrl": "/images/picture-board/boxing-gloves.jpg" },
+          { "id": 10, "answer": "Swimming Goggles", "imageUrl": "/images/picture-board/swimming-goggles.jpg" },
+          { "id": 11, "answer": "Running Shoes", "imageUrl": "/images/picture-board/running-shoes.jpg" },
+          { "id": 12, "answer": "Cycling Helmet", "imageUrl": "/images/picture-board/cycling-helmet.jpg" }
+        ]
       }
     ]
   },
