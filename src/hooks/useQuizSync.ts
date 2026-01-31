@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuizStore } from '@/store/quizStore';
 import questionsData from '@/data/questions.json';
+import { getRoundIdByIndex } from '@/utils/roundUtils';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 
 const CHANNEL_NAME = 'quiz-sync';
@@ -61,8 +62,7 @@ export const useQuizSync = (_isHost: boolean = false) => {
 // Helper function to load questions for current round
 function loadQuestionsForCurrentRound() {
   const store = useQuizStore.getState();
-  const roundIds = ['world-rankings', 'just-one', 'picture-board', 'only-connect', 'round-robin', 'daves-dozen', 'ellies-tellies', 'distinctly-average', 'wipeout', 'one-minute-round', 'f1-grand-prix'];
-  const currentRoundId = roundIds[store.currentRoundIndex];
+  const currentRoundId = getRoundIdByIndex(store.currentRoundIndex);
   
   const data = questionsData as any;
   const currentRoundData = data[currentRoundId];
@@ -82,7 +82,7 @@ function applyStateUpdate(action: string, data: any) {
       loadQuestionsForCurrentRound();
       break;
     case 'startRound':
-      useQuizStore.setState({ gameState: 'round' });
+      useQuizStore.setState({ gameState: 'round', isTransitioning: false });
       loadQuestionsForCurrentRound();
       break;
     case 'nextRound':
@@ -92,7 +92,15 @@ function applyStateUpdate(action: string, data: any) {
           gameState: 'round-transition',
           currentQuestionIndex: 0,
           showAnswer: false,
+          questions: [], // Clear questions during transition
+          isTransitioning: true, // Explicitly mark as transitioning
         });
+        
+        // Load questions after a brief delay to ensure transition state is set first
+        setTimeout(() => {
+          loadQuestionsForCurrentRound();
+          useQuizStore.setState({ isTransitioning: false }); // End transition after questions are loaded
+        }, 100);
       }
       break;
     case 'previousRound':
@@ -102,6 +110,7 @@ function applyStateUpdate(action: string, data: any) {
           gameState: 'round-transition',
           currentQuestionIndex: 0,
           showAnswer: false,
+          questions: [], // Clear questions during transition
         });
       }
       break;
@@ -111,6 +120,7 @@ function applyStateUpdate(action: string, data: any) {
         gameState: 'round-transition',
         currentQuestionIndex: 0,
         showAnswer: false,
+        questions: [], // Clear questions during transition
       });
       break;
     case 'showScores':

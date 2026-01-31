@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuizStore, RoundType } from '@/store/quizStore';
 import questionsData from '@/data/questions.json';
 import { Question, QuestionsData } from '@/types/questions';
+import { getRoundIds } from '@/utils/roundUtils';
 
 export const useQuestions = () => {
   const { currentRoundIndex, currentQuestionIndex } = useQuizStore();
@@ -9,19 +10,7 @@ export const useQuestions = () => {
   
   const data = questionsData as unknown as QuestionsData;
   
-  const roundIds: RoundType[] = [
-    'world-rankings',
-    'just-one', 
-    'picture-board',
-    'only-connect',
-    'round-robin',
-    'daves-dozen',
-    'ellies-tellies',
-    'distinctly-average',
-    'wipeout',
-    'one-minute-round',
-    'f1-grand-prix'
-  ];
+  const roundIds: RoundType[] = getRoundIds() as RoundType[];
   
   const currentRoundId = roundIds[currentRoundIndex];
   const currentRoundData = data[currentRoundId];

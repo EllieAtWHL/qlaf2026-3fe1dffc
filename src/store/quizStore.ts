@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import questionsData from '@/data/questions.json';
 import roundsData from '@/data/rounds.json';
+import { getRoundIdByIndex } from '@/utils/roundUtils';
 
 export type RoundType = 
   | 'world-rankings'
@@ -53,6 +54,9 @@ interface QuizState {
   isTimerRunning: boolean;
   timerValue: number;
   teams: Team[];
+  
+  // Transition state
+  isTransitioning: boolean;
   
   // Questions
   currentQuestionIndex: number;
@@ -108,6 +112,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   isTimerRunning: false,
   timerValue: 60,
   teams: initialTeams,
+  isTransitioning: false,
   currentQuestionIndex: 0,
   questions: [],
   showAnswer: false,
@@ -121,15 +126,24 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   nextRound: () => {
     const { currentRoundIndex } = get();
+    
     if (currentRoundIndex < ROUNDS.length - 1) {
+      const newRoundIndex = currentRoundIndex + 1;
+      
       set({ 
-        currentRoundIndex: currentRoundIndex + 1, 
+        currentRoundIndex: newRoundIndex, 
         gameState: 'round-transition',
         currentQuestionIndex: 0,
         showAnswer: false,
+        questions: [], // Clear questions during transition
+        isTransitioning: true, // Explicitly mark as transitioning
       });
-      // Load questions for the new round
-      get().loadQuestionsForCurrentRound();
+      
+      // Load questions after a brief delay to ensure transition state is set first
+      setTimeout(() => {
+        get().loadQuestionsForCurrentRound();
+        set({ isTransitioning: false }); // End transition after questions are loaded
+      }, 100);
     }
   },
   
@@ -141,6 +155,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         gameState: 'round-transition',
         currentQuestionIndex: 0,
         showAnswer: false,
+        questions: [], // Clear questions during transition
       });
     }
   },
@@ -151,14 +166,14 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       gameState: 'round-transition',
       currentQuestionIndex: 0,
       showAnswer: false,
+      questions: [], // Clear questions during transition
     });
-    // Load questions for the new round
-    get().loadQuestionsForCurrentRound();
+    // Don't load questions yet - wait until round starts
   },
   
   showTransition: () => set({ gameState: 'round-transition' }),
   startRound: () => {
-    set({ gameState: 'round' });
+    set({ gameState: 'round', isTransitioning: false });
     // Load questions for the current round
     get().loadQuestionsForCurrentRound();
   },
@@ -236,8 +251,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   loadQuestionsForCurrentRound: () => {
     const { currentRoundIndex } = get();
-    const roundIds = ['world-rankings', 'just-one', 'picture-board', 'only-connect', 'round-robin', 'daves-dozen', 'ellies-tellies', 'distinctly-average', 'wipeout', 'one-minute-round', 'f1-grand-prix'];
-    const currentRoundId = roundIds[currentRoundIndex];
+    const currentRoundId = getRoundIdByIndex(currentRoundIndex);
     
     // Use imported questions data
     const data = questionsData as any;

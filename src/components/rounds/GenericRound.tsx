@@ -6,13 +6,18 @@ import { useQuestions } from '@/hooks/useQuestions';
 import { normalizeOption } from '@/types/questions';
 
 interface GenericRoundProps {
-  roundId: string;
+  roundId?: string; // Make optional since we'll read from store
 }
 
 export const GenericRound = ({ roundId }: GenericRoundProps) => {
-  const { currentRoundIndex, showAnswer, currentQuestionIndex } = useQuizStore();
+  const { currentRoundIndex, showAnswer, currentQuestionIndex, gameState, isTransitioning } = useQuizStore();
   const { currentQuestion, totalQuestions } = useQuestions();
   const round = ROUNDS[currentRoundIndex];
+
+  // If we're transitioning or not in round state, don't render anything
+  if (isTransitioning || gameState !== 'round') {
+    return null;
+  }
 
   return (
     <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">

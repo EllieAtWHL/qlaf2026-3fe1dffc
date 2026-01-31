@@ -7,6 +7,7 @@ import { F1GrandPrix } from '@/components/rounds/F1GrandPrix';
 import { OneMinuteRound } from '@/components/rounds/OneMinuteRound';
 import { WorldRankings } from '@/components/rounds/WorldRankings';
 import { PictureBoard } from '@/components/rounds/PictureBoard';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const componentMap: Record<string, React.ComponentType<any>> = {
@@ -18,20 +19,30 @@ const componentMap: Record<string, React.ComponentType<any>> = {
 };
 
 export const MainDisplay = () => {
-  const { gameState, currentRoundIndex } = useQuizStore();
+  const { gameState, currentRoundIndex, isTransitioning } = useQuizStore();
   const currentRound = ROUNDS[currentRoundIndex];
 
   const renderRound = () => {
+    // Don't render any round component if we're not in 'round' state
+    if (gameState !== 'round') {
+      return null;
+    }
+    
     const Component = componentMap[currentRound.component] || GenericRound;
     
     if (currentRound.component === 'GenericRound') {
-      return <GenericRound roundId={currentRound.id} />;
+      return <GenericRound key={`${currentRound.id}-${gameState}`} />;
     }
     
-    return <Component roundId={currentRound.id} />;
+    return <Component key={`${currentRound.id}-${gameState}`} roundId={currentRound.id} />;
   };
 
   const renderContent = () => {
+    // If we're explicitly transitioning, show loading screen
+    if (isTransitioning) {
+      return <LoadingScreen />;
+    }
+    
     switch (gameState) {
       case 'welcome':
         return <WelcomeScreen />;
@@ -55,11 +66,11 @@ export const MainDisplay = () => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={`${gameState}-${currentRoundIndex}`}
+        key={gameState}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.1 }}
         className="w-full h-full"
       >
         {renderContent()}
