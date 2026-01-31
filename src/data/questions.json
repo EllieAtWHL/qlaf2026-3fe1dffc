@@ -6,7 +6,12 @@
         "id": "wr-1",
         "type": "ranking",
         "content": "Rank these countries by Olympic gold medals (most to least)",
-        "options": ["USA", "China", "Great Britain", "Russia"],
+        "options": [
+          { "label": "USA", "imageUrl": "https://flagcdn.com/w160/us.png" },
+          { "label": "China", "imageUrl": "https://flagcdn.com/w160/cn.png" },
+          { "label": "Great Britain", "imageUrl": "https://flagcdn.com/w160/gb.png" },
+          { "label": "Russia", "imageUrl": "https://flagcdn.com/w160/ru.png" }
+        ],
         "answer": ["USA", "China", "Russia", "Great Britain"],
         "points": 4
       }
