@@ -1,0 +1,103 @@
+{
+  "rounds": [
+    {
+      "id": "world-rankings",
+      "name": "World Rankings",
+      "description": "Rank items in order",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "WorldRankings",
+      "icon": "Globe"
+    },
+    {
+      "id": "just-one",
+      "name": "Just One",
+      "description": "Give a unique answer",
+      "timerDuration": null,
+      "isTeamRound": false,
+      "component": "GenericRound",
+      "icon": "Users"
+    },
+    {
+      "id": "picture-board",
+      "name": "Picture Board",
+      "description": "Identify the images",
+      "timerDuration": 60,
+      "isTeamRound": true,
+      "component": "PictureBoard",
+      "icon": "Image"
+    },
+    {
+      "id": "only-connect",
+      "name": "Only Connect",
+      "description": "Find the connection",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "GenericRound",
+      "icon": "Link"
+    },
+    {
+      "id": "round-robin",
+      "name": "Round Robin",
+      "description": "Take turns answering",
+      "timerDuration": null,
+      "isTeamRound": false,
+      "component": "GenericRound",
+      "icon": "RotateCcw"
+    },
+    {
+      "id": "daves-dozen",
+      "name": "Dave's Dozen",
+      "description": "Auction-style bidding",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "GenericRound",
+      "icon": "Gavel"
+    },
+    {
+      "id": "ellies-tellies",
+      "name": "Ellie's Tellies",
+      "description": "Picture round",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "GenericRound",
+      "icon": "Tv"
+    },
+    {
+      "id": "distinctly-average",
+      "name": "Distinctly Average",
+      "description": "Guess the average",
+      "timerDuration": null,
+      "isTeamRound": false,
+      "component": "GenericRound",
+      "icon": "Calculator"
+    },
+    {
+      "id": "wipeout",
+      "name": "Wipeout",
+      "description": "Risk vs reward",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "GenericRound",
+      "icon": "Skull"
+    },
+    {
+      "id": "one-minute-round",
+      "name": "One Minute Round",
+      "description": "Quick fire questions",
+      "timerDuration": 60,
+      "isTeamRound": true,
+      "component": "OneMinuteRound",
+      "icon": "Clock"
+    },
+    {
+      "id": "f1-grand-prix",
+      "name": "F1 Grand Prix Final",
+      "description": "The final race!",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "F1GrandPrix",
+      "icon": "Flag"
+    }
+  ]
+}

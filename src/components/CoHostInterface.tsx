@@ -195,15 +195,23 @@ export const CoHostInterface = () => {
         </div>
       </motion.div>
 
-      {/* Game State Controls */}
+      {/* Quiz Control */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass-card rounded-xl p-4 mb-4"
       >
-        <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3">
-          Game State
-        </h3>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider">
+            Quiz Control
+          </h3>
+          {gameState !== 'welcome' && (
+            <div className="text-xs text-muted-foreground text-right">
+              <div className="font-semibold">{currentRoundIndex + 1}/{ROUNDS.length}</div>
+              <div>{currentRound?.name}</div>
+            </div>
+          )}
+        </div>
         
         <div className="grid grid-cols-2 gap-2">
           {gameState === 'welcome' && (
@@ -218,86 +226,26 @@ export const CoHostInterface = () => {
           {gameState !== 'welcome' && (
             <>
               <button
-                onClick={syncedShowTransition}
-                className="control-btn bg-primary/20 text-primary border border-primary/30"
-              >
-                Show Round
-              </button>
-              <button
                 onClick={syncedStartRound}
-                className="control-btn bg-qlaf-success/20 text-qlaf-success border border-qlaf-success/30"
+                disabled={gameState === 'round'}
+                className="col-span-2 control-btn bg-qlaf-success/20 text-qlaf-success border border-qlaf-success/30 disabled:opacity-30"
               >
-                Play Round
+                {gameState === 'round' ? 'Round In Progress' : 'Play Round'}
               </button>
               <button
                 onClick={syncedShowScores}
-                className="control-btn bg-qlaf-gold/20 text-qlaf-gold border border-qlaf-gold/30"
+                className="col-span-2 control-btn bg-qlaf-gold/20 text-qlaf-gold border border-qlaf-gold/30"
               >
                 <Trophy className="w-4 h-4 inline mr-2" />
                 Scores
-              </button>
-              <button
-                onClick={syncedToggleAnswer}
-                className={`control-btn ${showAnswer ? 'bg-accent/20 text-accent border-accent/30' : 'bg-muted text-muted-foreground'} border`}
-              >
-                {showAnswer ? <Eye className="w-4 h-4 inline mr-2" /> : <EyeOff className="w-4 h-4 inline mr-2" />}
-                Answer
               </button>
             </>
           )}
         </div>
       </motion.div>
 
-      {/* Round Navigation */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="glass-card rounded-xl p-4 mb-4"
-      >
-        <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3">
-          Round {currentRoundIndex + 1}/{ROUNDS.length}: {currentRound?.name}
-        </h3>
-        
-        <div className="flex gap-2">
-          <button
-            onClick={syncedPreviousRound}
-            disabled={currentRoundIndex === 0}
-            className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
-          >
-            <ChevronLeft className="w-5 h-5 inline" />
-            Prev
-          </button>
-          <button
-            onClick={syncedNextRound}
-            disabled={currentRoundIndex === ROUNDS.length - 1}
-            className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
-          >
-            Next
-            <ChevronRight className="w-5 h-5 inline" />
-          </button>
-        </div>
-
-        {/* Round quick select */}
-        <div className="mt-3 grid grid-cols-6 gap-1">
-          {ROUNDS.map((round, index) => (
-            <button
-              key={round.id}
-              onClick={() => syncedGoToRound(index)}
-              className={`p-2 rounded text-xs font-display ${
-                index === currentRoundIndex 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-secondary/50 text-muted-foreground'
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
-      </motion.div>
-
       {/* Question Controls */}
-      {totalQuestions > 0 && (
+      {totalQuestions > 0 && gameState === 'round' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -307,8 +255,11 @@ export const CoHostInterface = () => {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider flex items-center gap-2">
               <HelpCircle className="w-4 h-4" />
-              Question {currentQuestionIndex + 1}/{totalQuestions}
+              Questions
             </h3>
+            <span className="text-xs text-muted-foreground">
+              {currentQuestionIndex + 1}/{totalQuestions}
+            </span>
           </div>
           
           {currentQuestion && (
@@ -329,18 +280,18 @@ export const CoHostInterface = () => {
             </div>
           )}
           
-          <div className="flex gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <button
               onClick={syncedPreviousQuestion}
               disabled={!hasPreviousQuestion}
-              className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
+              className="control-btn bg-secondary text-foreground disabled:opacity-30 text-sm"
             >
-              <ChevronLeft className="w-5 h-5 inline" />
-              Prev Q
+              <ChevronLeft className="w-4 h-4 inline mr-1" />
+              Prev
             </button>
             <button
               onClick={syncedToggleAnswer}
-              className={`flex-1 control-btn ${showAnswer ? 'bg-qlaf-success text-white' : 'bg-accent/20 text-accent'}`}
+              className={`control-btn ${showAnswer ? 'bg-qlaf-success text-white' : 'bg-accent/20 text-accent'} text-sm`}
             >
               {showAnswer ? <Eye className="w-4 h-4 inline mr-1" /> : <EyeOff className="w-4 h-4 inline mr-1" />}
               {showAnswer ? 'Hide' : 'Show'}
@@ -348,22 +299,22 @@ export const CoHostInterface = () => {
             <button
               onClick={syncedNextQuestion}
               disabled={!hasNextQuestion && !canAdvanceToNextRound()}
-              className="flex-1 control-btn bg-secondary text-foreground disabled:opacity-30"
+              className="control-btn bg-secondary text-foreground disabled:opacity-30 text-sm"
             >
               {hasNextQuestion ? (
                 <>
-                  Next Q
-                  <ChevronRight className="w-5 h-5 inline" />
+                  Next
+                  <ChevronRight className="w-4 h-4 inline ml-1" />
                 </>
               ) : canAdvanceToNextRound() ? (
                 <>
-                  Next Round
-                  <ChevronRight className="w-5 h-5 inline" />
+                  Next R
+                  <ChevronRight className="w-4 h-4 inline ml-1" />
                 </>
               ) : (
                 <>
                   End
-                  <ChevronRight className="w-5 h-5 inline" />
+                  <ChevronRight className="w-4 h-4 inline ml-1" />
                 </>
               )}
             </button>
@@ -377,39 +328,38 @@ export const CoHostInterface = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="glass-card rounded-xl p-4 mb-4"
+          className="glass-card rounded-xl p-3 mb-4"
         >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Timer
-            </h3>
-            <span className={`font-display text-2xl font-bold ${
-              timerValue <= 10 ? 'text-qlaf-danger' : timerValue <= 30 ? 'text-qlaf-warning' : 'text-qlaf-success'
-            }`}>
-              {Math.floor(timerValue / 60)}:{(timerValue % 60).toString().padStart(2, '0')}
-            </span>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
-              className={`control-btn ${isTimerRunning ? 'bg-qlaf-warning' : 'bg-qlaf-success'} text-white`}
-            >
-              {isTimerRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
-            </button>
-            <button
-              onClick={() => syncedResetTimer()}
-              className="control-btn bg-secondary text-foreground"
-            >
-              <RotateCcw className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => syncedResetTimer(30)}
-              className="control-btn bg-secondary text-foreground text-sm"
-            >
-              30s
-            </button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <span className={`font-display text-xl font-bold ${
+                timerValue <= 10 ? 'text-qlaf-danger' : timerValue <= 30 ? 'text-qlaf-warning' : 'text-qlaf-success'
+              }`}>
+                {Math.floor(timerValue / 60)}:{(timerValue % 60).toString().padStart(2, '0')}
+              </span>
+            </div>
+            
+            <div className="flex gap-1">
+              <button
+                onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
+                className={`p-2 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
+              >
+                {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => syncedResetTimer()}
+                className="p-2 rounded-lg bg-secondary text-foreground"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => syncedResetTimer(30)}
+                className="p-2 rounded-lg bg-secondary text-foreground text-xs font-semibold"
+              >
+                30s
+              </button>
+            </div>
           </div>
         </motion.div>
       )}

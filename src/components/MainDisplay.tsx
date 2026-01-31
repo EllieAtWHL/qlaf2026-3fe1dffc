@@ -9,23 +9,26 @@ import { WorldRankings } from '@/components/rounds/WorldRankings';
 import { PictureBoard } from '@/components/rounds/PictureBoard';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const componentMap: Record<string, React.ComponentType<any>> = {
+  'F1GrandPrix': F1GrandPrix,
+  'OneMinuteRound': OneMinuteRound,
+  'WorldRankings': WorldRankings,
+  'PictureBoard': PictureBoard,
+  'GenericRound': GenericRound,
+};
+
 export const MainDisplay = () => {
   const { gameState, currentRoundIndex } = useQuizStore();
   const currentRound = ROUNDS[currentRoundIndex];
 
   const renderRound = () => {
-    switch (currentRound.id) {
-      case 'f1-grand-prix':
-        return <F1GrandPrix />;
-      case 'one-minute-round':
-        return <OneMinuteRound />;
-      case 'world-rankings':
-        return <WorldRankings />;
-      case 'picture-board':
-        return <PictureBoard />;
-      default:
-        return <GenericRound roundId={currentRound.id} />;
+    const Component = componentMap[currentRound.component] || GenericRound;
+    
+    if (currentRound.component === 'GenericRound') {
+      return <GenericRound roundId={currentRound.id} />;
     }
+    
+    return <Component roundId={currentRound.id} />;
   };
 
   const renderContent = () => {

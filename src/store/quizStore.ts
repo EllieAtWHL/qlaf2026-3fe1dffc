@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import questionsData from '@/data/questions.json';
+import roundsData from '@/data/rounds.json';
 
 export type RoundType = 
   | 'world-rankings'
@@ -15,11 +16,13 @@ export type RoundType =
   | 'f1-grand-prix';
 
 export interface Round {
-  id: RoundType;
+  id: string;
   name: string;
   description: string;
   timerDuration?: number; // in seconds, undefined means no timer
   isTeamRound: boolean;
+  component: string; // Component name to render
+  icon: string; // Icon name for Lucide icons
 }
 
 export interface Team {
@@ -41,19 +44,7 @@ export interface Question {
   points?: number;
 }
 
-export const ROUNDS: Round[] = [
-  { id: 'world-rankings', name: 'World Rankings', description: 'Rank items in order', isTeamRound: true },
-  { id: 'just-one', name: 'Just One', description: 'Give a unique answer', isTeamRound: false },
-  { id: 'picture-board', name: 'Picture Board', description: 'Identify the images', timerDuration: 60, isTeamRound: true },
-  { id: 'only-connect', name: 'Only Connect', description: 'Find the connection', isTeamRound: true },
-  { id: 'round-robin', name: 'Round Robin', description: 'Take turns answering', isTeamRound: false },
-  { id: 'daves-dozen', name: "Dave's Dozen", description: 'Auction-style bidding', isTeamRound: true },
-  { id: 'ellies-tellies', name: "Ellie's Tellies", description: 'Picture round', isTeamRound: true },
-  { id: 'distinctly-average', name: 'Distinctly Average', description: 'Guess the average', isTeamRound: false },
-  { id: 'wipeout', name: 'Wipeout', description: 'Risk vs reward', isTeamRound: true },
-  { id: 'one-minute-round', name: 'One Minute Round', description: 'Quick fire questions', timerDuration: 60, isTeamRound: true },
-  { id: 'f1-grand-prix', name: 'F1 Grand Prix Final', description: 'The final race!', isTeamRound: true },
-];
+export const ROUNDS: Round[] = roundsData.rounds;
 
 interface QuizState {
   // Quiz state

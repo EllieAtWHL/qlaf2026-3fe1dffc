@@ -5,18 +5,18 @@ import {
   Gavel, Tv, Calculator, Skull, Clock, Flag 
 } from 'lucide-react';
 
-const roundIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  'world-rankings': Globe,
-  'just-one': Users,
-  'picture-board': Image,
-  'only-connect': Link,
-  'round-robin': RotateCcw,
-  'daves-dozen': Gavel,
-  'ellies-tellies': Tv,
-  'distinctly-average': Calculator,
-  'wipeout': Skull,
-  'one-minute-round': Clock,
-  'f1-grand-prix': Flag,
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  'Globe': Globe,
+  'Users': Users,
+  'Image': Image,
+  'Link': Link,
+  'RotateCcw': RotateCcw,
+  'Gavel': Gavel,
+  'Tv': Tv,
+  'Calculator': Calculator,
+  'Skull': Skull,
+  'Clock': Clock,
+  'Flag': Flag,
 };
 
 interface RoundTransitionProps {
@@ -27,7 +27,7 @@ interface RoundTransitionProps {
 export const RoundTransition = ({ isCoHost = false, onStartRound }: RoundTransitionProps) => {
   const { currentRoundIndex } = useQuizStore();
   const round = ROUNDS[currentRoundIndex];
-  const Icon = roundIcons[round.id] || Globe;
+  const Icon = iconMap[round.icon] || Globe;
 
   return (
     <div className="min-h-screen qlaf-bg flex flex-col items-center justify-center relative overflow-hidden p-4">

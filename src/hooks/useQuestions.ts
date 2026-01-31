@@ -38,7 +38,7 @@ export const useQuestions = () => {
   const hasNextQuestion = currentQuestionIndex < totalQuestions - 1;
   const hasPreviousQuestion = currentQuestionIndex > 0;
   
-  const getQuestionsForRound = (roundId: RoundType): Question[] => {
+  const getQuestionsForRound = (roundId: string): Question[] => {
     return data[roundId]?.questions || [];
   };
   
