@@ -106,16 +106,44 @@ export const GenericRound = ({ roundId }: GenericRoundProps) => {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-6"
+                  className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8"
                 >
-                  <span className="font-display text-sm text-qlaf-success uppercase tracking-wider">Answer</span>
-                  <p className="font-display text-2xl md:text-3xl text-qlaf-success mt-2">
-                    {Array.isArray(currentQuestion.answer) 
-                      ? currentQuestion.answer.join(', ') 
-                      : currentQuestion.answer}
-                  </p>
+                  <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">Answer</span>
+                  {Array.isArray(currentQuestion.answer) ? (
+                    currentQuestion.answer.length > 10 ? (
+                      <div className="mt-4 max-h-96 overflow-y-auto">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
+                          {currentQuestion.answer.map((answer, index) => {
+                            const answerObj = typeof answer === 'object' ? answer : { name: answer, event: '' };
+                            return (
+                              <div key={index} className="font-display text-base text-qlaf-success">
+                                <div className="font-semibold text-lg">{answerObj.name}</div>
+                                {answerObj.event && <div className="text-sm text-qlaf-success/70 mt-1">{answerObj.event}</div>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="font-display text-3xl md:text-4xl text-qlaf-success mt-4">
+                        {currentQuestion.answer.map((answer, index) => {
+                          const answerObj = typeof answer === 'object' ? answer : { name: answer, event: '' };
+                          return (
+                            <div key={index} className="mb-3">
+                              <div>{answerObj.name}</div>
+                              {answerObj.event && <div className="text-lg text-qlaf-success/70">{answerObj.event}</div>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )
+                  ) : (
+                    <p className="font-display text-3xl md:text-4xl text-qlaf-success mt-4">
+                      {currentQuestion.answer}
+                    </p>
+                  )}
                   {currentQuestion.points && (
-                    <p className="font-display text-lg text-qlaf-success/70 mt-2">
+                    <p className="font-display text-xl text-qlaf-success/70 mt-4">
                       {currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}
                     </p>
                   )}

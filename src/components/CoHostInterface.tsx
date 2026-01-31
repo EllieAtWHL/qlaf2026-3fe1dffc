@@ -273,7 +273,9 @@ export const CoHostInterface = () => {
                         .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer})`)
                         .join(' → ')
                     : Array.isArray(currentQuestion.answer) 
-                      ? currentQuestion.answer.join(', ') 
+                      ? currentQuestion.answer.map(answer => 
+                          typeof answer === 'object' && answer !== null ? answer.name : answer
+                        ).join(', ')
                       : currentQuestion.answer}
                 </p>
               )}
