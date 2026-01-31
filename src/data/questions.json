@@ -7,10 +7,10 @@
         "type": "ranking",
         "content": "Rank these footballers by single transfer fee (highest to lowest)",
         "options": [
-          { "label": "Keira Walsh", "sublabel": "Barcelona → Chelsea", "imageUrl": "/images/KeiraWalsh.png", "order": 4, "answer": "£400,000" },
-          { "label": "Olivia Smith", "sublabel": "Liverpool → Arsenal", "imageUrl": "/images/OliviaSmith.png", "order": 1, "answer": "£1,000,000" },
-          { "label": "Riyad Mahrez", "sublabel": "Le Havre → Leicester City", "imageUrl": "/images/RiyadMahrez.png", "order": 3, "answer": "£450,000" },
-          { "label": "Henrik Larsson", "sublabel": "Feyenoord → Celtic", "imageUrl": "/images/HenrikLarsson.png", "order": 2, "answer": "£650,000" }
+          { "label": "Keira Walsh", "sublabel": "Barcelona → Chelsea", "imageUrl": "/images/world-rankings/KeiraWalsh.png", "order": 4, "answer": "£400,000" },
+          { "label": "Olivia Smith", "sublabel": "Liverpool → Arsenal", "imageUrl": "/images/world-rankings/OliviaSmith.png", "order": 1, "answer": "£1,000,000" },
+          { "label": "Riyad Mahrez", "sublabel": "Le Havre → Leicester City", "imageUrl": "/images/world-rankings/RiyadMahrez.png", "order": 3, "answer": "£450,000" },
+          { "label": "Henrik Larsson", "sublabel": "Feyenoord → Celtic", "imageUrl": "/images/world-rankings/HenrikLarsson.png", "order": 2, "answer": "£650,000" }
         ]
       },
       {
@@ -18,10 +18,10 @@
         "type": "ranking",
         "content": "Rank these basketballers by NBA career playoff points scored (highest to lowest)",
         "options": [
-          { "label": "Kareem Abdul-Jabbar", "imageUrl": "/images/KareemAbdulJabbar.png", "order": 2, "answer": "5,762" },
-          { "label": "Shaquille O'Neal", "imageUrl": "/images/ShaquilleONeal.png", "order": 4, "answer": "5,250" },
-          { "label": "Kobe Bryant", "imageUrl": "/images/KobeBryant.png", "order": 3, "answer": "5,640" },
-          { "label": "Michael Jordan", "imageUrl": "/images/MichaelJordan.png", "order": 1, "answer": "5,987" }
+          { "label": "Kareem Abdul-Jabbar", "imageUrl": "/images/world-rankings/KareemAbdulJabbar.png", "order": 2, "answer": "5,762" },
+          { "label": "Shaquille O'Neal", "imageUrl": "/images/world-rankings/ShaquilleONeal.png", "order": 4, "answer": "5,250" },
+          { "label": "Kobe Bryant", "imageUrl": "/images/world-rankings/KobeBryant.png", "order": 3, "answer": "5,640" },
+          { "label": "Michael Jordan", "imageUrl": "/images/world-rankings/MichaelJordan.png", "order": 1, "answer": "5,987" }
         ]
       },      
       {
@@ -29,10 +29,10 @@
         "type": "ranking",
         "content": "Rank these events by the cheapest retail ticket available (lowest to highest)",
         "options": [
-          { "label": "FIFA World Cup 2022 Final", "imageUrl": "/images/FIFAWorldCup.png", "order": 3, "answer": "£440" },
-          { "label": "Paris 2024 Men’s 100m Final", "imageUrl": "/images/Olympic100mFinal.png", "order": 1, "answer": "£106" },
-          { "label": "Superbowl LIX", "imageUrl": "/images/SuperbowlLIX.png", "order": 4, "answer": "£780" },
-          { "label": "World Snooker Championship 2025 Final", "imageUrl": "/images/SnookerFinal2025.png", "order": 2, "answer": "£120" }
+          { "label": "FIFA World Cup 2022 Final", "imageUrl": "/images/world-rankings/FIFAWorldCup.png", "order": 3, "answer": "£440" },
+          { "label": "Paris 2024 Men’s 100m Final", "imageUrl": "/images/world-rankings/Olympic100mFinal.png", "order": 1, "answer": "£106" },
+          { "label": "Superbowl LIX", "imageUrl": "/images/world-rankings/SuperbowlLIX.png", "order": 4, "answer": "£780" },
+          { "label": "World Snooker Championship 2025 Final", "imageUrl": "/images/world-rankings/SnookerFinal2025.png", "order": 2, "answer": "£120" }
         ]
       },      
       {
@@ -40,10 +40,10 @@
         "type": "ranking",
         "content": "Rank these crickers by most test centuries (highest to lowest)",
         "options": [
-          { "label": "Ricky Ponting", "imageUrl": "/images/RickyPonting.png", "order": 2, "answer": "41" },
-          { "label": "Kumar Sangakkara", "imageUrl": "/images/KumarSangakkara.png", "order": 4, "answer": "38" },
-          { "label": "Jaques Kallis", "imageUrl": "/images/JaquesKallis.png", "order": 1, "answer": "45" },
-          { "label": "Joe Root", "imageUrl": "/images/JoeRoot.png", "order": 3, "answer": "40" }
+          { "label": "Ricky Ponting", "imageUrl": "/images/world-rankings/RickyPonting.png", "order": 2, "answer": "41" },
+          { "label": "Kumar Sangakkara", "imageUrl": "/images/world-rankings/KumarSangakkara.png", "order": 4, "answer": "38" },
+          { "label": "Jaques Kallis", "imageUrl": "/images/world-rankings/JaquesKallis.png", "order": 1, "answer": "45" },
+          { "label": "Joe Root", "imageUrl": "/images/world-rankings/JoeRoot.png", "order": 3, "answer": "40" }
         ]
       }
     ]
