@@ -248,18 +248,18 @@
         "name": "C Sport",
         "imageUrl": "/images/picture-board/boardC.jpg",
         "pictures": [
-          { "id": 1, "answer": "Football", "imageUrl": "/images/picture-board/football.jpg" },
-          { "id": 2, "answer": "Basketball", "imageUrl": "/images/picture-board/basketball.jpg" },
-          { "id": 3, "answer": "Tennis Racket", "imageUrl": "/images/picture-board/tennis-racket.jpg" },
-          { "id": 4, "answer": "Golf Club", "imageUrl": "/images/picture-board/golf-club.jpg" },
-          { "id": 5, "answer": "Cricket Bat", "imageUrl": "/images/picture-board/cricket-bat.jpg" },
-          { "id": 6, "answer": "Rugby Ball", "imageUrl": "/images/picture-board/rugby-ball.jpg" },
-          { "id": 7, "answer": "Hockey Stick", "imageUrl": "/images/picture-board/hockey-stick.jpg" },
-          { "id": 8, "answer": "Baseball Bat", "imageUrl": "/images/picture-board/baseball-bat.jpg" },
-          { "id": 9, "answer": "Boxing Gloves", "imageUrl": "/images/picture-board/boxing-gloves.jpg" },
-          { "id": 10, "answer": "Swimming Goggles", "imageUrl": "/images/picture-board/swimming-goggles.jpg" },
-          { "id": 11, "answer": "Running Shoes", "imageUrl": "/images/picture-board/running-shoes.jpg" },
-          { "id": 12, "answer": "Cycling Helmet", "imageUrl": "/images/picture-board/cycling-helmet.jpg" }
+          { "id": 1, "answer": "Oliver Bearman", "imageUrl": "/images/picture-board/OliverBearman.png" },
+          { "id": 2, "answer": "Dennis Taylor", "imageUrl": "/images/picture-board/DennisTaylor.png" },
+          { "id": 3, "answer": "Jessica Naz", "imageUrl": "/images/picture-board/JessNaz.png" },
+          { "id": 4, "answer": "Roger Federer", "imageUrl": "/images/picture-board/RogerFederer.png" },
+          { "id": 5, "answer": "Tom and Ben Curry", "imageUrl": "/images/picture-board/TomBenCurry.png" },
+          { "id": 6, "answer": "Rachel Blackmore", "imageUrl": "/images/picture-board/RachelBlackmore.png" },
+          { "id": 7, "answer": "Ally McCoist", "imageUrl": "/images/picture-board/AllyMcCoist.png" },
+          { "id": 8, "answer": "Neymar", "imageUrl": "/images/picture-board/Neymar.png" },
+          { "id": 9, "answer": "Caitlin Clark", "imageUrl": "/images/picture-board/CaitlinClark.png" },
+          { "id": 10, "answer": "Ollie Pope", "imageUrl": "/images/picture-board/OlliePope.png" },
+          { "id": 11, "answer": "Andy Roddick", "imageUrl": "/images/picture-board/AndyRoddick.png" },
+          { "id": 12, "answer": "Saido Berahino", "imageUrl": "/images/picture-board/SaidoBerahino.png" }
         ]
       }
     ]
