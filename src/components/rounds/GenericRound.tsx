@@ -51,7 +51,7 @@ export const GenericRound = ({
       </motion.div>
 
       {/* Main content area */}
-      <div className="flex-1 items-center justify-center flex flex-row">
+      <div className="flex-1 flex-row flex items-start justify-center py-[16px]">
         <motion.div key={currentQuestionIndex} initial={{
         opacity: 0,
         scale: 0.95
@@ -60,7 +60,7 @@ export const GenericRound = ({
         scale: 1
       }} transition={{
         delay: 0.1
-      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] py-[32px] mx-0">
+      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px]">
           {currentQuestion ? <>
               {/* Question number */}
               <div className="mb-4">
