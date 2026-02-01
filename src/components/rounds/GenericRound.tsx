@@ -60,7 +60,7 @@ export const GenericRound = ({
         scale: 1
       }} transition={{
         delay: 0.1
-      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px]">
+      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[75vh]">
           {currentQuestion ? <>
               {/* Question number */}
               <div className="mb-4">
