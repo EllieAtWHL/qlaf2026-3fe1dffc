@@ -48,7 +48,7 @@ export const GenericRound = ({ roundId }: GenericRoundProps) => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="glass-card rounded-2xl p-8 md:p-12 max-w-4xl w-full text-center"
+          className="glass-card rounded-2xl p-6 md:p-8 max-w-4xl w-full text-center"
         >
           {currentQuestion ? (
             <>
