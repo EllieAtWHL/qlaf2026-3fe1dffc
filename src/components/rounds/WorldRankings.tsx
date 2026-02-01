@@ -80,7 +80,7 @@ export const WorldRankings = () => {
               </div>
 
               {/* Items grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 gap-8 max-w-6xl mx-auto">
                 {displayOptions.map((item, index) => {
                   const originalIndex = options.indexOf(item);
                   
@@ -94,7 +94,7 @@ export const WorldRankings = () => {
                         delay: showAnswer ? 0 : originalIndex * 0.1,
                         layout: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
                       }}
-                      className={`glass-card rounded-xl p-6 text-center relative ${
+                      className={`glass-card rounded-2xl p-8 text-center relative ${
                         showAnswer ? 'border-2 border-qlaf-gold' : ''
                       }`}
                     >
@@ -103,7 +103,7 @@ export const WorldRankings = () => {
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.3 + index * 0.1 }}
-                          className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-qlaf-gold flex items-center justify-center font-display font-bold text-black z-10"
+                          className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-qlaf-gold flex items-center justify-center font-display font-bold text-black text-xl z-10"
                         >
                           {item.order}
                         </motion.div>
@@ -112,14 +112,14 @@ export const WorldRankings = () => {
                         <img 
                           src={item.imageUrl} 
                           alt={item.label}
-                          className="w-full h-64 object-contain mb-4"
+                          className="w-full h-96 object-contain mb-6"
                         />
                       )}
-                      <p className="font-display text-xl font-bold text-foreground">
+                      <p className="font-display text-2xl font-bold text-foreground">
                         {item.label}
                       </p>
                       {item.sublabel && (
-                        <p className="font-display text-sm text-muted-foreground">
+                        <p className="font-display text-lg text-muted-foreground mt-2">
                           {item.sublabel}
                         </p>
                       )}
@@ -128,7 +128,7 @@ export const WorldRankings = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.5 + index * 0.1 }}
-                          className="font-display text-sm text-qlaf-gold font-semibold mt-2"
+                          className="font-display text-lg text-qlaf-gold font-semibold mt-4"
                         >
                           {item.answer}
                         </motion.p>
