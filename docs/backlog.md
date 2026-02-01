@@ -4,9 +4,55 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
-## 🚨 High Priority Backlog Items
+## 🚨 Highest Priority Backlog Items
 
-### 1. Picture Board Timer Sync Issue
+### 1. Only Connect Round Critical Crash (BLOCKER)
+**Status**: Critical - Complete Failure  
+**Priority**: Blocker  
+**Description**: After the Only Connect round, the main display breaks completely with a blank screen and JavaScript errors. This completely blocks the quiz from continuing.
+
+**Current Issues**:
+- `TypeError: Cannot read properties of undefined (reading 'map')` 
+- Complete blank screen on main display after Only Connect round
+- Quiz cannot continue after this error
+- AudioContext errors may be related but not the root cause
+
+**Error Details**:
+```
+TypeError: Cannot read properties of undefined (reading 'map')
+    at UI (index-o4VkhCKw.js:266:33642)
+```
+
+**Files Involved**:
+- `src/components/rounds/OnlyConnect.tsx` - Likely source of undefined array
+- `src/components/MainDisplay.tsx` - Round rendering logic
+- `src/store/quizStore.ts` - State management for Only Connect
+
+**Impact**: Critical - Quiz completely breaks and cannot continue
+
+**Investigation Needed**:
+- Check OnlyConnect component for undefined arrays being mapped
+- Verify state transitions after Only Connect round
+- Check if round data is properly initialized
+
+### 2. Picture Board Navigation Delay (CRITICAL)
+**Status**: Needs Immediate Investigation  
+**Priority**: Critical  
+**Description**: There is often a delay between clicking "next picture" on the cohost app during the picture board round and it progressing on the main display. This is a timed round and delays could cause complaints from contestants.
+
+**Current Issues**:
+- Click delay between co-host action and main display response
+- Could impact contestant experience in timed round
+- Affects flow of picture board round
+
+**Files Involved**:
+- `src/components/CoHostInterface.tsx` - Picture navigation broadcasting
+- `src/components/PictureBoard.tsx` - Picture display logic
+- `src/hooks/useQuizSync.ts` - Sync system performance
+
+**Impact**: High - Contestants may notice delays during timed rounds
+
+### 3. Picture Board Timer Sync Issue
 **Status**: Needs Investigation  
 **Priority**: High  
 **Description**: The timer on the co-host app for the picture board round is not properly synchronized with the main display timer.
@@ -49,29 +95,94 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
-### 3. Picture Board UI Enhancements
-**Status**: Complete  
-**Priority**: N/A  
-**Description**: Successfully implemented picture number circles and improved image sizing.
+### 3. Only Connect Progressive Reveal UI
+**Status**: UI Improvement Needed  
+**Priority**: Low  
+**Description**: Move the progressive reveal functionality into the questions section for the Only Connect round to improve user experience.
 
-**Completed Items**:
-- ✅ Replaced "Picture X of Y" text with numbered circles
-- ✅ Added circles to both individual and grid views
-- ✅ Made circles filled with solid background
-- ✅ Positioned circles in top-right corners
-- ✅ Increased image size by reducing padding
+**Current Issues**:
+- Progressive reveal controls may not be optimally positioned
+- Could improve layout and user interaction flow
+- Better integration with questions section
+
+**Files Involved**:
+- `src/components/rounds/OnlyConnect.tsx` - Progressive reveal logic and UI
+- `src/components/CoHostInterface.tsx` - Co-host controls for Only Connect
+
+**Potential Improvements**:
+- Move reveal controls into questions section
+- Better visual integration with question display
+- Improved user experience for co-host
 
 ---
 
 ## 🔧 Technical Debt
 
-### 4. Channel Cleanup Logic
-**Status**: Improved but could be enhanced  
+### 1. Excessive Console Logging
+**Status**: Cleanup Needed  
 **Priority**: Low  
-**Description**: useQuizSync channel cleanup logic was improved but could be further enhanced for better reliability.
+**Description**: Large amount of console.log statements throughout the codebase that should be cleaned up for production.
+
+**Current Issues**:
+- Over 50 console.log statements in quizStore.ts for debugging
+- Extensive logging in useQuizSync.ts for sync operations
+- Debug logging in components that should be removed
 
 **Files Involved**:
-- `src/hooks/useQuizSync.ts`
+- `src/store/quizStore.ts` - Debug logging in picture board functions
+- `src/hooks/useQuizSync.ts` - Sync operation logging
+- `src/components/CoHostInterface.tsx` - Debug logging
+- `src/pages/NotFound.tsx` - Error logging
+
+**Impact**: Performance impact in production, console pollution
+
+### 2. Type Safety Issues with `any` Types
+**Status**: Type Safety Improvements Needed  
+**Priority**: Low  
+**Description**: Multiple instances of `any` type usage that reduce type safety and make the code harder to maintain.
+
+**Current Issues**:
+- `questionsData as any` in multiple locations
+- Function parameters using `any` type
+- Component props using `any` type
+
+**Files Involved**:
+- `src/store/quizStore.ts` - Data casting with `as any`
+- `src/hooks/useQuizSync.ts` - Function parameters and data handling
+- `src/hooks/useQuestions.ts` - Board mapping with `any`
+- `src/components/CoHostInterface.tsx` - Question handling with `any`
+
+**Impact**: Reduced type safety, potential runtime errors
+
+### 3. Hardcoded Configuration Values
+**Status**: Configuration Management Needed  
+**Priority**: Low  
+**Description**: Hardcoded values scattered throughout the codebase that should be centralized.
+
+**Current Issues**:
+- Hardcoded board IDs ['board-1', 'board-2', 'board-3']
+- Magic numbers for team selection (4 for completion)
+- Hardcoded timer values and delays
+
+**Files Involved**:
+- `src/store/quizStore.ts` - Board IDs and team logic
+- `src/components/CoHostInterface.tsx` - Timer delays
+
+**Impact**: Difficult to maintain, inflexible configuration
+
+### 4. Component Map with Weak Typing
+**Status**: Type System Improvements Needed  
+**Priority**: Low  
+**Description**: Component mapping in MainDisplay uses weak typing that could be improved.
+
+**Current Issues**:
+- `Record<string, React.ComponentType<any>>` in MainDisplay.tsx
+- Potential for runtime errors with component mapping
+
+**Files Involved**:
+- `src/components/MainDisplay.tsx` - Component mapping
+
+**Impact**: Runtime type safety issues
 
 ---
 
@@ -93,5 +204,5 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
-**Last Updated**: 2026-02-01  
-**Next Review**: When addressing timer sync issues
+**Last Updated**: 2026-02-01 at 11:15 PM UTC  
+**Next Review**: When addressing critical Only Connect crash or timer sync issues
