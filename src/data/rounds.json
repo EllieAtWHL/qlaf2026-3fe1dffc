@@ -21,7 +21,7 @@
     {
       "id": "picture-board",
       "name": "Picture Board",
-      "description": "Identify the images",
+      "description": "Identify the sportstar(s)",
       "timerDuration": 60,
       "isTeamRound": true,
       "component": "PictureBoard",
@@ -33,7 +33,7 @@
       "description": "Find the connection",
       "timerDuration": null,
       "isTeamRound": true,
-      "component": "GenericRound",
+      "component": "OnlyConnect",
       "icon": "Link"
     },
     {

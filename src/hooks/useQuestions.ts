@@ -16,8 +16,14 @@ export const useQuestions = () => {
   const currentRoundData = data[currentRoundId];
   
   const questions = useMemo(() => {
+    // Handle Picture Board round which uses 'boards' instead of 'questions'
+    if (currentRoundId === 'picture-board' && currentRoundData?.boards) {
+      // Return empty array for Picture Board since it has its own selection system
+      return [];
+    }
+    
     return currentRoundData?.questions || [];
-  }, [currentRoundData]);
+  }, [currentRoundData, currentRoundId]);
   
   const currentQuestion = useMemo(() => {
     return questions[currentQuestionIndex] || null;
@@ -28,7 +34,24 @@ export const useQuestions = () => {
   const hasPreviousQuestion = currentQuestionIndex > 0;
   
   const getQuestionsForRound = (roundId: string): Question[] => {
-    return data[roundId]?.questions || [];
+    const roundData = data[roundId];
+    if (!roundData) return [];
+    
+    // Handle Picture Board round which uses 'boards' instead of 'questions'
+    if (roundId === 'picture-board' && roundData.boards) {
+      // Convert boards to a format that works with the question system
+      return roundData.boards.map((board: any, index: number) => ({
+        id: board.id,
+        roundType: 'picture-board' as RoundType,
+        type: 'picture',
+        content: `Select board: ${board.name}`,
+        answer: board.name,
+        imageUrl: board.pictures[0]?.imageUrl || '/placeholder.svg',
+        points: 0,
+      }));
+    }
+    
+    return roundData.questions || [];
   };
   
   return {

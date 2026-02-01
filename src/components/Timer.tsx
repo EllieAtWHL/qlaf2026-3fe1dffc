@@ -28,15 +28,18 @@ export const Timer = ({ compact = false }: TimerProps) => {
   const lastTickRef = useRef<number>(timerValue);
   const hasPlayedBuzzer = useRef(false);
 
+  // Only run timer logic in main app (host), not in co-host
+  const isMainApp = typeof window !== 'undefined' && window.location.pathname === '/';
+
   useEffect(() => {
-    if (!isTimerRunning) return;
+    if (!isTimerRunning || !isMainApp) return;
 
     const interval = setInterval(() => {
       tick();
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isTimerRunning, tick]);
+  }, [isTimerRunning, tick, isMainApp]);
 
   // Sound effects
   useEffect(() => {

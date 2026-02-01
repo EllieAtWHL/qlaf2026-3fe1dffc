@@ -7,11 +7,21 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 
 const CHANNEL_NAME = 'quiz-sync';
 
-export const useQuizSync = (_isHost: boolean = false) => {
+export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false) => {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const store = useQuizStore();
 
   useEffect(() => {
+    console.log('[QuizSync] useEffect running - _disabled:', _disabled);
+    
+    // Don't create channel if disabled
+    if (_disabled) {
+      console.log('[QuizSync] Sync disabled, skipping channel creation');
+      return;
+    }
+    
+    console.log('[QuizSync] Creating new channel...');
+    
     // Create a broadcast channel for real-time sync
     const channel = supabase.channel(CHANNEL_NAME, {
       config: {
@@ -36,15 +46,19 @@ export const useQuizSync = (_isHost: boolean = false) => {
       });
 
     return () => {
-      console.log('[QuizSync] Cleaning up channel');
-      channel.unsubscribe();
+      console.log('[QuizSync] CLEANUP FUNCTION CALLED - This will close the channel!');
+      console.log('[QuizSync] Channel ref before cleanup:', !!channelRef.current);
+      if (channelRef.current) {
+        channel.unsubscribe();
+        console.log('[QuizSync] Channel unsubscribed');
+      }
     };
-  }, []);
+  }, []); // Empty dependency array - effect only runs once per component mount
 
   // Function to broadcast state changes (used by co-host)
   const broadcastAction = (action: string, data?: any) => {
-    if (!channelRef.current) {
-      console.warn('[QuizSync] Channel not ready');
+    if (!channelRef.current || _disabled) {
+      console.warn('[QuizSync] Channel not ready or disabled');
       return;
     }
 
@@ -84,6 +98,24 @@ function applyStateUpdate(action: string, data: any) {
     case 'startRound':
       useQuizStore.setState({ gameState: 'round', isTransitioning: false });
       loadQuestionsForCurrentRound();
+      
+      // Also initialize picture boards if this is picture board round
+      const currentRoundId = getRoundIdByIndex(useQuizStore.getState().currentRoundIndex);
+      console.log('[QuizSync] Starting round:', currentRoundId);
+      if (currentRoundId === 'picture-board') {
+        console.log('[QuizSync] Initializing picture boards in sync...');
+        const data = questionsData as any;
+        const pictureBoardData = data['picture-board'];
+        const boards = pictureBoardData?.boards || [];
+        console.log('[QuizSync] Picture boards found:', boards.length);
+        useQuizStore.setState({ 
+          pictureBoards: boards,
+          availableBoards: ['board-1', 'board-2', 'board-3'],
+          selectedBoards: {},
+          currentTeamSelecting: 1,
+          currentBoard: null
+        });
+      }
       break;
     case 'nextRound':
       if (store.currentRoundIndex < 10) {
@@ -144,6 +176,9 @@ function applyStateUpdate(action: string, data: any) {
         isTimerRunning: false 
       });
       break;
+    case 'tick':
+      store.tick();
+      break;
     case 'updateTeamScore':
       const teamsForUpdate = [...store.teams];
       const teamToUpdate = teamsForUpdate.find(t => t.id === data.teamId);
@@ -195,6 +230,48 @@ function applyStateUpdate(action: string, data: any) {
         showAnswer: false,
         f1Positions: [0, 0, 0],
       });
+      break;
+    case 'selectBoard':
+      console.log('[QuizSync] Received selectBoard:', data);
+      store.selectBoard(data.teamId, data.boardId);
+      break;
+    case 'teamTimeUp':
+      console.log('[QuizSync] Received teamTimeUp');
+      store.teamTimeUp();
+      break;
+    case 'nextPicture':
+      console.log('[QuizSync] Received nextPicture');
+      store.nextPicture();
+      // Apply the state data if provided
+      if (data?.currentPictureIndex !== undefined) {
+        useQuizStore.setState({ currentPictureIndex: data.currentPictureIndex });
+      }
+      if (data?.showAllPictures !== undefined) {
+        useQuizStore.setState({ showAllPictures: data.showAllPictures });
+      }
+      break;
+    case 'previousPicture':
+      console.log('[QuizSync] Received previousPicture');
+      store.previousPicture();
+      // Apply the state data if provided
+      if (data?.currentPictureIndex !== undefined) {
+        useQuizStore.setState({ currentPictureIndex: data.currentPictureIndex });
+      }
+      if (data?.showAllPictures !== undefined) {
+        useQuizStore.setState({ showAllPictures: data.showAllPictures });
+      }
+      break;
+    case 'resetPictureBoard':
+      console.log('[QuizSync] Received resetPictureBoard');
+      store.resetPictureBoard();
+      break;
+    case 'revealOnlyConnectOption':
+      console.log('[QuizSync] Received revealOnlyConnectOption');
+      store.revealOnlyConnectOption();
+      break;
+    case 'resetOnlyConnect':
+      console.log('[QuizSync] Received resetOnlyConnect');
+      store.resetOnlyConnect();
       break;
     default:
       console.warn('[QuizSync] Unknown action:', action);

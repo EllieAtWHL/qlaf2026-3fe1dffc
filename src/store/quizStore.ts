@@ -34,6 +34,17 @@ export interface Team {
   f1Position: number; // for F1 finale (0-100%)
 }
 
+export interface PictureBoard {
+  id: string;
+  name: string;
+  imageUrl: string;
+  pictures: Array<{
+    id: number;
+    answer: string;
+    imageUrl: string;
+  }>;
+}
+
 export interface Question {
   id: string;
   roundType: RoundType;
@@ -63,39 +74,63 @@ interface QuizState {
   questions: Question[];
   showAnswer: boolean;
   
+  // Picture Board state
+  availableBoards: string[];
+  selectedBoards: { [key: number]: string };
+  currentTeamSelecting: number;
+  pictureBoards: PictureBoard[];
+  currentBoard: PictureBoard | null;
+  currentPictureIndex: number;
+  showAllPictures: boolean;
+  lastTeamTimeUpCall: number | null;
+  
   // F1 specific
   f1Positions: number[];
   
+  // Only Connect specific
+  onlyConnectRevealedOptions: number;
+  
   // Actions
   startGame: () => void;
+  startRound: () => void;
   nextRound: () => void;
   previousRound: () => void;
   goToRound: (index: number) => void;
   showTransition: () => void;
-  startRound: () => void;
   showScores: () => void;
   showFinal: () => void;
   
-  // Timer
+  // Timer actions
   startTimer: () => void;
   pauseTimer: () => void;
   resetTimer: (duration?: number) => void;
   tick: () => void;
   
-  // Scores
-  updateTeamScore: (teamId: number, roundIndex: number, score: number) => void;
-  addToTeamScore: (teamId: number, points: number) => void;
-  
-  // Questions
+  // Question actions
   nextQuestion: () => void;
   previousQuestion: () => void;
+  goToQuestion: (index: number) => void;
   toggleAnswer: () => void;
-  loadQuestionsForCurrentRound: () => void;
   
-  // F1
-  updateF1Position: (teamId: number, position: number) => void;
+  // Team actions
+  updateTeamScore: (teamId: number, roundIndex: number, score: number) => void;
+  addToTeamScore: (teamId: number, points: number) => void;
   advanceF1Car: (teamId: number, amount: number) => void;
   
+  // Picture Board actions
+  loadQuestionsForCurrentRound: () => void;
+  initializePictureBoards: () => void;
+  selectBoard: (teamId: number, boardId: string) => void;
+  teamTimeUp: () => void;
+  nextPicture: () => void;
+  previousPicture: () => void;
+  resetPictureBoard: () => void;
+  
+  // Only Connect actions
+  revealOnlyConnectOption: () => void;
+  resetOnlyConnect: () => void;
+  
+  // Game actions
   // Reset
   resetGame: () => void;
 }
@@ -117,6 +152,19 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   questions: [],
   showAnswer: false,
   f1Positions: [0, 0, 0],
+  
+  // Picture Board initial state
+  availableBoards: [],
+  selectedBoards: {},
+  currentTeamSelecting: 1,
+  pictureBoards: [],
+  currentBoard: null,
+  currentPictureIndex: 0,
+  showAllPictures: false,
+  lastTeamTimeUpCall: null,
+  
+  // Only Connect initial state
+  onlyConnectRevealedOptions: 1,
   
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
@@ -238,15 +286,31 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   nextQuestion: () => {
     const { currentQuestionIndex, questions } = get();
     if (currentQuestionIndex < questions.length - 1) {
-      set({ currentQuestionIndex: currentQuestionIndex + 1, showAnswer: false });
+      set({ 
+        currentQuestionIndex: currentQuestionIndex + 1, 
+        showAnswer: false,
+        onlyConnectRevealedOptions: 1 
+      });
     }
   },
   
   previousQuestion: () => {
     const { currentQuestionIndex } = get();
     if (currentQuestionIndex > 0) {
-      set({ currentQuestionIndex: currentQuestionIndex - 1, showAnswer: false });
+      set({ 
+        currentQuestionIndex: currentQuestionIndex - 1, 
+        showAnswer: false,
+        onlyConnectRevealedOptions: 1 
+      });
     }
+  },
+  
+  goToQuestion: (index: number) => {
+    set({ 
+      currentQuestionIndex: index, 
+      showAnswer: false,
+      onlyConnectRevealedOptions: 1 
+    });
   },
   
   loadQuestionsForCurrentRound: () => {
@@ -258,9 +322,163 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const currentRoundData = data[currentRoundId];
     const questions = currentRoundData?.questions || [];
     set({ questions });
+    
+    // Auto-initialize picture boards if this is the picture board round
+    if (currentRoundId === 'picture-board') {
+      const pictureBoardData = data['picture-board'];
+      const boards = pictureBoardData?.boards || [];
+      set({ 
+        pictureBoards: boards,
+        availableBoards: ['board-1', 'board-2', 'board-3'],
+        selectedBoards: {},
+        currentTeamSelecting: 1,
+        currentBoard: null
+      });
+    }
   },
   
   toggleAnswer: () => set(state => ({ showAnswer: !state.showAnswer })),
+  
+  initializePictureBoards: () => {
+    console.log('Initializing picture boards...');
+    const data = questionsData as any;
+    console.log('Questions data:', data);
+    const pictureBoardData = data['picture-board'];
+    console.log('Picture board data:', pictureBoardData);
+    const boards = pictureBoardData?.boards || [];
+    console.log('Boards found:', boards);
+    set({ 
+      pictureBoards: boards,
+      availableBoards: ['board-1', 'board-2', 'board-3'],
+      selectedBoards: {},
+      currentTeamSelecting: 1,
+      currentBoard: null
+    });
+  },
+  
+  selectBoard: (teamId: number, boardId: string) => {
+    const { availableBoards, selectedBoards, pictureBoards } = get();
+    
+    const newSelectedBoards = { ...selectedBoards, [teamId]: boardId };
+    const newAvailableBoards = availableBoards.filter(id => id !== boardId);
+    
+    set({
+      selectedBoards: newSelectedBoards,
+      availableBoards: newAvailableBoards,
+      // Don't advance currentTeamSelecting here - let teamTimeUp handle that
+    });
+    
+    // Set the current board if this is the current team selecting
+    if (teamId === get().currentTeamSelecting) {
+      const selectedBoard = pictureBoards.find(board => board.id === boardId);
+      if (selectedBoard) {
+        set({ currentBoard: selectedBoard });
+      }
+    }
+  },
+  
+  teamTimeUp: () => {
+    const { currentTeamSelecting, selectedBoards, pictureBoards } = get();
+    
+    console.log('[teamTimeUp] === START ===');
+    console.log('[teamTimeUp] Current team selecting:', currentTeamSelecting);
+    console.log('[teamTimeUp] Selected boards:', selectedBoards);
+    
+    // Prevent multiple calls if already at completion
+    if (currentTeamSelecting >= 4) {
+      console.log('[teamTimeUp] Already at completion, ignoring call');
+      return;
+    }
+    
+    // Prevent rapid successive calls (debounce protection)
+    const now = Date.now();
+    if (get().lastTeamTimeUpCall && now - get().lastTeamTimeUpCall < 1000) {
+      console.log('[teamTimeUp] Rapid call detected, ignoring');
+      return;
+    }
+    
+    // Store the timestamp of this call
+    set({ lastTeamTimeUpCall: now });
+    
+    // Reset timer when time is up
+    get().resetTimer(60);
+    
+    // Move to next team or finish if all teams have played
+    if (currentTeamSelecting < 3) {
+      const nextTeam = currentTeamSelecting + 1;
+      console.log('[teamTimeUp] Moving to next team:', nextTeam);
+      set({ currentTeamSelecting: nextTeam });
+      
+      // Reset picture board state for the new team
+      set({ currentPictureIndex: 0, showAllPictures: false });
+      
+      // Set the current board for the next team if they've already selected
+      const nextTeamBoardId = selectedBoards[nextTeam];
+      if (nextTeamBoardId) {
+        const nextTeamBoard = pictureBoards.find(board => board.id === nextTeamBoardId);
+        if (nextTeamBoard) {
+          set({ currentBoard: nextTeamBoard });
+        }
+      } else {
+        set({ currentBoard: null });
+      }
+    } else {
+      // All teams have played, round is complete
+      console.log('[teamTimeUp] All teams have played, setting currentTeamSelecting to 4');
+      set({ currentTeamSelecting: 4 }); // Use 4 to indicate completion
+    }
+    
+    console.log('[teamTimeUp] === END ===');
+  },
+  
+  nextPicture: () => {
+    const { currentBoard, currentPictureIndex } = get();
+    console.log('[nextPicture] === START ===');
+    console.log('[nextPicture] Current index:', currentPictureIndex);
+    console.log('[nextPicture] Total pictures:', currentBoard?.pictures.length);
+    console.log('[nextPicture] currentBoard exists:', !!currentBoard);
+    
+    if (currentBoard) {
+      if (currentPictureIndex < currentBoard.pictures.length - 1) {
+        // Go to next picture
+        const newIndex = currentPictureIndex + 1;
+        console.log('[nextPicture] Going from', currentPictureIndex, 'to', newIndex);
+        set({ currentPictureIndex: newIndex });
+        console.log('[nextPicture] Set new index to:', newIndex);
+      } else if (currentPictureIndex === currentBoard.pictures.length - 1) {
+        // After showing the last picture, show all pictures
+        console.log('[nextPicture] At last picture, showing all pictures');
+        set({ showAllPictures: true });
+        console.log('[nextPicture] Set showAllPictures to true');
+      }
+    }
+    console.log('[nextPicture] === END ===');
+  },
+  
+  previousPicture: () => {
+    const { currentPictureIndex, showAllPictures } = get();
+    console.log('[previousPicture] === START ===');
+    console.log('[previousPicture] Current index:', currentPictureIndex);
+    console.log('[previousPicture] showAllPictures:', showAllPictures);
+    
+    if (showAllPictures) {
+      // If showing all, go back to last picture
+      console.log('[previousPicture] Going from all pictures to last picture (11)');
+      set({ showAllPictures: false, currentPictureIndex: 11 });
+    } else if (currentPictureIndex > 0) {
+      const newIndex = currentPictureIndex - 1;
+      console.log('[previousPicture] Going from', currentPictureIndex, 'to', newIndex);
+      set({ currentPictureIndex: newIndex });
+    }
+    console.log('[previousPicture] === END ===');
+  },
+  
+  resetPictureBoard: () => {
+    set({ 
+      currentPictureIndex: 0, 
+      showAllPictures: false 
+    });
+  },
   
   updateF1Position: (teamId: number, position: number) => {
     const { f1Positions } = get();
@@ -276,6 +494,18 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({ f1Positions: newPositions });
   },
   
+  // Only Connect actions
+  revealOnlyConnectOption: () => {
+    const { onlyConnectRevealedOptions } = get();
+    // Prevent revealing more than 4 options
+    if (onlyConnectRevealedOptions >= 4) return;
+    set({ onlyConnectRevealedOptions: onlyConnectRevealedOptions + 1 });
+  },
+  
+  resetOnlyConnect: () => {
+    set({ onlyConnectRevealedOptions: 0 });
+  },
+  
   resetGame: () => set({
     gameState: 'welcome',
     currentRoundIndex: 0,
@@ -285,5 +515,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     currentQuestionIndex: 0,
     showAnswer: false,
     f1Positions: [0, 0, 0],
+    availableBoards: ['board-1', 'board-2', 'board-3'],
+    selectedBoards: {},
+    currentTeamSelecting: 1,
+    pictureBoards: [],
+    currentBoard: null,
+    onlyConnectRevealedOptions: 1,
   }),
 }));

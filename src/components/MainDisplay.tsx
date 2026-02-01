@@ -7,6 +7,7 @@ import { F1GrandPrix } from '@/components/rounds/F1GrandPrix';
 import { OneMinuteRound } from '@/components/rounds/OneMinuteRound';
 import { WorldRankings } from '@/components/rounds/WorldRankings';
 import { PictureBoard } from '@/components/rounds/PictureBoard';
+import { OnlyConnect } from '@/components/rounds/OnlyConnect';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,12 +16,18 @@ const componentMap: Record<string, React.ComponentType<any>> = {
   'OneMinuteRound': OneMinuteRound,
   'WorldRankings': WorldRankings,
   'PictureBoard': PictureBoard,
+  'OnlyConnect': OnlyConnect,
   'GenericRound': GenericRound,
 };
 
 export const MainDisplay = () => {
   const { gameState, currentRoundIndex, isTransitioning } = useQuizStore();
   const currentRound = ROUNDS[currentRoundIndex];
+  
+  console.log('[MainDisplay] Render - currentRound:', currentRound?.component);
+  
+  // MainDisplay should NEVER call useQuizSync - only CoHostInterface should broadcast
+  // The store state is updated through the sync system automatically
 
   const renderRound = () => {
     // Don't render any round component if we're not in 'round' state
@@ -32,6 +39,11 @@ export const MainDisplay = () => {
     
     if (currentRound.component === 'GenericRound') {
       return <GenericRound key={`${currentRound.id}-${gameState}`} />;
+    }
+    
+    // For PictureBoard, only use roundId in key to prevent unmounting during team transitions
+    if (currentRound.component === 'PictureBoard') {
+      return <Component key={currentRound.id} roundId={currentRound.id} />;
     }
     
     return <Component key={`${currentRound.id}-${gameState}`} roundId={currentRound.id} />;

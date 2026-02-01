@@ -271,8 +271,49 @@
         "id": "oc-1",
         "type": "connection",
         "content": "What connects these items?",
-        "options": ["Federer", "Nadal", "Djokovic", "Murray"],
+        "options": [
+          { "text": "Federer" },
+          { "text": "Nadal" },
+          { "text": "Djokovic" },
+          { "text": "Murray" }
+        ],
         "answer": "Grand Slam singles champions"
+      },
+      {
+        "id": "oc-2",
+        "type": "connection",
+        "content": "What connects these football clubs?",
+        "options": [
+          { "text": "Manchester United", "imageUrl": "/images/only-connect/manchester-united.png" },
+          { "text": "Liverpool", "imageUrl": "/images/only-connect/liverpool.png" },
+          { "text": "Arsenal", "imageUrl": "/images/only-connect/arsenal.png" },
+          { "text": "Chelsea", "imageUrl": "/images/only-connect/chelsea.png" }
+        ],
+        "answer": "Premier League clubs never relegated"
+      },
+      {
+        "id": "oc-3",
+        "type": "connection",
+        "content": "What connects these sporting events?",
+        "options": [
+          { "text": "Olympics", "imageUrl": "/images/only-connect/olympics.jpg" },
+          { "text": "FIFA World Cup", "imageUrl": "/images/only-connect/world-cup.jpg" },
+          { "text": "Tour de France", "imageUrl": "/images/only-connect/tour-de-france.jpg" },
+          { "text": "Super Bowl", "imageUrl": "/images/only-connect/super-bowl.jpg" }
+        ],
+        "answer": "Major international sporting events"
+      },
+      {
+        "id": "oc-4",
+        "type": "connection",
+        "content": "What connects these athletes?",
+        "options": [
+          { "text": "Michael Jordan" },
+          { "text": "LeBron James" },
+          { "text": "Kobe Bryant" },
+          { "text": "Stephen Curry" }
+        ],
+        "answer": "NBA basketball legends"
       }
     ]
   },

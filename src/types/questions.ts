@@ -27,9 +27,21 @@ export const normalizeOption = (option: string | QuestionOption): QuestionOption
   return option;
 };
 
+export interface PictureBoard {
+  id: string;
+  name: string;
+  imageUrl: string;
+  pictures: Array<{
+    id: number;
+    answer: string;
+    imageUrl: string;
+  }>;
+}
+
 export interface RoundQuestions {
   title: string;
-  questions: Question[];
+  questions?: Question[];
+  boards?: PictureBoard[];
 }
 
 export type QuestionsData = Record<RoundType, RoundQuestions>;
