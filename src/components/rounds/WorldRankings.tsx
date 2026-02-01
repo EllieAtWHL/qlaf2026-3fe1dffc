@@ -94,7 +94,7 @@ export const WorldRankings = () => {
                         delay: showAnswer ? 0 : originalIndex * 0.1,
                         layout: { duration: 0.6, ease: [0.4, 0, 0.2, 1] }
                       }}
-                      className={`glass-card rounded-2xl p-4 text-center relative ${
+                      className={`glass-card rounded-2xl p-2 text-center relative ${
                         showAnswer ? 'border-2 border-qlaf-gold' : ''
                       }`}
                     >
@@ -103,7 +103,7 @@ export const WorldRankings = () => {
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: 0.3 + index * 0.1 }}
-                          className="absolute -top-3 -left-3 w-10 h-10 rounded-full bg-qlaf-gold flex items-center justify-center font-display font-bold text-black z-10"
+                          className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-qlaf-gold flex items-center justify-center font-display font-bold text-black z-10"
                         >
                           {item.order}
                         </motion.div>
@@ -112,7 +112,7 @@ export const WorldRankings = () => {
                         <img 
                           src={item.imageUrl} 
                           alt={item.label}
-                          className="w-full h-96 object-contain mb-2"
+                          className="w-full h-148 object-contain mb-1"
                         />
                       )}
                       <p className="font-display text-lg font-bold text-foreground">
@@ -128,7 +128,7 @@ export const WorldRankings = () => {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.5 + index * 0.1 }}
-                          className="font-display text-sm text-qlaf-gold font-semibold mt-2"
+                          className="font-display text-sm text-qlaf-gold font-semibold mt-1"
                         >
                           {item.answer}
                         </motion.p>
