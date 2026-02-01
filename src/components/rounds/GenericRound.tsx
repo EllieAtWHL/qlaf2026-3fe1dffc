@@ -27,7 +27,7 @@ export const GenericRound = ({
   if (isTransitioning || gameState !== 'round') {
     return null;
   }
-  return <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+  return <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
       {/* Header with round info and timer */}
       <motion.div initial={{
       opacity: 0,
@@ -60,7 +60,7 @@ export const GenericRound = ({
         scale: 1
       }} transition={{
         delay: 0.1
-      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[75vh]">
+      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[60vh] overflow-y-auto">
           {currentQuestion ? <>
               {/* Question number */}
               <div className="mb-4">

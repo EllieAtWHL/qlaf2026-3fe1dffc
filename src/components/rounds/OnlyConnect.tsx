@@ -98,7 +98,7 @@ export const OnlyConnect = () => {
   };
 
   return (
-    <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}

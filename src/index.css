@@ -305,4 +305,27 @@
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 1rem);
   }
+
+  /* 16:9 Aspect Ratio Container for Main Display */
+  .main-display-container {
+    aspect-ratio: 16/9;
+    width: 100vw;
+    max-height: 56.25vw; /* 9/16 * 100 */
+    overflow: hidden;
+    background: var(--gradient-main);
+  }
+
+  /* Ensure all round components respect 16:9 constraints */
+  .main-display-container > div {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Round components styling for 16:9 compliance */
+  .main-display-round {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 }

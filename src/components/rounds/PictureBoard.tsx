@@ -14,7 +14,7 @@ const BoardSelection = () => {
   const currentTeamBoard = pictureBoards.find(board => board.id === currentTeamBoardId);
   
   return (
-    <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
@@ -283,7 +283,7 @@ export const PictureBoard = () => {
   });
 
   return (
-    <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
@@ -309,25 +309,30 @@ export const PictureBoard = () => {
       </motion.div>
 
       {/* Picture display */}
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex-1 flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="w-full max-w-4xl"
+          className="w-full h-full max-w-6xl max-h-[60vh]"
         >
           {showAllPictures ? (
-            <div>
-              <p style={{color: 'red', fontSize: '20px', fontWeight: 'bold'}}>SHOWING ALL PICTURES</p>
-              {/* Show all pictures in a grid */}
-              <div className="grid grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
+            <div className="w-full h-full flex flex-col items-center justify-center">
+              {/* Show all pictures in a grid - 4x3 with rectangular images */}
+              <div className="grid grid-cols-4 gap-1 md:gap-2 w-full h-full">
                 {currentBoard.pictures.map((picture, index) => (
                   <motion.div
                     key={picture.id}
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    className="aspect-square glass-card rounded-lg p-2 flex items-center justify-center"
+                    className="aspect-video glass-card rounded-lg p-1 flex items-center justify-center relative"
                   >
+                    {/* Picture number circle in top-right corner */}
+                    <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center z-10">
+                      <span className="font-display text-sm font-bold text-primary-foreground">
+                        {index + 1}
+                      </span>
+                    </div>
                     <img 
                       src={picture.imageUrl} 
                       alt={picture.answer}
@@ -341,14 +346,21 @@ export const PictureBoard = () => {
               </div>
             </div>
           ) : (
-            <div>
-              <p style={{color: 'blue', fontSize: '20px', fontWeight: 'bold'}}>SHOWING INDIVIDUAL PICTURE {currentPictureIndex + 1}</p>
-              {/* Show single picture */}
+            <div className="w-full h-full flex flex-col items-center justify-center relative">
+              {/* Show single picture - much larger */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="aspect-square glass-card rounded-xl p-8 flex items-center justify-center"
+                className="w-full h-full max-h-[45vh] glass-card rounded-xl p-0 flex items-center justify-center relative"
               >
+                {/* Picture number circle in top-right corner */}
+                {!showAllPictures && (
+                  <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10">
+                    <span className="font-display text-lg font-bold text-primary-foreground">
+                      {currentPictureIndex + 1}
+                    </span>
+                  </div>
+                )}
                 <img 
                   src={currentPicture.imageUrl} 
                   alt={currentPicture.answer}
@@ -363,21 +375,14 @@ export const PictureBoard = () => {
         </motion.div>
       </div>
       
-      {/* Picture navigation info */}
-      <div className="text-center mb-4">
-        <div className="font-display text-lg text-foreground">
-          {showAllPictures ? (
-            "All Pictures"
-          ) : (
-            `Picture ${currentPictureIndex + 1} of ${currentBoard.pictures.length}`
-          )}
-        </div>
-        {showAnswer && currentPicture && (
-          <div className="font-display text-2xl text-qlaf-success mt-2">
+      {/* Answer display */}
+      {showAnswer && currentPicture && (
+        <div className="text-center mb-4">
+          <div className="font-display text-2xl text-qlaf-success">
             {currentPicture.answer}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* QLAF branding */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">

@@ -9,7 +9,7 @@ export const OneMinuteRound = () => {
   const round = ROUNDS[currentRoundIndex];
 
   return (
-    <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
       {/* Pulsing background for high energy */}
       <motion.div
         className="absolute inset-0 pointer-events-none"

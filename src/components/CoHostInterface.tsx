@@ -309,7 +309,7 @@ export const CoHostInterface = () => {
             </div>
             <button
               onClick={syncedResetGame}
-              className="p-2 rounded-lg bg-destructive/20 text-destructive"
+              className="p-3 rounded-lg bg-destructive/20 text-destructive"
             >
               <Home className="w-5 h-5" />
             </button>
@@ -516,19 +516,19 @@ export const CoHostInterface = () => {
             <div className="flex gap-1">
               <button
                 onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
-                className={`p-2 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
+                className={`p-3 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
               >
                 {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
               </button>
               <button
                 onClick={() => syncedResetTimer()}
-                className="p-2 rounded-lg bg-secondary text-foreground"
+                className="p-3 rounded-lg bg-secondary text-foreground"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
               <button
                 onClick={() => syncedResetTimer(30)}
-                className="p-2 rounded-lg bg-secondary text-foreground text-xs font-semibold"
+                className="p-3 rounded-lg bg-secondary text-foreground text-xs font-semibold"
               >
                 30s
               </button>
@@ -557,7 +557,7 @@ export const CoHostInterface = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => adjustScore(team.id, -1)}
-                  className="w-8 h-8 rounded-lg bg-destructive/20 text-destructive flex items-center justify-center"
+                  className="w-11 h-11 rounded-lg bg-destructive/20 text-destructive flex items-center justify-center"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -565,11 +565,11 @@ export const CoHostInterface = () => {
                   type="number"
                   value={scoreInputs[`${team.id}-${currentRoundIndex}`] || 0}
                   onChange={(e) => handleScoreChange(team.id, e.target.value)}
-                  className="w-16 h-8 rounded-lg bg-input text-center font-display text-lg border-none"
+                  className="w-16 h-11 rounded-lg bg-input text-center font-display text-lg border-none"
                 />
                 <button
                   onClick={() => adjustScore(team.id, 1)}
-                  className="w-8 h-8 rounded-lg bg-qlaf-success/20 text-qlaf-success flex items-center justify-center"
+                  className="w-11 h-11 rounded-lg bg-qlaf-success/20 text-qlaf-success flex items-center justify-center"
                 >
                   <Plus className="w-4 h-4" />
                 </button>

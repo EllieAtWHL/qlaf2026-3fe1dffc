@@ -15,7 +15,7 @@ export const F1GrandPrix = () => {
   const winner = f1Positions.findIndex(pos => pos >= 100);
 
   return (
-    <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
       {/* Title */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}

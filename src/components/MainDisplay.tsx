@@ -76,17 +76,19 @@ export const MainDisplay = () => {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={gameState}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.1 }}
-        className="w-full h-full"
-      >
-        {renderContent()}
-      </motion.div>
-    </AnimatePresence>
+    <div className="main-display-container">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={gameState}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.1 }}
+          className="w-full h-full"
+        >
+          {renderContent()}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 };
