@@ -6,9 +6,11 @@ import {
   SkipForward, Clock, Wifi, WifiOff, HelpCircle, Image, Link,
   Bug
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import React from 'react';
 import { useQuizSync } from '@/hooks/useQuizSync';
 import { useQuestions } from '@/hooks/useQuestions';
+import { normalizeOption } from '@/types/questions';
 
 export const CoHostInterface = () => {
   const {
@@ -61,6 +63,29 @@ export const CoHostInterface = () => {
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
   const [isRevealing, setIsRevealing] = useState(false);
+
+  // Create a stable copy of options for display to prevent reordering
+  const stableOptions = useMemo(() => {
+    if (!currentQuestion?.options) return [];
+    
+    // Create a deep copy and preserve original order by storing original indices
+    const optionsWithOriginalIndex = currentQuestion.options.map((option, index) => {
+      if (typeof option === 'string') {
+        return {
+          label: option,
+          _originalIndex: index
+        };
+      } else {
+        return {
+          ...option,
+          _originalIndex: index
+        };
+      }
+    });
+    
+    // Sort by original index to ensure display order is always maintained
+    return optionsWithOriginalIndex.sort((a, b) => (a._originalIndex || 0) - (b._originalIndex || 0));
+  }, [currentQuestion?.id, currentQuestion?.options]);
 
   // Timer broadcasting logic
   useEffect(() => {
@@ -362,24 +387,31 @@ export const CoHostInterface = () => {
           {currentQuestion && (
             <div className="bg-secondary/30 rounded-lg p-3 mb-3">
               <p className="text-sm text-foreground line-clamp-2">{currentQuestion.content}</p>
-              {showAnswer && currentQuestion && (
-                <p className="text-sm text-qlaf-success mt-2 font-semibold">
-                  Answer: {currentQuestion.type === 'ranking' && currentQuestion.options
-                    ? (currentQuestion.options as any[])
-                        .sort((a, b) => (a.order || 999) - (b.order || 999))
-                        .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer})`)
-                        .join(' → ')
-                    : Array.isArray(currentQuestion.answer) 
-                      ? currentQuestion.answer.map(answer => 
-                          typeof answer === 'object' && answer !== null ? answer.name : answer
-                        ).join(', ')
-                      : currentQuestion.answer || 'No answer available'}
-                </p>
+              
+              {/* Show options in the same order as main display */}
+              {stableOptions.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {stableOptions.map((option, index) => {
+                    const normalized = normalizeOption(option);
+                    
+                    return (
+                      <div key={index} className="flex items-start gap-2 text-xs">
+                        <span className="text-primary font-semibold mt-0.5">{String.fromCharCode(65 + index)}.</span>
+                        <div className="flex-1">
+                          <div className="text-foreground">{normalized.label}</div>
+                          {normalized.sublabel && (
+                            <div className="text-muted-foreground text-xs mt-0.5">{normalized.sublabel}</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
           )}
           
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               onClick={syncedPreviousQuestion}
               disabled={!hasPreviousQuestion}
@@ -387,13 +419,6 @@ export const CoHostInterface = () => {
             >
               <ChevronLeft className="w-4 h-4 inline mr-1" />
               Prev
-            </button>
-            <button
-              onClick={syncedToggleAnswer}
-              className={`control-btn ${showAnswer ? 'bg-qlaf-success text-white' : 'bg-accent/20 text-accent'} text-sm`}
-            >
-              {showAnswer ? <Eye className="w-4 h-4 inline mr-1" /> : <EyeOff className="w-4 h-4 inline mr-1" />}
-              {showAnswer ? 'Hide' : 'Show'}
             </button>
             <button
               onClick={syncedNextQuestion}
@@ -417,6 +442,55 @@ export const CoHostInterface = () => {
                 </>
               )}
             </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Answer for Co-host (Always Visible) */}
+      {totalQuestions > 0 && gameState === 'round' && currentQuestion && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <HelpCircle className="w-4 h-4 text-qlaf-success" />
+              <h3 className="font-display text-sm text-qlaf-success uppercase tracking-wider">
+                Answer
+              </h3>
+            </div>
+            <button
+              onClick={syncedToggleAnswer}
+              className={`control-btn ${showAnswer ? 'bg-qlaf-success text-white' : 'bg-accent/20 text-accent'} text-xs`}
+            >
+              {showAnswer ? <Eye className="w-3 h-3 inline mr-1" /> : <EyeOff className="w-3 h-3 inline mr-1" />}
+              {showAnswer ? 'Hide' : 'Show'} On Screen
+            </button>
+          </div>
+          
+          <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+            <p className="text-sm text-foreground font-medium">
+              {currentQuestion.type === 'ranking' && currentQuestion.options
+                ? (currentQuestion.options as any[])
+                    .sort((a, b) => (a.order || 999) - (b.order || 999))
+                    .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer || 'No answer'})`)
+                    .join(' → ')
+                : Array.isArray(currentQuestion.answer) 
+                  ? currentQuestion.answer.map((answer: any) => {
+                      if (answer && typeof answer === 'object' && 'name' in answer) {
+                        return answer.name || answer.answer || 'No answer';
+                      }
+                      return answer || 'No answer';
+                    }).join(', ')
+                  : currentQuestion.answer || 'No answer available'}
+            </p>
+            {currentQuestion.points && (
+              <p className="text-xs text-qlaf-success/70 mt-2">
+                {currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}
+              </p>
+            )}
           </div>
         </motion.div>
       )}
@@ -512,7 +586,7 @@ export const CoHostInterface = () => {
       </motion.div>
 
       {/* Picture Board Controls */}
-      {currentRound?.id === 'picture-board' && gameState === 'round' && currentTeamSelecting <= 3 && (
+      {currentRound?.id === 'picture-board' && gameState === 'round' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -521,131 +595,150 @@ export const CoHostInterface = () => {
         >
           <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
             <Image className="w-4 h-4" />
-            Picture Board - Current Selection
+            {currentTeamSelecting <= 3 ? 'Picture Board - Current Selection' : 'Picture Board - Complete'}
           </h3>
           
-          {/* Debug info */}
-          <div className="text-xs text-muted-foreground mb-2">
-            Available boards: {availableBoards.length} | Picture boards loaded: {pictureBoards.length}
-          </div>
-          
-          {/* Board Selection */}
-          {!selectedBoards[currentTeamSelecting] && availableBoards.length > 0 && (
-            <div className="space-y-3">
-              <p className="text-xs text-muted-foreground">Select a board for the current player:</p>
-              <div className="grid grid-cols-1 gap-2">
-                {availableBoards.map((boardId) => {
-                  const board = pictureBoards.find(b => b.id === boardId);
-                  if (!board) return null;
-                  
-                  return (
-                    <button
-                      key={boardId}
-                      onClick={() => syncedSelectBoard(currentTeamSelecting, boardId)}
-                      className="control-btn bg-secondary text-foreground text-left justify-start"
-                    >
-                      <Image className="w-4 h-4 mr-2" />
-                      {board.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-          
-          {/* Current Board Display */}
-          {selectedBoards[currentTeamSelecting] && (
-            <div className="space-y-3">
-              <div className="bg-secondary/30 rounded-lg p-3">
-                <p className="text-sm font-semibold text-foreground">
-                  Current Board: {pictureBoards.find(b => b.id === selectedBoards[currentTeamSelecting])?.name}
-                </p>
+          {currentTeamSelecting <= 3 ? (
+            <>
+              {/* Debug info */}
+              <div className="text-xs text-muted-foreground mb-2">
+                Available boards: {availableBoards.length} | Picture boards loaded: {pictureBoards.length}
               </div>
               
-              {/* Picture Navigation */}
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">
-                  {showAllPictures ? 
-                    "Showing all pictures" : 
-                    `Picture ${currentPictureIndex + 1} of ${pictureBoards.find(b => b.id === selectedBoards[currentTeamSelecting])?.pictures.length || 12}`
-                  }
-                </p>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    onClick={syncedPreviousPicture}
-                    disabled={currentPictureIndex === 0 && !showAllPictures}
-                    className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
-                  >
-                    Previous
-                  </button>
-                  <button
-                    onClick={syncedNextPicture}
-                    disabled={showAllPictures}
-                    className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
-                  >
-                    {showAllPictures ? "All Shown" : "Next"}
-                  </button>
-                  <button
-                    onClick={syncedResetPictureBoard}
-                    className="control-btn bg-secondary text-foreground text-xs"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </div>
-              
-              {/* Current Picture Answer */}
-              {!showAllPictures && currentBoard && (
-                <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
-                  <p className="text-sm text-foreground font-medium">
-                    {currentBoard.pictures[currentPictureIndex]?.answer || "No answer"}
-                  </p>
-                </div>
-              )}
-              
-              {/* All Answers Grid */}
-              {showAllPictures && currentBoard && (
-                <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-qlaf-success mb-2">All Answers:</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {currentBoard.pictures.map((picture, index) => (
-                      <div key={picture.id} className="flex items-start gap-1">
-                        <span className="text-muted-foreground">{index + 1}.</span>
-                        <span className="text-foreground">{picture.answer}</span>
-                      </div>
-                    ))}
+              {/* Board Selection */}
+              {!selectedBoards[currentTeamSelecting] && availableBoards.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground">Select a board for the current player:</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {availableBoards.map((boardId) => {
+                      const board = pictureBoards.find(b => b.id === boardId);
+                      if (!board) return null;
+                      
+                      return (
+                        <button
+                          key={boardId}
+                          onClick={() => syncedSelectBoard(currentTeamSelecting, boardId)}
+                          className="control-btn bg-secondary text-foreground text-left justify-start"
+                        >
+                          <Image className="w-4 h-4 mr-2" />
+                          {board.name}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
               
+              {/* Current Board Display */}
+              {selectedBoards[currentTeamSelecting] && (
+                <div className="space-y-3">
+                  <div className="bg-secondary/30 rounded-lg p-3">
+                    <p className="text-sm font-semibold text-foreground">
+                      Current Board: {pictureBoards.find(b => b.id === selectedBoards[currentTeamSelecting])?.name}
+                    </p>
+                  </div>
+                  
+                  {/* Picture Navigation */}
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground">
+                      {showAllPictures ? 
+                        "Showing all pictures" : 
+                        `Picture ${currentPictureIndex + 1} of ${pictureBoards.find(b => b.id === selectedBoards[currentTeamSelecting])?.pictures.length || 12}`
+                      }
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={syncedPreviousPicture}
+                        disabled={currentPictureIndex === 0 && !showAllPictures}
+                        className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={syncedNextPicture}
+                        disabled={showAllPictures}
+                        className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
+                      >
+                        {showAllPictures ? "All Shown" : "Next"}
+                      </button>
+                      <button
+                        onClick={syncedResetPictureBoard}
+                        className="control-btn bg-secondary text-foreground text-xs"
+                      >
+                        Reset
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Current Picture Answer */}
+                  {!showAllPictures && currentBoard && (
+                    <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+                      <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
+                      <p className="text-sm text-foreground font-medium">
+                        {currentBoard.pictures[currentPictureIndex]?.answer || "No answer"}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* All Answers Grid */}
+                  {showAllPictures && currentBoard && (
+                    <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+                      <p className="text-xs font-semibold text-qlaf-success mb-2">All Answers:</p>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {currentBoard.pictures.map((picture, index) => (
+                          <div key={picture.id} className="flex items-start gap-1">
+                            <span className="text-muted-foreground">{index + 1}.</span>
+                            <span className="text-foreground">{picture.answer}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  <button
+                    onClick={syncedTeamTimeUp}
+                    className="control-btn bg-qlaf-warning text-white w-full"
+                  >
+                    <Clock className="w-4 h-4 inline mr-2" />
+                    Time's Up - Next Team
+                  </button>
+                </div>
+              )}
+              
+              {/* Selection Status */}
+              <div className="mt-3 pt-3 border-t border-border">
+                <p className="text-xs text-muted-foreground mb-2">Selection Status:</p>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  {[1, 2, 3].map(teamId => (
+                    <div key={teamId} className="text-center">
+                      <div className="font-semibold">Board {teamId}</div>
+                      <div className={selectedBoards[teamId] ? 'text-qlaf-success' : 'text-muted-foreground'}>
+                        {selectedBoards[teamId] 
+                          ? pictureBoards.find(b => b.id === selectedBoards[teamId])?.name 
+                          : 'Not selected'
+                        }
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Picture Board Complete - Show Next Round Button */
+            <div className="space-y-3">
+              <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+                <p className="text-sm font-semibold text-qlaf-success mb-1">Picture Board Complete!</p>
+                <p className="text-xs text-foreground">All teams have finished their picture boards.</p>
+              </div>
               <button
-                onClick={syncedTeamTimeUp}
-                className="control-btn bg-qlaf-warning text-white w-full"
+                onClick={syncedNextRound}
+                className="control-btn bg-qlaf-success text-white w-full"
               >
-                <Clock className="w-4 h-4 inline mr-2" />
-                Time's Up - Next Team
+                <SkipForward className="w-4 h-4 inline mr-2" />
+                Next Round
               </button>
             </div>
           )}
-          
-          {/* Selection Status */}
-          <div className="mt-3 pt-3 border-t border-border">
-            <p className="text-xs text-muted-foreground mb-2">Selection Status:</p>
-            <div className="grid grid-cols-3 gap-2 text-xs">
-              {[1, 2, 3].map(teamId => (
-                <div key={teamId} className="text-center">
-                  <div className="font-semibold">Board {teamId}</div>
-                  <div className={selectedBoards[teamId] ? 'text-qlaf-success' : 'text-muted-foreground'}>
-                    {selectedBoards[teamId] 
-                      ? pictureBoards.find(b => b.id === selectedBoards[teamId])?.name 
-                      : 'Not selected'
-                    }
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
         </motion.div>
       )}
 

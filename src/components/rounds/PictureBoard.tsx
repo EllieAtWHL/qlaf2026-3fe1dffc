@@ -136,8 +136,6 @@ export const PictureBoard = () => {
   } = useQuizStore();
 
   const round = ROUNDS[currentRoundIndex];
-  const [shouldAdvance, setShouldAdvance] = useState(false);
-  const hasAdvanced = useRef(false);
   const previousBoardId = useRef<string | null>(null);
   
   console.log('[PictureBoard] Render:', {
@@ -180,40 +178,28 @@ export const PictureBoard = () => {
     }
   }, [currentBoard, currentPictureIndex, showAllPictures]);
   
-  // Handle auto-advance to next round when all teams are done
-  useEffect(() => {
-    console.log('[PictureBoard] Auto-advance check:', {
-      shouldAdvance,
-      currentTeamSelecting,
-      hasAdvanced: hasAdvanced.current
-    });
-    
-    if (shouldAdvance && currentTeamSelecting === 4 && !hasAdvanced.current) {
-      console.log('[PictureBoard] In useEffect, advancing to next round');
-      console.log('[PictureBoard] Current round index:', currentRoundIndex);
-      console.log('[PictureBoard] Total rounds:', ROUNDS.length);
-      
-      hasAdvanced.current = true;
-      const store = useQuizStore.getState();
-      store.nextRound();
-      console.log('[PictureBoard] New round index:', store.currentRoundIndex);
-    }
-  }, [shouldAdvance, currentTeamSelecting]);
-  
-  // If all teams have completed (currentTeamSelecting === 4), trigger advance
+  // Show completion message when all teams are done
   if (currentTeamSelecting === 4) {
-    console.log('[PictureBoard] All teams completed, will advance to next round');
-    console.log('[PictureBoard] Current state check:', {
-      currentTeamSelecting,
-      shouldAdvance,
-      hasAdvanced: hasAdvanced.current
-    });
-    
-    if (!shouldAdvance) {
-      setShouldAdvance(true);
-    }
-    
-    return <div>Loading next round...</div>;
+    console.log('[PictureBoard] All teams completed, showing completion message');
+    return (
+      <div className="min-h-screen qlaf-bg flex flex-col items-center justify-center p-4 md:p-8">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="glass-card rounded-xl p-8 max-w-2xl text-center"
+        >
+          <h1 className="font-display text-4xl font-bold text-foreground mb-4">
+            Picture Board Complete!
+          </h1>
+          <p className="font-body text-xl text-muted-foreground mb-6">
+            All teams have finished their picture boards.
+          </p>
+          <p className="font-body text-lg text-muted-foreground">
+            Use the co-host controls to advance to the next round.
+          </p>
+        </motion.div>
+      </div>
+    );
   }
   
   // Show board selection UI if current team hasn't selected a board yet
