@@ -89,16 +89,55 @@ export const CoHostInterface = () => {
 
   // Timer broadcasting logic
   useEffect(() => {
-    const { isTimerRunning } = useQuizStore.getState();
+    // Don't broadcast ticks if timer is not running OR if we're not in an active round
+    const shouldBroadcast = isTimerRunning && gameState === 'round';
     
-    if (!isTimerRunning) return;
-
-    const interval = setInterval(() => {
+    const interval = shouldBroadcast ? setInterval(() => {
       broadcastAction('tick');
-    }, 1000);
+    }, 1000) : null;
 
-    return () => clearInterval(interval);
-  }, [isTimerRunning, broadcastAction]);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isTimerRunning, gameState, broadcastAction]);
+
+  // Auto-start timer for picture board when first picture is displayed
+  useEffect(() => {
+    console.log('[CoHostInterface] Picture board timer check:', {
+      currentRoundId: ROUNDS[currentRoundIndex]?.id,
+      currentRoundIndex,
+      selectedBoards,
+      currentTeamSelecting,
+      currentPictureIndex,
+      showAllPictures,
+      isTimerRunning
+    });
+    
+    // Only run for picture board round
+    if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
+      console.log('[CoHostInterface] Not picture board round, skipping');
+      return;
+    }
+    
+    // Check if a board is selected and this is the first picture
+    const hasBoardSelected = selectedBoards[currentTeamSelecting];
+    const isFirstPicture = currentPictureIndex === 0;
+    const notShowingAll = !showAllPictures;
+    const timerNotRunning = !isTimerRunning;
+    
+    console.log('[CoHostInterface] Timer conditions:', {
+      hasBoardSelected,
+      isFirstPicture,
+      notShowingAll,
+      timerNotRunning,
+      shouldStart: hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning
+    });
+    
+    if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
+      console.log('[CoHostInterface] Auto-starting timer for picture board first picture');
+      syncedStartTimer();
+    }
+  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
@@ -137,6 +176,7 @@ export const CoHostInterface = () => {
   };
 
   const syncedStartTimer = () => {
+    // Update local state first to enable broadcasting, then broadcast
     startTimer();
     broadcastAction('startTimer');
   };

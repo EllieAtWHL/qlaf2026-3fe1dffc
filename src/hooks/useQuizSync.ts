@@ -20,6 +20,13 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
       return;
     }
     
+    // Clean up any existing channel first
+    if (channelRef.current) {
+      console.log('[QuizSync] Cleaning up existing channel before creating new one');
+      channelRef.current.unsubscribe();
+      channelRef.current = null;
+    }
+    
     console.log('[QuizSync] Creating new channel...');
     
     // Create a broadcast channel for real-time sync
@@ -49,8 +56,9 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
       console.log('[QuizSync] CLEANUP FUNCTION CALLED - This will close the channel!');
       console.log('[QuizSync] Channel ref before cleanup:', !!channelRef.current);
       if (channelRef.current) {
-        channel.unsubscribe();
+        channelRef.current.unsubscribe();
         console.log('[QuizSync] Channel unsubscribed');
+        channelRef.current = null;
       }
     };
   }, []); // Empty dependency array - effect only runs once per component mount

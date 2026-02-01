@@ -28,18 +28,12 @@ export const Timer = ({ compact = false }: TimerProps) => {
   const lastTickRef = useRef<number>(timerValue);
   const hasPlayedBuzzer = useRef(false);
 
-  // Only run timer logic in main app (host), not in co-host
-  const isMainApp = typeof window !== 'undefined' && window.location.pathname === '/';
-
+  // Timer interval is disabled - we rely on sync system from CoHostInterface
+  // This prevents double-ticking when both cohost and main display try to manage timer
   useEffect(() => {
-    if (!isTimerRunning || !isMainApp) return;
-
-    const interval = setInterval(() => {
-      tick();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isTimerRunning, tick, isMainApp]);
+    // No interval - timer is managed by CoHostInterface via sync
+    return () => {};
+  }, []);
 
   // Sound effects
   useEffect(() => {

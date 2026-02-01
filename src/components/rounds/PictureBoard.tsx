@@ -170,13 +170,7 @@ export const PictureBoard = () => {
     }
   }, [selectedBoards, currentTeamSelecting]);
   
-  // Start timer when first picture is shown
-  useEffect(() => {
-    if (currentBoard && currentPictureIndex === 0 && !showAllPictures) {
-      console.log('[PictureBoard] Starting timer for first picture');
-      startTimer();
-    }
-  }, [currentBoard, currentPictureIndex, showAllPictures]);
+  // Note: Timer should only be started from CoHostInterface to follow architecture rules
   
   // Show completion message when all teams are done
   if (currentTeamSelecting === 4) {
