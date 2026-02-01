@@ -111,7 +111,7 @@ export const GenericRound = ({
           }} animate={{
             opacity: 1,
             scale: 1
-          }} className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8">
+          }} className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8 mx-[16px] my-[16px]">
                   <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">Answer</span>
                   {Array.isArray(currentQuestion.answer) ? currentQuestion.answer.length > 10 ? <div className="mt-2 max-h-56 overflow-y-auto">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
