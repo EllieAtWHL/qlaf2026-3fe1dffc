@@ -111,7 +111,7 @@ export const GenericRound = ({ roundId }: GenericRoundProps) => {
                   <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">Answer</span>
                   {Array.isArray(currentQuestion.answer) ? (
                     currentQuestion.answer.length > 10 ? (
-                      <div className="mt-4 max-h-48 overflow-y-auto">
+                      <div className="mt-2 max-h-48 overflow-y-auto">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
                           {currentQuestion.answer.map((answer, index) => {
                             const answerObj = typeof answer === 'object' ? answer : { name: answer, event: '' };
