@@ -35,7 +35,7 @@ export const GenericRound = ({
     }} animate={{
       opacity: 1,
       y: 0
-    }} className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+    }} className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         {/* Round info */}
         <div>
           <span className="font-display text-sm text-muted-foreground uppercase tracking-[0.3em]">
