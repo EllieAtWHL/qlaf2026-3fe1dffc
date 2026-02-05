@@ -60,7 +60,7 @@
       "description": "Picture round",
       "timerDuration": null,
       "isTeamRound": true,
-      "component": "GenericRound",
+      "component": "ElliesTellies",
       "icon": "Tv"
     },
     {

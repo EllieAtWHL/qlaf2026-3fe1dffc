@@ -116,6 +116,30 @@ TypeError: Cannot read properties of undefined (reading 'map')
 
 ---
 
+### 4. Ellie's Tellies Static Effect and Image Overlay Improvements
+**Status**: Enhancement Needed  
+**Priority**: Medium  
+**Description**: Improve the TV static transition effect and adjust the image overlay size/position to better fit within the TV frame.
+
+**Current Issues**:
+- Static effect needs more realistic CRT TV interference patterns
+- Image overlay size and positioning doesn't perfectly align with TV screen area
+- Could enhance the "tuning in" effect for better user experience
+
+**Files Involved**:
+- `src/components/rounds/ElliesTellies.tsx` - Static animation and image positioning
+- `public/images/ellies-tellies/` - TV frame and question images
+
+**Potential Improvements**:
+- Enhance static noise patterns for more authentic CRT effect
+- Fine-tune image overlay dimensions to better fit TV screen area
+- Adjust positioning to align perfectly within TV frame
+- Consider additional CRT effects like screen curvature or color bleeding
+
+**Impact**: Medium - Improves user experience but doesn't break functionality
+
+---
+
 ## 🔧 Technical Debt
 
 ### 1. Excessive Console Logging

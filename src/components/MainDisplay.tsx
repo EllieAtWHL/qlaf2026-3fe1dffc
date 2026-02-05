@@ -8,6 +8,7 @@ import { OneMinuteRound } from '@/components/rounds/OneMinuteRound';
 import { WorldRankings } from '@/components/rounds/WorldRankings';
 import { PictureBoard } from '@/components/rounds/PictureBoard';
 import { OnlyConnect } from '@/components/rounds/OnlyConnect';
+import { ElliesTellies } from '@/components/rounds/ElliesTellies';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -17,6 +18,7 @@ const componentMap: Record<string, React.ComponentType<any>> = {
   'WorldRankings': WorldRankings,
   'PictureBoard': PictureBoard,
   'OnlyConnect': OnlyConnect,
+  'ElliesTellies': ElliesTellies,
   'GenericRound': GenericRound,
 };
 

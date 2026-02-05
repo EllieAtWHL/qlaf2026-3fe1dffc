@@ -357,9 +357,54 @@
       {
         "id": "et-1",
         "type": "picture",
-        "content": "Name the sports personality",
-        "imageUrl": "/placeholder.svg",
-        "answer": "David Beckham"
+        "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
+        "imageUrl": "/images/ellies-tellies/telly1.png",
+        "answer": [
+          "Sportstar 1: Mélanie de Jesus dos Santos",
+          "Sportstar 2: Ellie Downie", 
+          "Event: Gymnastics European All-Around Championships",
+          "Location: Cluj-Napoca, Romania",
+          "Date: April 2017"
+        ]
+      },
+      {
+        "id": "et-2",
+        "type": "picture",
+        "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
+        "imageUrl": "/images/ellies-tellies/telly2.png",
+        "answer": [
+          "Sportstar 1: Martin Guptil",
+          "Sportstar 2: Jos Buttler", 
+          "Event: Cricket World Cup Final",
+          "Location: London, England",
+          "Date: July 2019"
+        ]
+      },
+      {
+        "id": "et-3",
+        "type": "picture",
+        "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
+        "imageUrl": "/images/ellies-tellies/telly3.png",
+        "answer": [
+          "Sportstar 1: Damon Hill",
+          "Sportstar 2: Michael Schumacher", 
+          "Event: Australian Grand Prix",
+          "Location: Adelaide, Australia",
+          "Date: November 1994"
+        ]
+      },
+      {
+        "id": "et-4",
+        "type": "picture",
+        "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
+        "imageUrl": "/images/ellies-tellies/telly4.png",
+        "answer": [
+          "Sportstar 1: Alex Greenwood",
+          "Sportstar 2: Michelle Agyemang", 
+          "Event: Euro 25 Semi-final",
+          "Location: Geneva, Switzerland",
+          "Date: July 2025"
+        ]
       }
     ]
   },
