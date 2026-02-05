@@ -138,9 +138,35 @@ TypeError: Cannot read properties of undefined (reading 'map')
 
 **Impact**: Medium - Improves user experience but doesn't break functionality
 
----
+### 5. GenericRound Question Transition Enhancement
+**Status**: Enhancement Opportunity  
+**Priority**: Low  
+**Description**: Add smooth transitioning for questions in GenericRound to make them take up more screen space before answers are revealed, improving visual impact and user engagement.
 
-## 🔧 Technical Debt
+**Current Issues**:
+- Questions appear in fixed size without dramatic presentation
+- Could enhance visual hierarchy when transitioning from question to answer
+- Opportunity to create more cinematic question reveal experience
+
+**Desired Enhancement**:
+- Question should appear larger and more prominent initially
+- Smooth transition when answers are revealed to make space for answer content
+- Maintain clean layout while adding visual interest
+- Should work across all rounds using GenericRound (Just One, etc.)
+
+**Files Involved**:
+- `src/components/rounds/GenericRound.tsx` - Question layout and transitions
+- `src/components/MainDisplay.tsx` - Round container layout
+
+**Potential Implementation**:
+- Large centered question before answer reveal
+- Smooth scaling/positioning animation when answer is shown
+- Maintain 16:9 aspect ratio requirements
+- Ensure auto-scroll functionality continues to work
+
+**Impact**: Low - Visual enhancement only, doesn't affect functionality
+
+---
 
 ### 1. Excessive Console Logging
 **Status**: Cleanup Needed  

@@ -43,9 +43,10 @@ The display handles two different answer formats:
 2. **Object Answers**: Shows in a grid layout with enhanced formatting
 
 #### Object Answer Display
-- **Large lists (>10 items)**: Scrollable 2-3 column grid
-- **Small lists (≤10 items)**: Vertical list layout
+- **Large lists (>3 items)**: Scrollable single-column grid with auto-scroll
+- **Small lists (≤3 items)**: Vertical list layout
 - **Each item shows**: Name (prominent) + additional data (smaller text)
+- **Auto-scroll**: For >3 items, automatically scrolls down and up (8 seconds each direction)
 
 ### Co-host Display (`/src/components/CoHostInterface.tsx`)
 
@@ -118,8 +119,9 @@ Use object format when you want to display additional information:
 
 ### Answer Count Thresholds
 The display automatically adjusts based on answer count:
-- **≤10 items**: Simple vertical list
-- **>10 items**: Scrollable grid layout
+- **≤3 items**: Simple vertical list
+- **>3 items**: Scrollable grid layout with auto-scroll animation
+- **Auto-scroll timing**: 8 seconds down, 3 seconds pause, 8 seconds up
 - Consider this when deciding how many answers to include
 
 ## Technical Implementation Details
@@ -131,14 +133,16 @@ const answerObj = typeof answer === 'object' ? answer : { name: answer, event: '
 ```
 
 ### Responsive Design
-- **Mobile**: 2-column grid for large lists
-- **Desktop**: 3-column grid for large lists
-- **Text sizing**: Automatically scales based on list size
+- **All list sizes**: Single-column grid for consistency
+- **Auto-scroll**: Smooth 8-second animations for large lists
+- **Text sizing**: Fixed sizing for readability during scroll
+- **16:9 aspect ratio**: Maintained for TV compatibility
 
 ### Performance
 - Efficient rendering with React keys
-- Scrollable containers prevent layout overflow
+- Custom scroll animations using requestAnimationFrame
 - Optimized for large answer lists (40+ items)
+- Auto-scroll prevents manual scrolling requirements
 
 ## Current Questions
 
@@ -157,8 +161,9 @@ const answerObj = typeof answer === 'object' ? answer : { name: answer, event: '
    - Check null handling in co-host component
 
 2. **Display overflow**
-   - Large lists automatically become scrollable
-   - Check `max-h-96` setting in GenericRound.tsx
+   - Large lists automatically become scrollable with auto-scroll
+   - Auto-scroll timing: 8 seconds down, 3 seconds pause, 8 seconds up
+   - Check `max-h-56` setting in GenericRound.tsx for scroll container
 
 3. **TypeScript errors**
    - Ensure proper null checks for object answers
@@ -169,3 +174,5 @@ const answerObj = typeof answer === 'object' ? answer : { name: answer, event: '
 - Verify co-host interface shows names only
 - Check responsive behavior on different screen sizes
 - Test with various answer counts (small and large lists)
+- **Test auto-scroll**: Verify smooth scrolling for >3 answers
+- **Test thresholds**: Confirm layout changes at 3-item threshold

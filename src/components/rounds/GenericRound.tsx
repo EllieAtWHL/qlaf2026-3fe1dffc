@@ -4,6 +4,7 @@ import { Scoreboard } from '@/components/Scoreboard';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { useQuestions } from '@/hooks/useQuestions';
 import { normalizeOption } from '@/types/questions';
+import { useEffect, useRef } from 'react';
 interface GenericRoundProps {
   roundId?: string; // Make optional since we'll read from store
 }
@@ -22,6 +23,79 @@ export const GenericRound = ({
     totalQuestions
   } = useQuestions();
   const round = ROUNDS[currentRoundIndex];
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const innerScrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll for any round when answer is shown and has many items
+  useEffect(() => {
+    if (showAnswer && currentQuestion?.answer && Array.isArray(currentQuestion.answer) && currentQuestion.answer.length > 3) {
+      console.log('Auto-scroll triggered for', currentQuestion.answer.length, 'answers');
+      const scrollContainer = innerScrollRef.current;
+      if (!scrollContainer) {
+        console.log('Inner scroll container not found');
+        return;
+      }
+
+      let scrollTimeout: NodeJS.Timeout;
+      
+      // Start scrolling after a brief delay
+      scrollTimeout = setTimeout(() => {
+        console.log('Starting scroll to bottom');
+        
+        // Custom slow scroll to bottom
+        const startTop = scrollContainer.scrollTop;
+        const endTop = scrollContainer.scrollHeight;
+        const duration = 8000; // 8 seconds for scroll down
+        const startTime = performance.now();
+        
+        const animateScroll = (currentTime: number) => {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          
+          // Easing function for smooth animation
+          const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          const easedProgress = easeInOutQuad(progress);
+          
+          scrollContainer.scrollTop = startTop + (endTop - startTop) * easedProgress;
+          
+          if (progress < 1) {
+            requestAnimationFrame(animateScroll);
+          } else {
+            // Scroll back to top after reaching bottom
+            setTimeout(() => {
+              console.log('Scrolling back to top');
+              
+              // Custom slow scroll to top
+              const startTopUp = scrollContainer.scrollTop;
+              const endTopUp = 0;
+              const durationUp = 8000; // 8 seconds for scroll up
+              const startTimeUp = performance.now();
+              
+              const animateScrollUp = (currentTimeUp: number) => {
+                const elapsedUp = currentTimeUp - startTimeUp;
+                const progressUp = Math.min(elapsedUp / durationUp, 1);
+                
+                const easeInOutQuad = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                const easedProgressUp = easeInOutQuad(progressUp);
+                
+                scrollContainer.scrollTop = startTopUp + (endTopUp - startTopUp) * easedProgressUp;
+                
+                if (progressUp < 1) {
+                  requestAnimationFrame(animateScrollUp);
+                }
+              };
+              
+              requestAnimationFrame(animateScrollUp);
+            }, 3000); // Wait 3 seconds at bottom
+          }
+        };
+        
+        requestAnimationFrame(animateScroll);
+      }, 1000); // Wait 1 second before starting scroll
+
+      return () => clearTimeout(scrollTimeout);
+    }
+  }, [showAnswer, currentQuestion]);
 
   // If we're transitioning or not in round state, don't render anything
   if (isTransitioning || gameState !== 'round') {
@@ -60,7 +134,7 @@ export const GenericRound = ({
         scale: 1
       }} transition={{
         delay: 0.1
-      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[60vh] overflow-y-auto">
+      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[60vh] overflow-y-auto relative" ref={scrollContainerRef}>
           {currentQuestion ? <>
               {/* Question number */}
               <div className="mb-4">
@@ -113,7 +187,7 @@ export const GenericRound = ({
             scale: 1
           }} className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8 mx-[16px] my-[16px]">
                   <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">Answer</span>
-                  {Array.isArray(currentQuestion.answer) ? currentQuestion.answer.length > 10 ? <div className="mt-2 max-h-56 overflow-y-auto">
+                  {Array.isArray(currentQuestion.answer) ? currentQuestion.answer.length > 3 ? <div className="mt-2 max-h-56 overflow-y-auto" ref={innerScrollRef}>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
                           {currentQuestion.answer.map((answer, index) => {
                   const answerObj = typeof answer === 'object' ? answer : {
