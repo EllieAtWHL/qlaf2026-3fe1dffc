@@ -368,7 +368,7 @@ export const CoHostInterface = () => {
               CO-HOST CONTROLS
             </span>
             <h1 className="font-display text-lg font-bold text-primary">
-              QLAF 2026
+              QLAF 2026 Host
             </h1>
           </div>
           <div className="flex items-center gap-2">
