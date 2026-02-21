@@ -6,36 +6,7 @@ This document tracks items that need to be fixed or improved but are not current
 
 ## 🚨 Highest Priority Backlog Items
 
-### 1. Only Connect Round Critical Crash (BLOCKER)
-**Status**: Critical - Complete Failure  
-**Priority**: Blocker  
-**Description**: After the Only Connect round, the main display breaks completely with a blank screen and JavaScript errors. This completely blocks the quiz from continuing.
-
-**Current Issues**:
-- `TypeError: Cannot read properties of undefined (reading 'map')` 
-- Complete blank screen on main display after Only Connect round
-- Quiz cannot continue after this error
-- AudioContext errors may be related but not the root cause
-
-**Error Details**:
-```
-TypeError: Cannot read properties of undefined (reading 'map')
-    at UI (index-o4VkhCKw.js:266:33642)
-```
-
-**Files Involved**:
-- `src/components/rounds/OnlyConnect.tsx` - Likely source of undefined array
-- `src/components/MainDisplay.tsx` - Round rendering logic
-- `src/store/quizStore.ts` - State management for Only Connect
-
-**Impact**: Critical - Quiz completely breaks and cannot continue
-
-**Investigation Needed**:
-- Check OnlyConnect component for undefined arrays being mapped
-- Verify state transitions after Only Connect round
-- Check if round data is properly initialized
-
-### 2. Picture Board Navigation Delay (CRITICAL)
+### 1. Picture Board Navigation Delay (CRITICAL)
 **Status**: Needs Immediate Investigation  
 **Priority**: Critical  
 **Description**: There is often a delay between clicking "next picture" on the cohost app during the picture board round and it progressing on the main display. This is a timed round and delays could cause complaints from contestants.
@@ -74,7 +45,64 @@ TypeError: Cannot read properties of undefined (reading 'map')
 
 ---
 
-## 📋 Other Backlog Items
+## 🖼️ Only Connect Images Not Displaying
+
+### Only Connect Image Display Issue
+**Status**: Needs Investigation  
+**Priority**: Medium  
+**Description**: Images in the Only Connect round are not showing up properly on the main display.
+
+**Current Issues**:
+- Images fail to display during Only Connect rounds
+- May be related to image paths, loading, or rendering logic
+- Could affect user experience if visual clues are missing
+
+**Files Involved**:
+- `src/components/rounds/OnlyConnect.tsx` - Image rendering logic
+- `src/data/questions.json` - Image paths and question data
+- `/public/images/` - Image assets location
+
+**Fallback Option**:
+- Can convert to text-only round if images cannot be fixed
+- Ensure text alternatives are available for all image-based questions
+
+**Impact**: Medium - Affects round presentation but doesn't break functionality
+
+---
+
+## 🖼️ Picture Board Image Replacements
+
+### Picture Board Items to Replace
+**Status**: Content Updates Needed  
+**Priority**: Medium  
+**Description**: Several images in the Picture Board rounds are marked for replacement with TODO comments in the questions.json file.
+
+**Items to Replace**:
+
+**Board A (Sporting A)**:
+- ID 7: Andy Murray - `/images/picture-board/AndyMurray.png`
+- ID 11: Gary Lineker - `/images/picture-board/GaryLineker.png`
+
+**Board B (B Sports)**:
+- ID 3: Luke Littler - `/images/picture-board/LukeLittler.png`
+
+**Board C (C Sport)**:
+- ID 2: Dennis Taylor - `/images/picture-board/DennisTaylor.png`
+- ID 7: Ally McCoist - `/images/picture-board/AllyMcCoist.png`
+- ID 8: Neymar - `/images/picture-board/Neymar.png`
+
+**Files Involved**:
+- `src/data/questions.json` - Remove TODO comments after replacement
+- `/public/images/picture-board/` - Replace image files
+
+**Action Required**:
+1. Replace the 6 marked images with new sports personalities
+2. Update the answer text and image paths in questions.json
+3. Remove the `/*TODO: Replace*/` comments from the JSON file
+
+---
+
+## �� Other Backlog Items
 
 ### 2. Timer Sound Effects
 **Status**: Working but with 403 errors  
@@ -236,6 +264,30 @@ TypeError: Cannot read properties of undefined (reading 'map')
 
 ---
 
+## ✅ Resolved Issues
+
+### 1. Only Connect Round Critical Crash (RESOLVED)
+**Status**: Fixed - No longer crashes  
+**Priority**: Previously Blocker  
+**Date Resolved**: 2026-02-21  
+**Description**: After Only Connect round, main display was breaking completely with a blank screen and JavaScript errors. This completely blocked quiz from continuing.
+
+**Root Cause**: `OnlyConnect` component attempted to access `question.options.map()` during round transition before new round's question data had loaded.
+
+**Fix Applied**:
+- Added null checks for `question.options` throughout OnlyConnect component
+- Used optional chaining `?.` for safe property access
+- Enhanced initial validation to check both question and options availability
+- Added proper loading state handling during transitions
+
+**Files Changed**:
+- `src/components/rounds/OnlyConnect.tsx` - Added defensive null checks
+- `docs/only-connect-crash-analysis.md` - Created comprehensive documentation
+
+**Testing**: Round transitions now work without crashes, quiz can continue normally.
+
+---
+
 ## 📝 Notes for Future Development
 
 ### Architecture Rules to Maintain:
@@ -254,5 +306,5 @@ TypeError: Cannot read properties of undefined (reading 'map')
 
 ---
 
-**Last Updated**: 2026-02-01 at 11:15 PM UTC  
-**Next Review**: When addressing critical Only Connect crash or timer sync issues
+**Last Updated**: 2026-02-21 at 10:45 PM UTC  
+**Next Review**: When addressing critical Picture Board navigation delays or timer sync issues
