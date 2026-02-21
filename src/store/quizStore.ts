@@ -446,44 +446,24 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   nextPicture: () => {
     const { currentBoard, currentPictureIndex } = get();
-    console.log('[nextPicture] === START ===');
-    console.log('[nextPicture] Current index:', currentPictureIndex);
-    console.log('[nextPicture] Total pictures:', currentBoard?.pictures.length);
-    console.log('[nextPicture] currentBoard exists:', !!currentBoard);
     
     if (currentBoard) {
       if (currentPictureIndex < currentBoard.pictures.length - 1) {
-        // Go to next picture
-        const newIndex = currentPictureIndex + 1;
-        console.log('[nextPicture] Going from', currentPictureIndex, 'to', newIndex);
-        set({ currentPictureIndex: newIndex });
-        console.log('[nextPicture] Set new index to:', newIndex);
+        set({ currentPictureIndex: currentPictureIndex + 1 });
       } else if (currentPictureIndex === currentBoard.pictures.length - 1) {
-        // After showing the last picture, show all pictures
-        console.log('[nextPicture] At last picture, showing all pictures');
         set({ showAllPictures: true });
-        console.log('[nextPicture] Set showAllPictures to true');
       }
     }
-    console.log('[nextPicture] === END ===');
   },
   
   previousPicture: () => {
     const { currentPictureIndex, showAllPictures } = get();
-    console.log('[previousPicture] === START ===');
-    console.log('[previousPicture] Current index:', currentPictureIndex);
-    console.log('[previousPicture] showAllPictures:', showAllPictures);
     
     if (showAllPictures) {
-      // If showing all, go back to last picture
-      console.log('[previousPicture] Going from all pictures to last picture (11)');
       set({ showAllPictures: false, currentPictureIndex: 11 });
     } else if (currentPictureIndex > 0) {
-      const newIndex = currentPictureIndex - 1;
-      console.log('[previousPicture] Going from', currentPictureIndex, 'to', newIndex);
-      set({ currentPictureIndex: newIndex });
+      set({ currentPictureIndex: currentPictureIndex - 1 });
     }
-    console.log('[previousPicture] === END ===');
   },
   
   resetPictureBoard: () => {

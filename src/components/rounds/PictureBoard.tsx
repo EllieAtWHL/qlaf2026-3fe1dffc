@@ -138,29 +138,6 @@ export const PictureBoard = () => {
   const round = ROUNDS[currentRoundIndex];
   const previousBoardId = useRef<string | null>(null);
   
-  console.log('[PictureBoard] Render:', {
-    currentTeamSelecting,
-    selectedBoards,
-    availableBoards,
-    pictureBoardsLength: pictureBoards.length,
-    currentPictureIndex,
-    showAllPictures,
-    currentBoardName: currentBoard?.name,
-    currentBoardPictures: currentBoard?.pictures.length
-  });
-  
-  // Log what should be displayed
-  const shouldShowIndividual = !showAllPictures && currentBoard && currentPictureIndex < currentBoard.pictures.length;
-  const shouldShowGrid = showAllPictures && currentBoard;
-  
-  console.log('[PictureBoard] Display Logic:', {
-    shouldShowIndividual,
-    shouldShowGrid,
-    currentPictureIndex,
-    showAllPictures,
-    hasCurrentBoard: !!currentBoard
-  });
-  
   // Reset picture board state when a new board is selected
   useEffect(() => {
     const currentBoardId = selectedBoards[currentTeamSelecting];
@@ -174,7 +151,6 @@ export const PictureBoard = () => {
   
   // Show completion message when all teams are done
   if (currentTeamSelecting === 4) {
-    console.log('[PictureBoard] All teams completed, showing completion message');
     return (
       <div className="min-h-screen qlaf-bg flex flex-col items-center justify-center p-4 md:p-8">
         <motion.div
@@ -198,11 +174,6 @@ export const PictureBoard = () => {
   
   // Show board selection UI if current team hasn't selected a board yet
   if (!selectedBoards[currentTeamSelecting]) {
-    console.log('[PictureBoard] Showing board selection for current player', {
-      currentTeamSelecting,
-      selectedBoards,
-      hasBoardForCurrentTeam: !!selectedBoards[currentTeamSelecting]
-    });
     // Render board selection inline instead of separate component to prevent unmounting
     return (
       <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
@@ -263,18 +234,10 @@ export const PictureBoard = () => {
   
   // Show the selected board for the current team
   if (!currentBoard) {
-    console.log('[PictureBoard] No current board available');
     return <div>Loading board...</div>;
   }
   
   const currentPicture = currentBoard.pictures[currentPictureIndex];
-  
-  console.log('[PictureBoard] About to render:', {
-    showAllPictures,
-    currentPictureIndex,
-    totalPictures: currentBoard.pictures.length,
-    currentPictureExists: !!currentPicture
-  });
 
   return (
     <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
@@ -307,6 +270,7 @@ export const PictureBoard = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
+          transition={{ duration: 0.1 }}
           className="w-full h-full max-w-6xl max-h-[60vh]"
         >
           {showAllPictures ? (
@@ -316,9 +280,9 @@ export const PictureBoard = () => {
                 {currentBoard.pictures.map((picture, index) => (
                   <motion.div
                     key={picture.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.05 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: index * 0.02 }}
                     className="aspect-video glass-card rounded-lg p-1 flex items-center justify-center relative"
                   >
                     {/* Picture number circle in top-right corner */}
@@ -331,6 +295,7 @@ export const PictureBoard = () => {
                       src={picture.imageUrl} 
                       alt={picture.answer}
                       className="w-full h-full object-cover rounded"
+                      loading="eager"
                       onError={(e) => {
                         e.currentTarget.src = '/placeholder.svg';
                       }}
@@ -343,8 +308,9 @@ export const PictureBoard = () => {
             <div className="w-full h-full flex flex-col items-center justify-center relative">
               {/* Show single picture - much larger */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.1 }}
                 className="w-full h-full max-h-[45vh] glass-card rounded-xl p-0 flex items-center justify-center relative"
               >
                 {/* Picture number circle in top-right corner */}
@@ -359,6 +325,7 @@ export const PictureBoard = () => {
                   src={currentPicture.imageUrl} 
                   alt={currentPicture.answer}
                   className="w-full h-full object-contain rounded"
+                  loading="eager"
                   onError={(e) => {
                     e.currentTarget.src = '/placeholder.svg';
                   }}
