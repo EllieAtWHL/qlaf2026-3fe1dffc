@@ -34,7 +34,7 @@ export const OnlyConnect = () => {
   // Calculate points based on revealed options
   const points = [5, 3, 2, 1][onlyConnectRevealedOptions - 1] || 1;
 
-  if (!question) {
+  if (!question || !question.options) {
     return (
       <div className="min-h-screen qlaf-bg flex items-center justify-center">
         <div className="text-center">
@@ -61,34 +61,35 @@ export const OnlyConnect = () => {
           scale: 1
         }}
         transition={{ delay: index * 0.1 }}
-        className="glass-card rounded-xl p-6 mb-4"
+        className="glass-card rounded-xl p-4 h-48 w-full"
       >
-        <div className="flex items-center gap-4">
-          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-            <span className="font-display text-sm font-bold text-primary">
-              {index + 1}
-            </span>
-          </div>
-          
-          <div className="flex-1">
-            {option.text && (
-              <p className="font-display text-xl text-foreground">
+        <div className="flex items-center gap-4 h-full">
+          <div className="flex-1 flex items-center justify-center min-h-0">
+            {option.text && !option.imageUrl && (
+              <p className="font-display text-2xl md:text-3xl text-foreground text-center leading-relaxed">
                 {option.text}
               </p>
             )}
             
-            {option.imageUrl && (
-              <div className="mt-3">
-                <div className="w-full h-32 rounded-lg overflow-hidden bg-secondary/50">
-                  <img 
-                    src={option.imageUrl} 
-                    alt={`Option ${index + 1}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = '/placeholder.svg';
-                    }}
-                  />
-                </div>
+            {option.imageUrl && !option.text && (
+              <div className="w-full h-full rounded-lg overflow-hidden bg-secondary/50">
+                <img 
+                  src={option.imageUrl} 
+                  alt={`Option ${index + 1}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    console.log(`[OnlyConnect] Failed to load image: ${option.imageUrl}`, e);
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
+                  onLoad={() => {
+                    console.log(`*** [OnlyConnect] Successfully loaded image: ${option.imageUrl}`);
+                    // Check if image element exists in DOM
+                    const imgElement = document.querySelector(`img[alt="Option ${index + 1}"]`);
+                    console.log(`*** [OnlyConnect] Image element found:`, imgElement);
+                    console.log(`*** [OnlyConnect] Image src:`, imgElement?.src);
+                    console.log(`*** [OnlyConnect] Image display:`, window.getComputedStyle(imgElement)?.display);
+                  }}
+                />
               </div>
             )}
           </div>
@@ -147,11 +148,13 @@ export const OnlyConnect = () => {
       </motion.div>
 
       {/* Options */}
-      <div className="flex-1 max-w-4xl mx-auto w-full">
-        {question.options.map((option, index) => renderOption(option, index))}
+      <div className="max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          {question.options?.map((option, index) => renderOption(option, index))}
+        </div>
         
         {/* Reveal Button */}
-        {onlyConnectRevealedOptions < question.options.length && (
+        {question.options && onlyConnectRevealedOptions < question.options.length && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -167,7 +170,7 @@ export const OnlyConnect = () => {
         )}
         
         {/* All clues revealed message */}
-        {onlyConnectRevealedOptions === question.options.length && (
+        {question.options && onlyConnectRevealedOptions === question.options.length && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
