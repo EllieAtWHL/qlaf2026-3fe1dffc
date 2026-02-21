@@ -225,8 +225,11 @@ export const CoHostInterface = () => {
   };
 
   const syncedNextPicture = () => {
+    const startTime = performance.now();
     nextPicture();
     broadcastAction('nextPicture');
+    const endTime = performance.now();
+    console.log(`[syncedNextPicture] Total time: ${endTime - startTime}ms`);
   };
 
   const syncedPreviousPicture = () => {

@@ -445,6 +445,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
   
   nextPicture: () => {
+    const startTime = performance.now();
     const { currentBoard, currentPictureIndex } = get();
     
     if (currentBoard) {
@@ -454,6 +455,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         set({ showAllPictures: true });
       }
     }
+    
+    const endTime = performance.now();
+    console.log(`[nextPicture] Execution time: ${endTime - startTime}ms`);
   },
   
   previousPicture: () => {

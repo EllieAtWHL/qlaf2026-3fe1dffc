@@ -66,11 +66,9 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
   // Function to broadcast state changes (used by co-host)
   const broadcastAction = (action: string, data?: any) => {
     if (!channelRef.current || _disabled) {
-      console.warn('[QuizSync] Channel not ready or disabled');
       return;
     }
 
-    console.log('[QuizSync] Broadcasting:', action, data);
     channelRef.current.send({
       type: 'broadcast',
       event: 'state-update',
@@ -280,15 +278,15 @@ function applyStateUpdate(action: string, data: any) {
       store.teamTimeUp();
       break;
     case 'nextPicture':
-      console.log('[QuizSync] Received nextPicture');
+      const startTime = performance.now();
       store.nextPicture();
+      const endTime = performance.now();
+      console.log(`[QuizSync] nextPicture handling time: ${endTime - startTime}ms`);
       break;
     case 'previousPicture':
-      console.log('[QuizSync] Received previousPicture');
       store.previousPicture();
       break;
     case 'resetPictureBoard':
-      console.log('[QuizSync] Received resetPictureBoard');
       store.resetPictureBoard();
       break;
     case 'revealOnlyConnectOption':
