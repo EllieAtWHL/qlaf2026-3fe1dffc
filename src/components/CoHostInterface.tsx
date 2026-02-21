@@ -4,7 +4,7 @@ import {
   Play, Pause, RotateCcw, ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
   SkipForward, Clock, Wifi, WifiOff, HelpCircle, Image, Link,
-  Bug
+  Bug, X, Grid3X3
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import React from 'react';
@@ -270,12 +270,38 @@ export const CoHostInterface = () => {
     setTimeout(() => setIsRevealing(false), 500);
   };
 
+  // Dave's Dozen synced functions
+  const syncedRevealDavesDozenAnswer = (answerNumber: number) => {
+    broadcastAction('revealDavesDozenAnswer', { answerNumber });
+  };
+
+  const syncedShowIncorrectAnswer = () => {
+    broadcastAction('showIncorrectAnswer');
+  };
+
+  const syncedResetDavesDozen = () => {
+    broadcastAction('resetDavesDozen');
+  };
+
   const canAdvanceToNextRound = () => {
     const nextRoundIndex = currentRoundIndex + 1;
+    console.log('[CoHostInterface] canAdvanceToNextRound:', {
+      currentRoundIndex,
+      nextRoundIndex,
+      totalRounds: ROUNDS.length
+    });
+    
     if (nextRoundIndex < ROUNDS.length) {
-      const nextRoundQuestions = getQuestionsForRound(ROUNDS[nextRoundIndex].id);
+      const nextRound = ROUNDS[nextRoundIndex];
+      const nextRoundQuestions = getQuestionsForRound(nextRound.id);
+      console.log('[CoHostInterface] Next round check:', {
+        nextRoundId: nextRound.id,
+        nextRoundName: nextRound.name,
+        questionCount: nextRoundQuestions.length
+      });
       return nextRoundQuestions.length > 0;
     }
+    console.log('[CoHostInterface] Next round index out of bounds');
     return false;
   };
 
@@ -286,7 +312,10 @@ export const CoHostInterface = () => {
     } else if (canAdvanceToNextRound()) {
       // Don't call nextQuestion since there are no more questions
       // Just advance to the next round directly
+      console.log('[CoHostInterface] Advancing to next round from syncedNextQuestion');
       syncedNextRound();
+    } else {
+      console.log('[CoHostInterface] No more questions and cannot advance to next round');
     }
   };
 
@@ -436,9 +465,8 @@ export const CoHostInterface = () => {
                     
                     return (
                       <div key={index} className="flex items-start gap-2 text-xs">
-                        <span className="text-primary font-semibold mt-0.5">{String.fromCharCode(65 + index)}.</span>
                         <div className="flex-1">
-                          <div className="text-foreground">{normalized.label}</div>
+                          <div className="text-foreground line-clamp-2">{normalized.label}</div>
                           {normalized.sublabel && (
                             <div className="text-muted-foreground text-xs mt-0.5">{normalized.sublabel}</div>
                           )}
@@ -482,6 +510,50 @@ export const CoHostInterface = () => {
                 </>
               )}
             </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Only Connect Controls */}
+      {currentRound?.id === 'only-connect' && gameState === 'round' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Link className="w-4 h-4" />
+            Only Connect - Progressive Reveal
+          </h3>
+          
+          <div className="space-y-3">
+            {/* Current State */}
+            <div className="bg-secondary/30 rounded-lg p-3">
+              <p className="text-sm font-semibold text-foreground mb-1">
+                Clues Revealed: {onlyConnectRevealedOptions}/4
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Points available: {[5, 3, 2, 1][onlyConnectRevealedOptions - 1] || 1}
+              </p>
+            </div>
+            
+            {/* Controls */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={debouncedRevealOnlyConnectOption}
+                disabled={onlyConnectRevealedOptions >= 4 || isRevealing}
+                className="control-btn bg-qlaf-warning text-white disabled:opacity-30 text-sm"
+              >
+                {isRevealing ? 'Revealing...' : 'Reveal Next Clue'}
+              </button>
+              <button
+                onClick={syncedResetOnlyConnect}
+                className="control-btn bg-secondary text-foreground text-sm"
+              >
+                Reset Clues
+              </button>
+            </div>
           </div>
         </motion.div>
       )}
@@ -782,8 +854,8 @@ export const CoHostInterface = () => {
         </motion.div>
       )}
 
-      {/* Only Connect Controls */}
-      {currentRound?.id === 'only-connect' && gameState === 'round' && (
+      {/* Dave's Dozen Controls */}
+      {currentRound?.id === 'daves-dozen' && gameState === 'round' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -791,70 +863,42 @@ export const CoHostInterface = () => {
           className="glass-card rounded-xl p-4 mb-4"
         >
           <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Link className="w-4 h-4" />
-            Only Connect - Progressive Reveal
+            <Grid3X3 className="w-4 h-4" />
+            Dave's Dozen - Answer Selection
           </h3>
           
           <div className="space-y-3">
-            {/* Current State */}
-            <div className="bg-secondary/30 rounded-lg p-3">
-              <p className="text-sm font-semibold text-foreground mb-1">
-                Clues Revealed: {onlyConnectRevealedOptions}/4
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Points available: {[5, 3, 2, 1][onlyConnectRevealedOptions - 1] || 1}
-              </p>
+            {/* Answer Grid */}
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+              {currentQuestion?.answers?.map((answer: any) => (
+                <button
+                  key={answer.number}
+                  onClick={() => syncedRevealDavesDozenAnswer(answer.number)}
+                  className="control-btn bg-secondary text-foreground text-xs p-3 flex flex-col items-center gap-1"
+                >
+                  <span className="font-bold text-lg">{answer.number}</span>
+                  <span className="text-xs leading-tight">{answer.text}</span>
+                </button>
+              ))}
             </div>
             
-            {/* Controls */}
+            {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-2">
               <button
-                onClick={debouncedRevealOnlyConnectOption}
-                disabled={onlyConnectRevealedOptions >= 4 || isRevealing}
-                className="control-btn bg-qlaf-warning text-white disabled:opacity-30 text-sm"
+                onClick={syncedShowIncorrectAnswer}
+                className="control-btn bg-red-500 text-white text-xs"
               >
-                {isRevealing ? 'Revealing...' : 'Reveal Next Clue'}
+                <X className="w-4 h-4 inline mr-1" />
+                Incorrect
               </button>
               <button
-                onClick={syncedResetOnlyConnect}
-                className="control-btn bg-secondary text-foreground text-sm"
+                onClick={syncedResetDavesDozen}
+                className="control-btn bg-secondary text-foreground text-xs"
               >
-                Reset Clues
+                <RotateCcw className="w-4 h-4 inline mr-1" />
+                Reset
               </button>
             </div>
-            
-            {/* Points Reference */}
-            <div className="bg-qlaf-gold/10 border border-qlaf-gold/30 rounded-lg p-3">
-              <p className="text-xs font-semibold text-qlaf-gold mb-2">Points System:</p>
-              <div className="grid grid-cols-2 gap-1 text-xs">
-                <div className="flex justify-between">
-                  <span>After 1 clue:</span>
-                  <span className="font-bold">5 pts</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>After 2 clues:</span>
-                  <span className="font-bold">3 pts</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>After 3 clues:</span>
-                  <span className="font-bold">2 pts</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>After 4 clues:</span>
-                  <span className="font-bold">1 pt</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Answer for Co-host */}
-            {currentQuestion && (currentQuestion as any).answer && (
-              <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
-                <p className="text-xs font-semibold text-qlaf-success mb-1">Answer (Co-host only):</p>
-                <p className="text-sm text-foreground font-medium">
-                  {(currentQuestion as any).answer}
-                </p>
-              </div>
-            )}
           </div>
         </motion.div>
       )}
