@@ -51,7 +51,7 @@
       "description": "Auction-style bidding",
       "timerDuration": null,
       "isTeamRound": true,
-      "component": "GenericRound",
+      "component": "DavesDozen",
       "icon": "Gavel"
     },
     {

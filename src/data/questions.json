@@ -3,6 +3,17 @@
     "title": "World Rankings",
     "questions": [
       {
+        "id": "wr-0",
+        "type": "ranking",
+        "content": "Rank these Olympians by most gold medals at a single Olympics, most to least",
+        "options": [
+          { "label": "Johannes Høsflot Klæbo", "sublabel": "Milano-Cortina 2026", "imageUrl": "/images/world-rankings/Klaebo.png", "order": 3, "answer": "6" },
+          { "label": "Mark Spitz", "sublabel": "Municg 1972", "imageUrl": "/images/world-rankings/Spitz.png", "order": 2, "answer": "7" },
+          { "label": "Michael Phelps", "sublabel": "Beijing 2008", "imageUrl": "/images/world-rankings/Phelps.png", "order": 1, "answer": "8" },
+          { "label": "Simone Biles", "sublabel": "Rio 2016", "imageUrl": "/images/world-rankings/Biles.png", "order": 4, "answer": "4" }
+        ]
+      },
+      {
         "id": "wr-1",
         "type": "ranking",
         "content": "Rank these footballers by single transfer fee (highest to lowest)",
@@ -57,23 +68,23 @@
         "content": "Name a British gold medalist from the last Summer or Winter Olympics (41)",
         "answer": [
           {"name": "Alex Yee", "event": "Triathlon - Men's Individual"},
+          {"name": "Ben Maher", "event": "Equestrian - Team Jumping"},
           {"name": "Bryony Page", "event": "Gymnastics - Women's Trampoline"},
           {"name": "Charlie Elwes", "event": "Rowing - Men's Eight"},
+          {"name": "Charlotte Bankes", "event": "Mixed Team Snowboard Cross"},
           {"name": "Duncan Scott", "event": "Swimming - Men's 4x200m Freestyle Relay"},
           {"name": "Ellie Aldridge", "event": "Sailing - Women's Kite"},
           {"name": "Emily Craig", "event": "Rowing - Women's Lightweight Double Sculls"},
           {"name": "Emma Finucane", "event": "Cycling - Women's Team Sprint"},
-          {"name": "Eve Muirhead", "event": "Curling - Women's Tournament (Skip)"},
           {"name": "Georgie Brayshaw", "event": "Rowing - Women's Quadruple Sculls"},
-          {"name": "Hailey Duff", "event": "Curling - Women's Tournament"},
           {"name": "Hannah Scott", "event": "Rowing - Women's Quadruple Sculls"},
           {"name": "Harry Brightmore", "event": "Rowing - Men's Eight (Cox)"},
           {"name": "Harry Charles", "event": "Equestrian - Team Jumping"},
+          {"name": "Huw Nightingale", "event": "Mixed Team Snowboard Cross"},
           {"name": "Imogen Grant", "event": "Rowing - Women's Lightweight Double Sculls"},
           {"name": "Jacob Dawson", "event": "Rowing - Men's Eight"},
           {"name": "James Guy", "event": "Swimming - Men's 4x200m Freestyle Relay"},
           {"name": "James Rudkin", "event": "Rowing - Men's Eight"},
-          {"name": "Jennifer Dodds", "event": "Curling - Women's Tournament"},
           {"name": "Jack McMillan", "event": "Swimming - Men's 4x200m Freestyle Relay (Heats only)"},
           {"name": "Katy Marchant", "event": "Cycling - Women's Team Sprint"},
           {"name": "Keely Hodgkinson", "event": "Athletics - Women's 800m"},
@@ -82,7 +93,7 @@
           {"name": "Lauren Henry", "event": "Rowing - Women's Quadruple Sculls"},
           {"name": "Lola Anderson", "event": "Rowing - Women's Quadruple Sculls"},
           {"name": "Matt Richards", "event": "Swimming - Men's 4x200m Freestyle Relay"},
-          {"name": "Mili Smith", "event": "Curling - Women's Tournament"},
+          {"name": "Matt Weston", "event": "Skeleton - Men's & Mixed Team"},
           {"name": "Morgan Bolding", "event": "Rowing - Men's Eight"},
           {"name": "Nathan Hales", "event": "Shooting - Men's Trap"},
           {"name": "Rory Gibbs", "event": "Rowing - Men's Eight"},
@@ -90,13 +101,13 @@
           {"name": "Scott Brash", "event": "Equestrian - Team Jumping"},
           {"name": "Sholto Carnegie", "event": "Rowing - Men's Eight"},
           {"name": "Sophie Capewell", "event": "Cycling - Women's Team Sprint"},
+          {"name": "Tabitha Stoecker", "event": "Skeleton - Mixed Team"},
           {"name": "Tom Dean", "event": "Swimming - Men's 4x200m Freestyle Relay"},
           {"name": "Tom Digby", "event": "Rowing - Men's Eight"},
           {"name": "Tom Ford", "event": "Rowing - Men's Eight"},
           {"name": "Tom McEwen", "event": "Equestrian - Team Eventing"},
           {"name": "Tom Pidcock", "event": "Cycling - Men's Mountain Bike"},
-          {"name": "Toby Roberts", "event": "Sport Climbing - Men's Combined"},
-          {"name": "Vicky Wright", "event": "Curling - Women's Tournament"}
+          {"name": "Toby Roberts", "event": "Sport Climbing - Men's Combined"}
         ]
       },{
         "id": "jo-2",
@@ -229,7 +240,7 @@
         "name": "B Sports",
         "imageUrl": "/images/picture-board/boardB.jpg",
         "pictures": [
-          { "id": 1, "answer": "Glenn Hoddle", "imageUrl": "/images/picture-board/GlennHoddle.png" },
+          { "id": 1, "answer": "Bruce Mouat", "imageUrl": "/images/picture-board/BruceMouat.png" },
           { "id": 2, "answer": "Dinara Safina", "imageUrl": "/images/picture-board/DinaraSafina.png" },
           { "id": 3, "answer": "Luke Littler", "imageUrl": "/images/picture-board/LukeLittler.png" },
           { "id": 4, "answer": "Ross Barkley", "imageUrl": "/images/picture-board/RossBarkley.png" },
@@ -284,10 +295,10 @@
         "type": "connection",
         "content": "What connects these football clubs?",
         "options": [
-          { "text": "Manchester United", "imageUrl": "/images/only-connect/manchester-united.png" },
-          { "text": "Liverpool", "imageUrl": "/images/only-connect/liverpool.png" },
-          { "text": "Arsenal", "imageUrl": "/images/only-connect/arsenal.png" },
-          { "text": "Chelsea", "imageUrl": "/images/only-connect/chelsea.png" }
+          { "text": "Manchester United", "imageUrl": "/images/ellies-tellies/telly1.png" },
+          { "text": "Liverpool", "imageUrl": "/images/ellies-tellies/telly2.png" },
+          { "text": "Arsenal", "imageUrl": "/images/ellies-tellies/telly3.png" },
+          { "text": "Chelsea", "imageUrl": "/images/ellies-tellies/telly4.png" }
         ],
         "answer": "Premier League clubs never relegated"
       },
@@ -347,7 +358,20 @@
         "id": "dd-1",
         "type": "auction",
         "content": "Name 12 Premier League teams that have never been relegated",
-        "answer": ["Arsenal", "Liverpool", "Manchester United", "Everton", "Tottenham", "Manchester City", "Chelsea", "Brighton", "Bournemouth", "Brentford", "Nottingham Forest", "Fulham"]
+        "answers": [
+          { "number": 1, "text": "Arsenal", "imageUrl": "/images/daves-dozen/arsenal.png" },
+          { "number": 2, "text": "Liverpool", "imageUrl": "/images/daves-dozen/liverpool.png" },
+          { "number": 3, "text": "Manchester United", "imageUrl": "/images/daves-dozen/manchester-united.png" },
+          { "number": 4, "text": "Everton", "imageUrl": "/images/daves-dozen/everton.png" },
+          { "number": 5, "text": "Tottenham", "imageUrl": "/images/daves-dozen/tottenham.png" },
+          { "number": 6, "text": "Manchester City", "imageUrl": "/images/daves-dozen/manchester-city.png" },
+          { "number": 7, "text": "Chelsea", "imageUrl": "/images/daves-dozen/chelsea.png" },
+          { "number": 8, "text": "Brighton", "imageUrl": "/images/daves-dozen/brighton.png" },
+          { "number": 9, "text": "Bournemouth", "imageUrl": "/images/daves-dozen/bournemouth.png" },
+          { "number": 10, "text": "Brentford", "imageUrl": "/images/daves-dozen/brentford.png" },
+          { "number": 11, "text": "Nottingham Forest", "imageUrl": "/images/daves-dozen/nottingham-forest.png" },
+          { "number": 12, "text": "Fulham", "imageUrl": "/images/daves-dozen/fulham.png" }
+        ]
       }
     ]
   },
@@ -414,8 +438,20 @@
       {
         "id": "da-1",
         "type": "average",
-        "content": "What is the average number of goals scored per match in the Premier League 2023/24?",
-        "answer": "2.85"
+        "content": "What was the attendance at Seattle Torrents first home game in the PWHL?",
+        "answer": "16,014"
+      },
+      {
+        "id": "da-2",
+        "type": "average",
+        "content": "How many London-based teams across the tp4 tier in mens snd top 2 tiers in womens football?",
+        "answer": "21"
+      },
+      {
+        "id": "da-3",
+        "type": "average",
+        "content": "How many yards did Jaxon Smith-Njigba get in the most r2025 NFL Regular Season?",
+        "answer": "1,793"
       }
     ]
   },
