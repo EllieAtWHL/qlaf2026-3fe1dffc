@@ -83,14 +83,35 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
 
 // Helper function to load questions for current round
 function loadQuestionsForCurrentRound() {
-  const store = useQuizStore.getState();
-  const currentRoundId = getRoundIdByIndex(store.currentRoundIndex);
-  
-  const data = questionsData as any;
-  const currentRoundData = data[currentRoundId];
-  const questions = currentRoundData?.questions || [];
-  
-  useQuizStore.setState({ questions });
+  try {
+    const store = useQuizStore.getState();
+    const currentRoundId = getRoundIdByIndex(store.currentRoundIndex);
+    
+    console.log('[QuizSync] Loading questions for round:', {
+      currentRoundIndex: store.currentRoundIndex,
+      currentRoundId
+    });
+    
+    const data = questionsData as any;
+    const currentRoundData = data[currentRoundId];
+    
+    if (!currentRoundData) {
+      console.error('[QuizSync] No data found for round:', currentRoundId);
+      useQuizStore.setState({ questions: [] });
+      return;
+    }
+    
+    const questions = currentRoundData?.questions || [];
+    console.log('[QuizSync] Loaded questions:', {
+      roundId: currentRoundId,
+      questionCount: questions.length
+    });
+    
+    useQuizStore.setState({ questions });
+  } catch (error) {
+    console.error('[QuizSync] Error loading questions:', error);
+    useQuizStore.setState({ questions: [] });
+  }
 }
 
 // Apply state updates received from broadcast - uses store directly
@@ -126,9 +147,17 @@ function applyStateUpdate(action: string, data: any) {
       }
       break;
     case 'nextRound':
+      console.log('[QuizSync] Processing nextRound:', {
+        currentRoundIndex: store.currentRoundIndex,
+        totalRounds: 10
+      });
+      
       if (store.currentRoundIndex < 10) {
+        const newRoundIndex = store.currentRoundIndex + 1;
+        console.log('[QuizSync] Advancing to round:', newRoundIndex);
+        
         useQuizStore.setState({ 
-          currentRoundIndex: store.currentRoundIndex + 1, 
+          currentRoundIndex: newRoundIndex, 
           gameState: 'round-transition',
           currentQuestionIndex: 0,
           showAnswer: false,
@@ -138,9 +167,12 @@ function applyStateUpdate(action: string, data: any) {
         
         // Load questions after a brief delay to ensure transition state is set first
         setTimeout(() => {
+          console.log('[QuizSync] Loading questions for new round after delay');
           loadQuestionsForCurrentRound();
           useQuizStore.setState({ isTransitioning: false }); // End transition after questions are loaded
         }, 100);
+      } else {
+        console.log('[QuizSync] Cannot advance - already at last round');
       }
       break;
     case 'previousRound':
@@ -280,6 +312,18 @@ function applyStateUpdate(action: string, data: any) {
     case 'resetOnlyConnect':
       console.log('[QuizSync] Received resetOnlyConnect');
       store.resetOnlyConnect();
+      break;
+    case 'revealDavesDozenAnswer':
+      console.log('[QuizSync] Received revealDavesDozenAnswer:', data);
+      store.revealDavesDozenAnswer(data.answerNumber);
+      break;
+    case 'showIncorrectAnswer':
+      console.log('[QuizSync] Received showIncorrectAnswer');
+      store.showIncorrectAnswer();
+      break;
+    case 'resetDavesDozen':
+      console.log('[QuizSync] Received resetDavesDozen');
+      store.resetDavesDozen();
       break;
     default:
       console.warn('[QuizSync] Unknown action:', action);

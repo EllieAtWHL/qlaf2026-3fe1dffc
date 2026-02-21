@@ -14,6 +14,11 @@ export interface Question {
   content: string;
   options?: (string | QuestionOption)[];
   answer: string | string[];
+  answers?: Array<{
+    number: number;
+    text: string;
+    imageUrl: string;
+  }>;
   correctOrder?: string[];
   imageUrl?: string;
   points: number;

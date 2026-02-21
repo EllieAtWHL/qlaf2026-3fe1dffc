@@ -90,6 +90,10 @@ interface QuizState {
   // Only Connect specific
   onlyConnectRevealedOptions: number;
   
+  // Dave's Dozen specific
+  davesDozenRevealedAnswers: Set<number>;
+  davesDozenShowRedCross: boolean;
+  
   // Actions
   startGame: () => void;
   startRound: () => void;
@@ -130,6 +134,11 @@ interface QuizState {
   revealOnlyConnectOption: () => void;
   resetOnlyConnect: () => void;
   
+  // Dave's Dozen actions
+  revealDavesDozenAnswer: (answerNumber: number) => void;
+  showIncorrectAnswer: () => void;
+  resetDavesDozen: () => void;
+  
   // Game actions
   // Reset
   resetGame: () => void;
@@ -165,6 +174,10 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   // Only Connect initial state
   onlyConnectRevealedOptions: 1,
+  
+  // Dave's Dozen initial state
+  davesDozenRevealedAnswers: new Set(),
+  davesDozenShowRedCross: false,
   
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
@@ -506,6 +519,29 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({ onlyConnectRevealedOptions: 0 });
   },
   
+  // Dave's Dozen actions
+  revealDavesDozenAnswer: (answerNumber: number) => {
+    const { davesDozenRevealedAnswers } = get();
+    const newRevealed = new Set(davesDozenRevealedAnswers);
+    newRevealed.add(answerNumber);
+    set({ davesDozenRevealedAnswers: newRevealed });
+  },
+  
+  showIncorrectAnswer: () => {
+    set({ davesDozenShowRedCross: true });
+    // Auto-hide after 2 seconds
+    setTimeout(() => {
+      set({ davesDozenShowRedCross: false });
+    }, 2000);
+  },
+  
+  resetDavesDozen: () => {
+    set({ 
+      davesDozenRevealedAnswers: new Set(),
+      davesDozenShowRedCross: false 
+    });
+  },
+  
   resetGame: () => set({
     gameState: 'welcome',
     currentRoundIndex: 0,
@@ -521,5 +557,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     pictureBoards: [],
     currentBoard: null,
     onlyConnectRevealedOptions: 1,
+    davesDozenRevealedAnswers: new Set(),
+    davesDozenShowRedCross: false,
   }),
 }));
