@@ -226,22 +226,12 @@ export const CoHostInterface = () => {
 
   const syncedNextPicture = () => {
     nextPicture();
-    // Get the updated state after calling nextPicture
-    const store = useQuizStore.getState();
-    broadcastAction('nextPicture', { 
-      currentPictureIndex: store.currentPictureIndex,
-      showAllPictures: store.showAllPictures 
-    });
+    broadcastAction('nextPicture');
   };
 
   const syncedPreviousPicture = () => {
     previousPicture();
-    // Get the updated state after calling previousPicture
-    const store = useQuizStore.getState();
-    broadcastAction('previousPicture', { 
-      currentPictureIndex: store.currentPictureIndex,
-      showAllPictures: store.showAllPictures 
-    });
+    broadcastAction('previousPicture');
   };
 
   const syncedResetPictureBoard = () => {
@@ -365,11 +355,8 @@ export const CoHostInterface = () => {
         <div className="flex items-center justify-between">
           <div>
             <span className="font-display text-xs text-muted-foreground uppercase tracking-widest">
-              CO-HOST CONTROLS
+              QLAF 2026 CO-HOST CONTROLS
             </span>
-            <h1 className="font-display text-lg font-bold text-primary">
-              QLAF 2026 Host
-            </h1>
           </div>
           <div className="flex items-center gap-2">
             <div className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs ${isConnected ? 'bg-qlaf-success/20 text-qlaf-success' : 'bg-destructive/20 text-destructive'}`}>

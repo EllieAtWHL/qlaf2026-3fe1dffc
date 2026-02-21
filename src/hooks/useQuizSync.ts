@@ -282,24 +282,10 @@ function applyStateUpdate(action: string, data: any) {
     case 'nextPicture':
       console.log('[QuizSync] Received nextPicture');
       store.nextPicture();
-      // Apply the state data if provided
-      if (data?.currentPictureIndex !== undefined) {
-        useQuizStore.setState({ currentPictureIndex: data.currentPictureIndex });
-      }
-      if (data?.showAllPictures !== undefined) {
-        useQuizStore.setState({ showAllPictures: data.showAllPictures });
-      }
       break;
     case 'previousPicture':
       console.log('[QuizSync] Received previousPicture');
       store.previousPicture();
-      // Apply the state data if provided
-      if (data?.currentPictureIndex !== undefined) {
-        useQuizStore.setState({ currentPictureIndex: data.currentPictureIndex });
-      }
-      if (data?.showAllPictures !== undefined) {
-        useQuizStore.setState({ showAllPictures: data.showAllPictures });
-      }
       break;
     case 'resetPictureBoard':
       console.log('[QuizSync] Received resetPictureBoard');
