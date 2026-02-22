@@ -48,20 +48,28 @@ export const Timer = ({ compact = false }: TimerProps) => {
   // Sound effects
   useEffect(() => {
     if (isTimerRunning && timerValue !== lastTickRef.current) {
-      if (timerValue <= 10 && timerValue > 0) {
-        tickSound.play();
-      }
+      console.log(`[Timer Sound] Value: ${timerValue}, Running: ${isTimerRunning}, Last: ${lastTickRef.current}`);
+      
+      // Play warning sound at exactly 10 seconds
       if (timerValue === 10) {
+        console.log('[Timer Sound] Playing warning sound at 10s');
         warningSound.play();
       }
-      if (timerValue === 0 && !hasPlayedBuzzer.current) {
+      // Play tick sound for 9, 8, 7, 6, 5, 4, 3, 2, 1 seconds
+      else if (timerValue <= 9 && timerValue > 0) {
+        console.log(`[Timer Sound] Playing tick sound at ${timerValue}s`);
+        tickSound.play();
+      }
+      // Play buzzer when timer reaches 0 (only once)
+      else if (timerValue === 0 && !hasPlayedBuzzer.current) {
+        console.log('[Timer Sound] Playing buzzer sound at 0s');
         buzzerSound.play();
         hasPlayedBuzzer.current = true;
       }
       lastTickRef.current = timerValue;
     }
     
-    // Reset buzzer flag when timer resets
+    // Reset buzzer flag when timer resets above 0
     if (timerValue > 10) {
       hasPlayedBuzzer.current = false;
     }

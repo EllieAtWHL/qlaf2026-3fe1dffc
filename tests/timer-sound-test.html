@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Sound Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: white;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🔊 Timer Sound Test</h1>
+    <p>This page tests the timer sounds used in the QLAF quiz application.</p>
+    
+    <div class="status info">
+        <strong>Instructions:</strong><br>
+        1. Click anywhere on the page first (browser autoplay requirement)<br>
+        2. Test each sound button below<br>
+        3. Check browser console for any errors
+    </div>
+
+    <button class="test-button" onclick="testTick()">🔊 Test Tick Sound (≤10s)</button>
+    <button class="test-button" onclick="testWarning()">⚠️ Test Warning Sound (10s)</button>
+    <button class="test-button" onclick="testBuzzer()">🔔 Test Buzzer Sound (0s)</button>
+    <button class="test-button" onclick="testSequence()">🎵 Test Full Sequence</button>
+
+    <div id="status"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script>
+        // Initialize sounds (same as Timer component)
+        const tickSound = new Howl({
+            src: ['https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'],
+            volume: 0.3,
+        });
+
+        const warningSound = new Howl({
+            src: ['https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3'],
+            volume: 0.5,
+        });
+
+        const buzzerSound = new Howl({
+            src: ['https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'],
+            volume: 0.7,
+        });
+
+        function updateStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        function testTick() {
+            updateStatus('Playing tick sound...', 'info');
+            tickSound.play();
+            tickSound.once('end', () => {
+                updateStatus('✅ Tick sound played successfully!', 'success');
+            });
+            tickSound.once('loaderror', () => {
+                updateStatus('❌ Failed to load tick sound', 'error');
+            });
+        }
+
+        function testWarning() {
+            updateStatus('Playing warning sound...', 'info');
+            warningSound.play();
+            warningSound.once('end', () => {
+                updateStatus('✅ Warning sound played successfully!', 'success');
+            });
+            warningSound.once('loaderror', () => {
+                updateStatus('❌ Failed to load warning sound', 'error');
+            });
+        }
+
+        function testBuzzer() {
+            updateStatus('Playing buzzer sound...', 'info');
+            buzzerSound.play();
+            buzzerSound.once('end', () => {
+                updateStatus('✅ Buzzer sound played successfully!', 'success');
+            });
+            buzzerSound.once('loaderror', () => {
+                updateStatus('❌ Failed to load buzzer sound', 'error');
+            });
+        }
+
+        function testSequence() {
+            updateStatus('Testing full timer sequence...', 'info');
+            
+            // Simulate timer countdown sequence
+            let countdown = 12;
+            
+            const sequence = setInterval(() => {
+                countdown--;
+                
+                if (countdown === 10) {
+                    warningSound.play();
+                    updateStatus('⚠️ Warning! 10 seconds remaining...', 'info');
+                } else if (countdown <= 10 && countdown > 0) {
+                    tickSound.play();
+                    updateStatus(`🔊 ${countdown} seconds remaining...`, 'info');
+                } else if (countdown === 0) {
+                    buzzerSound.play();
+                    updateStatus('🔔 Time\'s up! Buzzer sounded!', 'success');
+                    clearInterval(sequence);
+                }
+            }, 1000);
+        }
+
+        // Check Howl.js support
+        window.onload = function() {
+            if (typeof Howl !== 'undefined') {
+                updateStatus('✅ Howl.js loaded successfully! Click buttons to test sounds.', 'success');
+                console.log('Howl.js version:', Howl.version);
+                console.log('Web Audio API support:', Howl.usingWebAudio);
+            } else {
+                updateStatus('❌ Howl.js failed to load', 'error');
+            }
+        };
+    </script>
+</body>
+</html>
