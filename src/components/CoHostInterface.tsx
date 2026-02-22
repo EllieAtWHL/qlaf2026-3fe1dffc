@@ -17,6 +17,8 @@ export const CoHostInterface = () => {
     gameState,
     currentRoundIndex,
     currentQuestionIndex,
+    isTimerRunning,
+    timerValue,
     teams,
     f1Positions,
     showAnswer,
@@ -28,6 +30,8 @@ export const CoHostInterface = () => {
     showScores,
     showTransition,
     startTimer,
+    pauseTimer,
+    resetTimer,
     updateTeamScore,
     advanceF1Car,
     toggleAnswer,
@@ -109,6 +113,38 @@ export const CoHostInterface = () => {
       return () => clearTimeout(timeoutId);
     }
   }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, currentRoundIndex, broadcastAction]);
+
+  // Timer broadcasting logic - OPTIMIZED to prevent navigation delays
+  useEffect(() => {
+    // Only broadcast ticks if timer is running AND we're in an active round
+    const shouldBroadcast = isTimerRunning && gameState === 'round';
+    
+    // Use requestAnimationFrame for better performance than setInterval
+    let animationId: number | null = null;
+    let lastBroadcastTime = 0;
+    const BROADCAST_INTERVAL = 1000; // 1 second intervals
+    
+    const broadcastTick = (timestamp: number) => {
+      if (shouldBroadcast && timestamp - lastBroadcastTime >= BROADCAST_INTERVAL) {
+        broadcastAction('tick');
+        lastBroadcastTime = timestamp;
+      }
+      
+      if (shouldBroadcast) {
+        animationId = requestAnimationFrame(broadcastTick);
+      }
+    };
+    
+    if (shouldBroadcast) {
+      animationId = requestAnimationFrame(broadcastTick);
+    }
+
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [isTimerRunning, gameState, broadcastAction]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
