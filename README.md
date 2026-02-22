@@ -43,6 +43,15 @@ npm run dev
 
 The application will be available at `http://localhost:5173`
 
+### Production Deployment
+
+The QLAF 2026 application is deployed on **Vercel** for production hosting:
+
+- **Main Display**: [your-app.vercel.app](https://your-app.vercel.app)
+- **Co-host Interface**: [your-app.vercel.app/cohost](https://your-app.vercel.app/cohost)
+
+Vercel provides automatic deployments from the main branch, global CDN distribution, and optimized build processes for the best performance.
+
 ## 📚 Documentation
 
 Comprehensive documentation is available in the `/docs` directory:
@@ -67,6 +76,7 @@ This project is built with modern web technologies:
 - **Audio**: Howler.js + use-sound
 - **Testing**: Vitest + React Testing Library
 - **Routing**: React Router DOM
+- **Deployment**: Vercel (production hosting)
 
 ## 🎮 Game Features
 
