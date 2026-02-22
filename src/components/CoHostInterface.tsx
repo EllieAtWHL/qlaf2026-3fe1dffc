@@ -11,8 +11,39 @@ import React from 'react';
 import { useQuizSync } from '@/hooks/useQuizSync';
 import { useQuestions } from '@/hooks/useQuestions';
 import { normalizeOption } from '@/types/questions';
+import { Howl } from 'howler';
+
+// Initialize AudioContext for sound playback on main display
+const initializeAudioContext = () => {
+  if (typeof window !== 'undefined' && Howler.ctx && Howler.ctx.state === 'suspended') {
+    Howler.ctx.resume().then(() => {
+      console.log('[CoHost] AudioContext resumed - sounds enabled on main display');
+    }).catch(error => {
+      console.error('[CoHost] Failed to resume AudioContext:', error);
+    });
+  }
+};
 
 export const CoHostInterface = () => {
+  // Initialize AudioContext on first user interaction to enable sounds on main display
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      initializeAudioContext();
+    };
+
+    // Add event listeners for user interactions on co-host app
+    const events = ['click', 'keydown', 'touchstart'];
+    events.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, { once: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction);
+      });
+    };
+  }, []);
+
   const {
     gameState,
     currentRoundIndex,
