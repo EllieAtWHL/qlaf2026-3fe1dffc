@@ -373,6 +373,8 @@ export const CoHostInterface = () => {
               {isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
               {isConnected ? 'Synced' : 'Offline'}
             </div>
+
+            
             <button
               onClick={syncedResetGame}
               className="p-3 rounded-lg bg-destructive/20 text-destructive"
@@ -473,6 +475,8 @@ export const CoHostInterface = () => {
                   })}
                 </div>
               )}
+
+              {/* Only Connect: clue labels shown inline with options above (no duplicate list) */}
             </div>
           )}
           
