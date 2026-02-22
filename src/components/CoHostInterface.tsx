@@ -810,7 +810,7 @@ export const CoHostInterface = () => {
                     className="control-btn bg-qlaf-warning text-white w-full"
                   >
                     <Clock className="w-4 h-4 inline mr-2" />
-                    Time's Up - Next Team
+                    Next Team
                   </button>
                 </div>
               )}
