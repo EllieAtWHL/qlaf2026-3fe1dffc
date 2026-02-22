@@ -29,19 +29,12 @@ export const GenericRound = ({
   // Auto-scroll for any round when answer is shown and has many items
   useEffect(() => {
     if (showAnswer && currentQuestion?.answer && Array.isArray(currentQuestion.answer) && currentQuestion.answer.length > 3) {
-      console.log('Auto-scroll triggered for', currentQuestion.answer.length, 'answers');
       const scrollContainer = innerScrollRef.current;
       if (!scrollContainer) {
-        console.log('Inner scroll container not found');
         return;
       }
 
-      let scrollTimeout: NodeJS.Timeout;
-      
-      // Start scrolling after a brief delay
-      scrollTimeout = setTimeout(() => {
-        console.log('Starting scroll to bottom');
-        
+      const scrollTimeout = setTimeout(() => {
         // Custom slow scroll to bottom
         const startTop = scrollContainer.scrollTop;
         const endTop = scrollContainer.scrollHeight;
@@ -63,8 +56,6 @@ export const GenericRound = ({
           } else {
             // Scroll back to top after reaching bottom
             setTimeout(() => {
-              console.log('Scrolling back to top');
-              
               // Custom slow scroll to top
               const startTopUp = scrollContainer.scrollTop;
               const endTopUp = 0;
@@ -86,16 +77,16 @@ export const GenericRound = ({
               };
               
               requestAnimationFrame(animateScrollUp);
-            }, 3000); // Wait 3 seconds at bottom
+            }, 2000); // Wait 2 seconds at bottom before scrolling up
           }
         };
         
         requestAnimationFrame(animateScroll);
-      }, 1000); // Wait 1 second before starting scroll
+      }, 1000); // Wait 1 second after answer is shown before starting scroll
 
       return () => clearTimeout(scrollTimeout);
     }
-  }, [showAnswer, currentQuestion]);
+  }, [showAnswer, currentQuestion?.answer]);
 
   // If we're transitioning or not in round state, don't render anything
   if (isTransitioning || gameState !== 'round') {

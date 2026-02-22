@@ -355,13 +355,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   toggleAnswer: () => set(state => ({ showAnswer: !state.showAnswer })),
   
   initializePictureBoards: () => {
-    console.log('Initializing picture boards...');
     const data = questionsData as any;
-    console.log('Questions data:', data);
     const pictureBoardData = data['picture-board'];
-    console.log('Picture board data:', pictureBoardData);
     const boards = pictureBoardData?.boards || [];
-    console.log('Boards found:', boards);
     set({ 
       pictureBoards: boards,
       availableBoards: ['board-1', 'board-2', 'board-3'],
@@ -399,39 +395,24 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   teamTimeUp: () => {
     const { currentTeamSelecting, selectedBoards, pictureBoards } = get();
     
-    console.log('[teamTimeUp] === START ===');
-    console.log('[teamTimeUp] Current team selecting:', currentTeamSelecting);
-    console.log('[teamTimeUp] Selected boards:', selectedBoards);
+    if (currentTeamSelecting === 4) {
+      return; // Already at completion
+    }
     
-    // Prevent multiple calls if already at completion
-    if (currentTeamSelecting >= 4) {
-      console.log('[teamTimeUp] Already at completion, ignoring call');
+    // Prevent rapid successive calls
+    if (Date.now() - get().lastTeamTimeUpCall < 500) {
       return;
     }
     
-    // Prevent rapid successive calls (debounce protection)
-    const now = Date.now();
-    if (get().lastTeamTimeUpCall && now - get().lastTeamTimeUpCall < 1000) {
-      console.log('[teamTimeUp] Rapid call detected, ignoring');
-      return;
-    }
+    const nextTeam = currentTeamSelecting + 1;
     
-    // Store the timestamp of this call
-    set({ lastTeamTimeUpCall: now });
-    
-    // Reset timer when time is up
-    get().resetTimer(60);
-    
-    // Move to next team or finish if all teams have played
-    if (currentTeamSelecting < 3) {
-      const nextTeam = currentTeamSelecting + 1;
-      console.log('[teamTimeUp] Moving to next team:', nextTeam);
-      set({ currentTeamSelecting: nextTeam });
+    if (nextTeam <= 3) {
+      set({ 
+        currentTeamSelecting: nextTeam,
+        lastTeamTimeUpCall: Date.now()
+      });
       
-      // Reset picture board state for the new team
-      set({ currentPictureIndex: 0, showAllPictures: false });
-      
-      // Set the current board for the next team if they've already selected
+      // Set the current board for the next team
       const nextTeamBoardId = selectedBoards[nextTeam];
       if (nextTeamBoardId) {
         const nextTeamBoard = pictureBoards.find(board => board.id === nextTeamBoardId);
@@ -443,15 +424,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       }
     } else {
       // All teams have played, round is complete
-      console.log('[teamTimeUp] All teams have played, setting currentTeamSelecting to 4');
       set({ currentTeamSelecting: 4 }); // Use 4 to indicate completion
     }
-    
-    console.log('[teamTimeUp] === END ===');
   },
   
   nextPicture: () => {
-    const startTime = performance.now();
     const { currentBoard, currentPictureIndex } = get();
     
     if (currentBoard) {
@@ -461,9 +438,6 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         set({ showAllPictures: true });
       }
     }
-    
-    const endTime = performance.now();
-    console.log(`[nextPicture] Execution time: ${endTime - startTime}ms`);
   },
   
   previousPicture: () => {

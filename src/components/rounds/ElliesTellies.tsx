@@ -9,9 +9,8 @@ import { Tv } from 'lucide-react';
 // TV static sound effect
 const staticSound = new Howl({
   src: ['/sounds/tv-static.wav'],
-  volume: 0.4,
+  volume: 0.2,
   loop: true,
-  onload: () => console.log('[Ellies Tellies] Static sound loaded successfully'),
   onloaderror: (id, error) => console.error('[Ellies Tellies] Failed to load static sound:', error),
 });
 

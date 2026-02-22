@@ -36,34 +36,103 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
-## 🖼️ Only Connect Images Not Displaying
+## 🎯 Critical Round Development Tasks
 
-### 2. Only Connect Image Display Issue
-**Status**: Needs Investigation  
-**Priority**: Medium  
-**Description**: Images in the Only Connect round are not showing up properly on the main display.
+### 1. Round Robin Round Implementation
+**Status**: Development Needed  
+**Priority**: High  
+**Date Added**: 2026-02-22  
+**Description**: Build out the complete Round Robin round functionality.
 
-**Current Issues**:
-- Images fail to display during Only Connect rounds
-- May be related to image paths, loading, or rendering logic
-- Could affect user experience if visual clues are missing
+**Requirements**:
+- Implement Round Robin game mechanics and scoring
+- Create question display and answer reveal functionality
+- Add timer and scoring system appropriate for Round Robin format
+- Ensure proper integration with quiz store and sync system
+- Design UI for both main display and co-host interface
 
 **Files Involved**:
-- `src/components/rounds/OnlyConnect.tsx` - Image rendering logic
-- `src/data/questions.json` - Image paths and question data
-- `/public/images/` - Image assets location
+- `src/components/rounds/RoundRobin.tsx` - Create new round component
+- `src/components/CoHostInterface.tsx` - Add Round Robin controls
+- `src/data/questions.json` - Add Round Robin question data
+- `src/store/quizStore.tsx` - Add Round Robin state management
 
-**Fallback Option**:
-- Can convert to text-only round if images cannot be fixed
-- Ensure text alternatives are available for all image-based questions
+**Impact**: High - Essential quiz round that needs to be fully functional
 
-**Impact**: Medium - Affects round presentation but doesn't break functionality
+---
+
+### 2. Wipeout Round Implementation
+**Status**: Development Needed  
+**Priority**: High  
+**Date Added**: 2026-02-22  
+**Description**: Build out the complete Wipeout round functionality.
+
+**Requirements**:
+- Implement Wipeout game mechanics with correct/incorrect answers
+- Create question grid and selection interface
+- Add wipeout penalty system and scoring
+- Ensure proper integration with quiz store and sync system
+- Design UI for both main display and co-host interface
+
+**Files Involved**:
+- `src/components/rounds/Wipeout.tsx` - Create new round component
+- `src/components/CoHostInterface.tsx` - Add Wipeout controls
+- `src/data/questions.json` - Add Wipeout question data
+- `src/store/quizStore.tsx` - Add Wipeout state management
+
+**Impact**: High - Essential quiz round that needs to be fully functional
+
+---
+
+### 3. One Minute Round Implementation
+**Status**: Development Needed  
+**Priority**: High  
+**Date Added**: 2026-02-22  
+**Description**: Build out the complete One Minute round functionality.
+
+**Requirements**:
+- Implement one-minute timer with proper countdown
+- Create rapid-fire question and answer system
+- Add scoring for correct answers within time limit
+- Ensure proper integration with quiz store and sync system
+- Design UI for both main display and co-host interface
+
+**Files Involved**:
+- `src/components/rounds/OneMinuteRound.tsx` - Create new round component
+- `src/components/CoHostInterface.tsx` - Add One Minute controls
+- `src/data/questions.json` - Add One Minute question data
+- `src/store/quizStore.tsx` - Add One Minute state management
+
+**Impact**: High - Essential quiz round that needs to be fully functional
+
+---
+
+### 4. F1 Finale Implementation
+**Status**: Development Needed  
+**Priority**: High  
+**Date Added**: 2026-02-22  
+**Description**: Build out the complete F1 Grand Prix finale round functionality.
+
+**Requirements**:
+- Implement F1 Grand Prix game mechanics and scoring
+- Create question display and answer reveal functionality
+- Add finale-specific features and dramatic presentation
+- Ensure proper integration with quiz store and sync system
+- Design UI for both main display and co-host interface
+
+**Files Involved**:
+- `src/components/rounds/F1GrandPrix.tsx` - Create new round component
+- `src/components/CoHostInterface.tsx` - Add F1 Finale controls
+- `src/data/questions.json` - Add F1 Finale question data
+- `src/store/quizStore.tsx` - Add F1 Finale state management
+
+**Impact**: High - Critical finale round that needs to be fully functional
 
 ---
 
 ## 🖼️ Picture Board Image Replacements
 
-### 3. Picture Board Items to Replace
+### 5. Picture Board Items to Replace
 **Status**: Content Updates Needed  
 **Priority**: Medium  
 **Description**: Several images in the Picture Board rounds are marked for replacement with TODO comments in the questions.json file.
@@ -95,7 +164,7 @@ This document tracks items that need to be fixed or improved but are not current
 
 ## 🖼️ Only Connect Progressive Reveal UI
 
-### 4. Only Connect Progressive Reveal Issue
+### 6. Only Connect Progressive Reveal Issue
 **Status**: UI Improvement Needed  
 **Priority**: Low  
 **Description**: Move the progressive reveal functionality into the questions section for the Only Connect round to improve user experience.
@@ -118,7 +187,7 @@ This document tracks items that need to be fixed or improved but are not current
 
 ## 🖼️ GenericRound Question Transition Enhancement
 
-### 5. GenericRound Question Transition Issue
+### 7. GenericRound Question Transition Issue
 **Status**: Enhancement Opportunity  
 **Priority**: Low  
 **Description**: Add smooth transitioning for questions in GenericRound to make them take up more screen space before answers are revealed, improving visual impact and user engagement.
@@ -142,7 +211,7 @@ This document tracks items that need to be fixed or improved but are not current
 
 ## 🖼️ Ellie's Tellies Static Effect and Image Overlay Improvements
 
-### 6. Ellie's Tellies Static Effect and Image Overlay Issue
+### 8. Ellie's Tellies Static Effect and Image Overlay Issue
 **Status**: Enhancement Needed  
 **Priority**: Medium  
 **Description**: Improve the TV static transition effect and adjust the image overlay size/position to better fit within the TV screen area.
@@ -161,6 +230,26 @@ This document tracks items that need to be fixed or improved but are not current
 - Fine-tune image overlay dimensions to better fit TV screen area
 - Adjust positioning to align perfectly within TV frame
 - Consider additional CRT effects like screen curvature or color bleeding
+
+---
+
+### 4. Only Connect Images Not Displaying
+**Status**: ✅ RESOLVED  
+**Priority**: Medium  
+**Date Resolved**: 2026-02-22  
+**Description**: Images in the Only Connect round were not showing up properly on the main display.
+
+**Solution Implemented**:
+- Fixed image rendering logic in OnlyConnect component
+- Resolved image path issues in questions.json
+- Ensured proper image loading and display functionality
+- All visual clues now display correctly during Only Connect rounds
+
+**Files Updated**:
+- `src/components/rounds/OnlyConnect.tsx` - Image rendering logic fixed
+- `src/data/questions.json` - Image paths corrected
+
+**Impact**: Only Connect round now displays images properly, enhancing user experience
 
 ---
 
@@ -251,6 +340,26 @@ This document tracks items that need to be fixed or improved but are not current
 - `docs/only-connect-crash-analysis.md` - Created comprehensive documentation
 
 **Testing**: Round transitions now work without crashes, quiz can continue normally.
+
+---
+
+### 4. Only Connect Images Not Displaying
+**Status**: ✅ RESOLVED  
+**Priority**: Medium  
+**Date Resolved**: 2026-02-22  
+**Description**: Images in the Only Connect round were not showing up properly on the main display.
+
+**Solution Implemented**:
+- Fixed image rendering logic in OnlyConnect component
+- Resolved image path issues in questions.json
+- Ensured proper image loading and display functionality
+- All visual clues now display correctly during Only Connect rounds
+
+**Files Updated**:
+- `src/components/rounds/OnlyConnect.tsx` - Image rendering logic fixed
+- `src/data/questions.json` - Image paths corrected
+
+**Impact**: Only Connect round now displays images properly, enhancing user experience
 
 ---
 
@@ -370,12 +479,14 @@ ROUNDS: [
 **Next Review**: When addressing Picture Board image issues or Only Connect image display problems
 
 ### Current Next Actions:
-1. **IMMEDIATE**: Complete verification testing for Picture Board functionality (user testing and edge cases)
-2. **HIGH PRIORITY**: Diagnose and fix Only Connect round image display issues
-3. **HIGH PRIORITY**: Investigate and fix Picture Board image replacement needs (6 sports personality images marked for replacement)
-4. **MEDIUM**: Enhance Ellie's Tellies static effect and image overlay positioning
-5. **LOW**: Implement GenericRound question transition enhancements for better visual presentation
-6. **LOW**: Move Only Connect progressive reveal controls into questions section
-
-7. **LOW**: Create additional Only Connect questions and add to  (track assets in )
-8. **LOW**: Optimize DavesDozen test suite (reduce mocking, add edge cases, consolidate test data)
+1. **CRITICAL**: Build out Round Robin round implementation
+2. **CRITICAL**: Build out Wipeout round implementation  
+3. **CRITICAL**: Build out One Minute round implementation
+4. **CRITICAL**: Build out F1 Grand Prix finale implementation
+5. **IMMEDIATE**: Complete verification testing for Picture Board functionality (user testing and edge cases)
+6. **HIGH PRIORITY**: Investigate and fix Picture Board image replacement needs (6 sports personality images marked for replacement)
+7. **MEDIUM**: Enhance Ellie's Tellies static effect and image overlay positioning
+8. **LOW**: Implement GenericRound question transition enhancements for better visual presentation
+9. **LOW**: Move Only Connect progressive reveal controls into questions section
+10. **LOW**: Create additional Only Connect questions and add to questions.json (track assets in public/images/)
+11. **LOW**: Optimize DavesDozen test suite (reduce mocking, add edge cases, consolidate test data)

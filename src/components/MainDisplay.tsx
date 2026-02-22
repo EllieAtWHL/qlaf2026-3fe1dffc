@@ -17,7 +17,6 @@ import questionsData from '@/data/questions.json';
 
 // Preload all images for the quiz
 const preloadAllImages = () => {
-  console.log('[MainDisplay] Preloading all images...');
   let totalImages = 0;
   
   // Preload World Rankings images
@@ -62,7 +61,7 @@ const preloadAllImages = () => {
     }
   });
   
-  console.log(`[MainDisplay] Preloaded ${totalImages} total images across all rounds`);
+  return totalImages;
 };
 
 const componentMap: Record<string, React.ComponentType<any>> = {
@@ -80,9 +79,7 @@ export const MainDisplay = () => {
   const { gameState, currentRoundIndex, isTransitioning } = useQuizStore();
   const currentRound = ROUNDS[currentRoundIndex];
   
-  console.log('[MainDisplay] Render - currentRound:', currentRound?.component);
-  
-  // Preload all images when component mounts
+  // Preload images on mount
   useEffect(() => {
     preloadAllImages();
   }, []);

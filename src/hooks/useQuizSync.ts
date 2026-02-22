@@ -12,24 +12,15 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
   const store = useQuizStore();
 
   useEffect(() => {
-    console.log('[QuizSync] useEffect running - _disabled:', _disabled);
-    
-    // Don't create channel if disabled
     if (_disabled) {
-      console.log('[QuizSync] Sync disabled, skipping channel creation');
       return;
     }
     
-    // Clean up any existing channel first
     if (channelRef.current) {
-      console.log('[QuizSync] Cleaning up existing channel before creating new one');
       channelRef.current.unsubscribe();
       channelRef.current = null;
     }
     
-    console.log('[QuizSync] Creating new channel...');
-    
-    // Create a broadcast channel for real-time sync
     const channel = supabase.channel(CHANNEL_NAME, {
       config: {
         broadcast: { self: false }, // Don't receive own broadcasts
@@ -38,32 +29,24 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
 
     channelRef.current = channel;
 
-    // Listen for state updates from co-host
     channel
       .on('broadcast', { event: 'state-update' }, ({ payload }) => {
-        console.log('[QuizSync] Received state update:', payload);
-        
-        // Apply the state update - only require action, data is optional
         if (payload?.action) {
           applyStateUpdate(payload.action, payload.data);
         }
       })
       .subscribe((status) => {
-        console.log('[QuizSync] Channel status:', status);
+        // Channel status updates
       });
 
     return () => {
-      console.log('[QuizSync] CLEANUP FUNCTION CALLED - This will close the channel!');
-      console.log('[QuizSync] Channel ref before cleanup:', !!channelRef.current);
       if (channelRef.current) {
         channelRef.current.unsubscribe();
-        console.log('[QuizSync] Channel unsubscribed');
         channelRef.current = null;
       }
     };
-  }, []); // Empty dependency array - effect only runs once per component mount
+  }, [_disabled]);
 
-  // Function to broadcast state changes (used by co-host)
   const broadcastAction = (action: string, data?: any) => {
     if (!channelRef.current || _disabled) {
       return;
@@ -79,44 +62,31 @@ export const useQuizSync = (_isHost: boolean = false, _disabled: boolean = false
   return { broadcastAction };
 };
 
-// Helper function to load questions for current round
 function loadQuestionsForCurrentRound() {
   try {
     const store = useQuizStore.getState();
     const currentRoundId = getRoundIdByIndex(store.currentRoundIndex);
     
-    console.log('[QuizSync] Loading questions for round:', {
-      currentRoundIndex: store.currentRoundIndex,
-      currentRoundId
-    });
-    
     const data = questionsData as any;
     const currentRoundData = data[currentRoundId];
     
     if (!currentRoundData) {
-      console.error('[QuizSync] No data found for round:', currentRoundId);
       useQuizStore.setState({ questions: [] });
       return;
     }
     
     const questions = currentRoundData?.questions || [];
-    console.log('[QuizSync] Loaded questions:', {
-      roundId: currentRoundId,
-      questionCount: questions.length
-    });
     
     useQuizStore.setState({ questions });
   } catch (error) {
-    console.error('[QuizSync] Error loading questions:', error);
+    console.error('Failed to load questions:', error);
     useQuizStore.setState({ questions: [] });
   }
 }
 
-// Apply state updates received from broadcast - uses store directly
 function applyStateUpdate(action: string, data: any) {
   const store = useQuizStore.getState();
-  console.log('[QuizSync] Applying action:', action, 'Current state:', store.gameState);
-  
+
   switch (action) {
     case 'startGame':
       useQuizStore.setState({ gameState: 'round-transition', currentRoundIndex: 0 });
@@ -126,15 +96,11 @@ function applyStateUpdate(action: string, data: any) {
       useQuizStore.setState({ gameState: 'round', isTransitioning: false });
       loadQuestionsForCurrentRound();
       
-      // Also initialize picture boards if this is picture board round
       const currentRoundId = getRoundIdByIndex(useQuizStore.getState().currentRoundIndex);
-      console.log('[QuizSync] Starting round:', currentRoundId);
       if (currentRoundId === 'picture-board') {
-        console.log('[QuizSync] Initializing picture boards in sync...');
         const data = questionsData as any;
         const pictureBoardData = data['picture-board'];
         const boards = pictureBoardData?.boards || [];
-        console.log('[QuizSync] Picture boards found:', boards.length);
         useQuizStore.setState({ 
           pictureBoards: boards,
           availableBoards: ['board-1', 'board-2', 'board-3'],
@@ -145,15 +111,8 @@ function applyStateUpdate(action: string, data: any) {
       }
       break;
     case 'nextRound':
-      console.log('[QuizSync] Processing nextRound:', {
-        currentRoundIndex: store.currentRoundIndex,
-        totalRounds: 10
-      });
-      
       if (store.currentRoundIndex < 10) {
         const newRoundIndex = store.currentRoundIndex + 1;
-        console.log('[QuizSync] Advancing to round:', newRoundIndex);
-        
         useQuizStore.setState({ 
           currentRoundIndex: newRoundIndex, 
           gameState: 'round-transition',
@@ -163,14 +122,10 @@ function applyStateUpdate(action: string, data: any) {
           isTransitioning: true, // Explicitly mark as transitioning
         });
         
-        // Load questions after a brief delay to ensure transition state is set first
         setTimeout(() => {
-          console.log('[QuizSync] Loading questions for new round after delay');
           loadQuestionsForCurrentRound();
           useQuizStore.setState({ isTransitioning: false }); // End transition after questions are loaded
         }, 100);
-      } else {
-        console.log('[QuizSync] Cannot advance - already at last round');
       }
       break;
     case 'previousRound':
@@ -241,7 +196,6 @@ function applyStateUpdate(action: string, data: any) {
       useQuizStore.setState({ showAnswer: !store.showAnswer });
       break;
     case 'nextQuestion':
-      // Ensure questions are loaded before advancing
       if (store.questions.length === 0) {
         loadQuestionsForCurrentRound();
       }
@@ -267,18 +221,13 @@ function applyStateUpdate(action: string, data: any) {
       });
       break;
     case 'selectBoard':
-      console.log('[QuizSync] Received selectBoard:', data);
       store.selectBoard(data.teamId, data.boardId);
       break;
     case 'teamTimeUp':
-      console.log('[QuizSync] Received teamTimeUp');
       store.teamTimeUp();
       break;
     case 'nextPicture':
-      const startTime = performance.now();
       store.nextPicture();
-      const endTime = performance.now();
-      console.log(`[QuizSync] nextPicture handling time: ${endTime - startTime}ms`);
       break;
     case 'previousPicture':
       store.previousPicture();
@@ -287,28 +236,21 @@ function applyStateUpdate(action: string, data: any) {
       store.resetPictureBoard();
       break;
     case 'revealOnlyConnectOption':
-      console.log('[QuizSync] Received revealOnlyConnectOption');
       store.revealOnlyConnectOption();
       break;
     case 'resetOnlyConnect':
-      console.log('[QuizSync] Received resetOnlyConnect');
       store.resetOnlyConnect();
       break;
     case 'revealDavesDozenAnswer':
-      console.log('[QuizSync] Received revealDavesDozenAnswer:', data);
       store.revealDavesDozenAnswer(data.answerNumber);
       break;
     case 'showIncorrectAnswer':
-      console.log('[QuizSync] Received showIncorrectAnswer');
       store.showIncorrectAnswer();
       break;
     case 'resetDavesDozen':
-      console.log('[QuizSync] Received resetDavesDozen');
       store.resetDavesDozen();
       break;
     default:
-      console.warn('[QuizSync] Unknown action:', action);
+      console.warn('Unknown action:', action);
   }
-  
-  console.log('[QuizSync] New state:', useQuizStore.getState().gameState);
-}
+};

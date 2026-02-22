@@ -76,11 +76,7 @@ export const OnlyConnect = () => {
               className="object-contain"
               style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
               onError={(e) => {
-                console.log(`[OnlyConnect] Failed to load image: ${option.imageUrl}`, e);
                 e.currentTarget.src = '/placeholder.svg';
-              }}
-              onLoad={() => {
-                console.log(`*** [OnlyConnect] Successfully loaded image: ${option.imageUrl}`);
               }}
             />
           </div>

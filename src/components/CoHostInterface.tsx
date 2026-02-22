@@ -16,9 +16,7 @@ import { Howl } from 'howler';
 // Initialize AudioContext for sound playback on main display
 const initializeAudioContext = () => {
   if (typeof window !== 'undefined' && Howler.ctx && Howler.ctx.state === 'suspended') {
-    Howler.ctx.resume().then(() => {
-      console.log('[CoHost] AudioContext resumed - sounds enabled on main display');
-    }).catch(error => {
+    Howler.ctx.resume().catch(error => {
       console.error('[CoHost] Failed to resume AudioContext:', error);
     });
   }
@@ -227,16 +225,8 @@ export const CoHostInterface = () => {
   };
 
   const syncedNextPicture = () => {
-    console.log('[syncedNextPicture] Button clicked!', {
-      showAllPictures,
-      currentPictureIndex,
-      timestamp: new Date().toISOString()
-    });
-    const startTime = performance.now();
     nextPicture();
     broadcastAction('nextPicture');
-    const endTime = performance.now();
-    console.log(`[syncedNextPicture] Total time: ${endTime - startTime}ms`);
   };
 
   const syncedPreviousPicture = () => {
@@ -285,23 +275,12 @@ export const CoHostInterface = () => {
 
   const canAdvanceToNextRound = () => {
     const nextRoundIndex = currentRoundIndex + 1;
-    console.log('[CoHostInterface] canAdvanceToNextRound:', {
-      currentRoundIndex,
-      nextRoundIndex,
-      totalRounds: ROUNDS.length
-    });
     
     if (nextRoundIndex < ROUNDS.length) {
       const nextRound = ROUNDS[nextRoundIndex];
       const nextRoundQuestions = getQuestionsForRound(nextRound.id);
-      console.log('[CoHostInterface] Next round check:', {
-        nextRoundId: nextRound.id,
-        nextRoundName: nextRound.name,
-        questionCount: nextRoundQuestions.length
-      });
       return nextRoundQuestions.length > 0;
     }
-    console.log('[CoHostInterface] Next round index out of bounds');
     return false;
   };
 
@@ -312,10 +291,7 @@ export const CoHostInterface = () => {
     } else if (canAdvanceToNextRound()) {
       // Don't call nextQuestion since there are no more questions
       // Just advance to the next round directly
-      console.log('[CoHostInterface] Advancing to next round from syncedNextQuestion');
       syncedNextRound();
-    } else {
-      console.log('[CoHostInterface] No more questions and cannot advance to next round');
     }
   };
 
@@ -679,7 +655,6 @@ export const CoHostInterface = () => {
                       </button>
                       <button
                         onClick={() => {
-                          console.log('[Button] onClick triggered!', new Date().toISOString());
                           syncedNextPicture();
                         }}
                         disabled={showAllPictures}
