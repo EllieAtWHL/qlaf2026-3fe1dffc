@@ -45,23 +45,25 @@ export const OnlyConnect = () => {
     );
   }
 
+  const optionVariants = {
+    hidden: { opacity: 0, y: 16, scale: 0.98 },
+    visible: { opacity: 1, y: 0, scale: 1 }
+  };
+
   const renderOption = (option: OnlyConnectOption, index: number) => {
     const isRevealed = index < onlyConnectRevealedOptions;
-    
+
     // Don't render unrevealed options at all
     if (!isRevealed) return null;
-    
+
     return (
       <motion.div
         key={index}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ 
-          opacity: 1,
-          scale: 1
-        }}
-        transition={{ delay: index * 0.1 }}
+        variants={optionVariants}
+        initial="hidden"
+        animate="visible"
         className="glass-card rounded-xl p-6 overflow-hidden flex items-center justify-center"
-        style={{ 
+        style={{
           width: '366px',
           height: '327px'
         }}
@@ -72,7 +74,7 @@ export const OnlyConnect = () => {
               src={option.imageUrl} 
               alt={`Option ${index + 1}`}
               className="object-contain"
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              style={{ maxWidth: '100%', maxHeight: '100%', display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
               onError={(e) => {
                 console.log(`[OnlyConnect] Failed to load image: ${option.imageUrl}`, e);
                 e.currentTarget.src = '/placeholder.svg';
@@ -141,7 +143,7 @@ export const OnlyConnect = () => {
 
       {/* Options and Answer Side by Side */}
       <motion.div 
-        className="flex justify-center items-start gap-8 flex-1 px-4"
+        className="flex justify-center items-center gap-8 flex-1 px-4 min-h-[40vh]"
         layout
         transition={{ duration: 0.5, ease: 'easeInOut' }}
       >
@@ -149,6 +151,12 @@ export const OnlyConnect = () => {
         <motion.div 
           className="flex justify-center"
           layout
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.08, delayChildren: 0.06 } }
+          }}
+          initial="hidden"
+          animate="visible"
         >
           <div className="grid grid-cols-2 gap-6 auto-rows-max w-fit">
             {question.options?.map((option, index) => renderOption(option, index))}
