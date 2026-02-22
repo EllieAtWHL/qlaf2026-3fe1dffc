@@ -181,8 +181,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
-    // Load questions for the first round
-    get().loadQuestionsForCurrentRound();
+    // Don't load questions yet - wait until round starts
   },
   
   nextRound: () => {
@@ -235,7 +234,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   showTransition: () => set({ gameState: 'round-transition' }),
   startRound: () => {
     set({ gameState: 'round', isTransitioning: false });
-    // Load questions for the current round
+    // Load questions for the current round when starting the round
     get().loadQuestionsForCurrentRound();
   },
   showScores: () => set({ gameState: 'scores' }),
@@ -304,7 +303,10 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       set({ 
         currentQuestionIndex: currentQuestionIndex + 1, 
         showAnswer: false,
-        onlyConnectRevealedOptions: 1 
+        onlyConnectRevealedOptions: 1,
+        // Reset Dave's Dozen answers when changing questions
+        davesDozenRevealedAnswers: new Set(),
+        davesDozenShowRedCross: false
       });
     }
   },
@@ -315,7 +317,10 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       set({ 
         currentQuestionIndex: currentQuestionIndex - 1, 
         showAnswer: false,
-        onlyConnectRevealedOptions: 1 
+        onlyConnectRevealedOptions: 1,
+        // Reset Dave's Dozen answers when changing questions
+        davesDozenRevealedAnswers: new Set(),
+        davesDozenShowRedCross: false
       });
     }
   },
@@ -324,7 +329,10 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({ 
       currentQuestionIndex: index, 
       showAnswer: false,
-      onlyConnectRevealedOptions: 1 
+      onlyConnectRevealedOptions: 1,
+      // Reset Dave's Dozen answers when changing questions
+      davesDozenRevealedAnswers: new Set(),
+      davesDozenShowRedCross: false
     });
   },
   
