@@ -1,24 +1,53 @@
 import { motion } from 'framer-motion';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { 
-  Play, Pause, RotateCcw, ChevronLeft, ChevronRight, 
+  ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
   SkipForward, Clock, Wifi, WifiOff, HelpCircle, Image, Link,
-  Bug, X, Grid3X3
+  Bug, X, Grid3X3, RotateCcw
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import React from 'react';
 import { useQuizSync } from '@/hooks/useQuizSync';
 import { useQuestions } from '@/hooks/useQuestions';
 import { normalizeOption } from '@/types/questions';
+import { Howl } from 'howler';
+
+// Initialize AudioContext for sound playback on main display
+const initializeAudioContext = () => {
+  if (typeof window !== 'undefined' && Howler.ctx && Howler.ctx.state === 'suspended') {
+    Howler.ctx.resume().then(() => {
+      console.log('[CoHost] AudioContext resumed - sounds enabled on main display');
+    }).catch(error => {
+      console.error('[CoHost] Failed to resume AudioContext:', error);
+    });
+  }
+};
 
 export const CoHostInterface = () => {
+  // Initialize AudioContext on first user interaction to enable sounds on main display
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      initializeAudioContext();
+    };
+
+    // Add event listeners for user interactions on co-host app
+    const events = ['click', 'keydown', 'touchstart'];
+    events.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, { once: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction);
+      });
+    };
+  }, []);
+
   const {
     gameState,
     currentRoundIndex,
     currentQuestionIndex,
-    isTimerRunning,
-    timerValue,
     teams,
     f1Positions,
     showAnswer,
@@ -38,6 +67,8 @@ export const CoHostInterface = () => {
     nextQuestion,
     previousQuestion,
     resetGame,
+    isTimerRunning,
+    timerValue,
     // Picture Board specific
     availableBoards,
     selectedBoards,
@@ -62,6 +93,17 @@ export const CoHostInterface = () => {
   const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound } = useQuestions();
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
+  const [showSetupReminder, setShowSetupReminder] = useState(false);
+
+  // Handle start game with reminder
+  const handleStartGame = () => {
+    setShowSetupReminder(true);
+  };
+
+  const confirmStartGame = () => {
+    setShowSetupReminder(false);
+    startGame();
+  };
   const [isRevealing, setIsRevealing] = useState(false);
 
   // Create a stable copy of options for display to prevent reordering
@@ -87,62 +129,37 @@ export const CoHostInterface = () => {
     return optionsWithOriginalIndex.sort((a, b) => (a._originalIndex || 0) - (b._originalIndex || 0));
   }, [currentQuestion?.id, currentQuestion?.options]);
 
-  // Timer broadcasting logic - DISABLED TEMPORARILY
-  // useEffect(() => {
-  //   // Don't broadcast ticks if timer is not running OR if we're not in an active round
-  //   const shouldBroadcast = isTimerRunning && gameState === 'round';
+  // Auto-start timer for picture board when first picture is displayed - OPTIMIZED
+  useEffect(() => {
+    // Only run for picture board round
+    if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
+      return;
+    }
     
-  //   const interval = shouldBroadcast ? setInterval(() => {
-  //     broadcastAction('tick');
-  //   }, 1000) : null;
-
-  //   return () => {
-  //     if (interval) clearInterval(interval);
-  //   };
-  // }, [isTimerRunning, gameState, broadcastAction]);
-
-  // Auto-start timer for picture board when first picture is displayed - DISABLED TEMPORARILY
-  // useEffect(() => {
-  //   console.log('[CoHostInterface] Picture board timer check:', {
-  //     currentRoundId: ROUNDS[currentRoundIndex]?.id,
-  //     currentRoundIndex,
-  //     selectedBoards,
-  //     currentTeamSelecting,
-  //     currentPictureIndex,
-  //     showAllPictures,
-  //     isTimerRunning
-  //   });
+    // Check if a board is selected and this is the first picture
+    const hasBoardSelected = selectedBoards[currentTeamSelecting];
+    const isFirstPicture = currentPictureIndex === 0;
+    const notShowingAll = !showAllPictures;
     
-  //   // Only run for picture board round
-  //   if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
-  //     console.log('[CoHostInterface] Not picture board round, skipping');
-  //     return;
-  //   }
-    
-  //   // Check if a board is selected and this is the first picture
-  //   const hasBoardSelected = selectedBoards[currentTeamSelecting];
-  //   const isFirstPicture = currentPictureIndex === 0;
-  //   const notShowingAll = !showAllPictures;
-  //   const timerNotRunning = !isTimerRunning;
-    
-  //   console.log('[CoHostInterface] Timer conditions:', {
-  //     hasBoardSelected,
-  //     isFirstPicture,
-  //     notShowingAll,
-  //     timerNotRunning,
-  //     shouldStart: hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning
-  //   });
-    
-  //   if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
-  //     console.log('[CoHostInterface] Auto-starting timer for picture board first picture');
-  //     syncedStartTimer();
-  //   }
-  // }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
+    // Use a debounced approach to prevent rapid state changes
+    // Add guard to prevent infinite loop - only start if timer is not already running
+    if (hasBoardSelected && isFirstPicture && notShowingAll && !isTimerRunning) {
+      // Small delay to ensure state is stable before starting timer
+      const timeoutId = setTimeout(() => {
+        // Double-check conditions haven't changed
+        if (selectedBoards[currentTeamSelecting] && currentPictureIndex === 0 && !showAllPictures && !isTimerRunning) {
+          startTimer();
+          broadcastAction('startTimer');
+        }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, currentRoundIndex, broadcastAction, isTimerRunning]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
-    startGame();
-    broadcastAction('startGame');
+    handleStartGame();
   };
 
   const syncedStartRound = () => {
@@ -175,22 +192,7 @@ export const CoHostInterface = () => {
     broadcastAction('showTransition');
   };
 
-  const syncedStartTimer = () => {
-    // Update local state first to enable broadcasting, then broadcast
-    startTimer();
-    broadcastAction('startTimer');
-  };
-
-  const syncedPauseTimer = () => {
-    pauseTimer();
-    broadcastAction('pauseTimer');
-  };
-
-  const syncedResetTimer = (duration?: number) => {
-    resetTimer(duration);
-    broadcastAction('resetTimer', { duration });
-  };
-
+  
   const syncedToggleAnswer = () => {
     toggleAnswer();
     broadcastAction('toggleAnswer');
@@ -771,48 +773,7 @@ export const CoHostInterface = () => {
         </motion.div>
       )}
 
-      {/* Timer Controls */}
-      {currentRound?.timerDuration && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card rounded-xl p-3 mb-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className={`font-display text-xl font-bold ${
-                timerValue <= 10 ? 'text-qlaf-danger' : timerValue <= 30 ? 'text-qlaf-warning' : 'text-qlaf-success'
-              }`}>
-                {Math.floor(timerValue / 60)}:{(timerValue % 60).toString().padStart(2, '0')}
-              </span>
-            </div>
-            
-            <div className="flex gap-1">
-              <button
-                onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
-                className={`p-3 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
-              >
-                {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={() => syncedResetTimer()}
-                className="p-3 rounded-lg bg-secondary text-foreground"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => syncedResetTimer(30)}
-                className="p-3 rounded-lg bg-secondary text-foreground text-xs font-semibold"
-              >
-                30s
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
+      
       {/* Team Scores */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -980,10 +941,7 @@ export const CoHostInterface = () => {
             <p className="text-xs font-mono text-muted-foreground">
               Question: <span className="text-foreground font-semibold">{currentQuestionIndex + 1}/{totalQuestions || 0}</span>
             </p>
-            <p className="text-xs font-mono text-muted-foreground">
-              Timer: <span className="text-foreground font-semibold">{timerValue}s ({isTimerRunning ? 'running' : 'stopped'})</span>
-            </p>
-            <p className="text-xs font-mono text-muted-foreground">
+                        <p className="text-xs font-mono text-muted-foreground">
               Show Answer: <span className="text-foreground font-semibold">{showAnswer ? 'true' : 'false'}</span>
             </p>
             {currentRound?.id === 'picture-board' && (
@@ -1064,6 +1022,47 @@ export const CoHostInterface = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Setup Reminder Modal */}
+      {showSetupReminder && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-background rounded-xl p-6 max-w-md w-full border shadow-lg"
+          >
+            <h2 className="text-xl font-bold text-foreground mb-4">Setup Reminder</h2>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>Before starting the quiz, please complete these steps:</p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-qlaf-success">•</span>
+                  <span><strong>Click once on main display</strong> to enable timer sounds</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-qlaf-success">•</span>
+                  <span><strong>All images are automatically preloaded</strong> for smooth gameplay</span>
+                </div>
+              </div>
+              <p className="text-xs pt-2">This only needs to be done once per browser session.</p>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowSetupReminder(false)}
+                className="flex-1 px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmStartGame}
+                className="flex-1 px-4 py-2 bg-qlaf-success text-white rounded-lg hover:bg-qlaf-success/90 transition-colors"
+              >
+                I've Done This - Start Game
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

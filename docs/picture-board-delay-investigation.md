@@ -62,11 +62,13 @@ nextPicture: () => {
 },
 ```
 
-### Phase 2: Timer System Cleanup
+### Phase 2: Timer System Architecture Refactor
 ```typescript
-// DISABLED: Auto-start timer useEffect
-// DISABLED: Timer broadcasting interval
-// These were causing network congestion and React re-renders
+// NEW ARCHITECTURE: CoHost broadcasts control actions only
+// - CoHost: startTimer/pauseTimer/resetTimer broadcasts
+// - MainDisplay: manages local countdown with setInterval
+// - No ongoing network traffic during countdown
+// - Picture Board auto-start preserved
 ```
 
 ### Phase 3: Component Simplification
@@ -137,11 +139,15 @@ nextPicture: () => {
    - Removed console logging from broadcastAction function
 
 3. `src/components/CoHostInterface.tsx`
-   - Disabled auto-start timer useEffect
-   - Disabled timer broadcasting interval
-   - Added click timing for debugging
+   - Re-enabled Picture Board auto-start timer with debouncing
+   - Removed timer broadcasting interval (no ongoing network traffic)
+   - Added timer control action broadcasting (start/pause/reset only)
+   - Maintained clean interface without timer UI controls
 
-4. `src/components/rounds/PictureBoard.tsx`
+4. `src/components/Timer.tsx`
+   - Enabled local countdown with setInterval
+   - Removed dependency on sync system for ticking
+   - Maintained sound effects and visual feedback
    - Complete rewrite with simplified architecture
    - Removed all useEffect hooks except essential ones
    - Minimal animations (0.1s duration)

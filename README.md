@@ -60,8 +60,8 @@ Comprehensive documentation is available in the `/docs` directory:
 - **[Co-host Interface](docs/co-host-interface.md)** - Guide for quiz moderators
 - **[World Rankings](docs/world-rankings.md)** - Specifics about the rankings game mode
 - **[Just One Technical Guide](docs/just-one-technical-guide.md)** - Technical implementation details
-- **[Picture Board Sync Investigation](docs/2026-01-31-picture-board-sync-investigation.md)** - Technical investigation notes
-- **[Round Transition Flash Fix](docs/round-transition-flash-fix.md)** - UI/UX improvements
+- **[Timer Architecture](docs/timer-architecture.md)** - Complete timer system documentation
+- **[Picture Board Delay Investigation](docs/picture-board-delay-investigation.md)** - Performance analysis and fixes
 
 ## 🛠️ Technologies Used
 
@@ -90,8 +90,8 @@ This project is built with modern web technologies:
 ### Key Components
 
 - **Main Display**: Primary game interface for players
-- **Co-host Interface**: Moderator controls and score management
-- **Timer System**: Configurable timers for different rounds
+- **Co-host Interface**: Moderator controls and score management  
+- **Timer System**: Local countdown with synchronized control actions
 - **Score Tracking**: Real-time score updates and leaderboard
 
 ## 🧪 Testing

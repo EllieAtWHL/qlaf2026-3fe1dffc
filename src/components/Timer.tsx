@@ -3,20 +3,26 @@ import { motion } from 'framer-motion';
 import { useQuizStore } from '@/store/quizStore';
 import { Howl } from 'howler';
 
-// Sound URLs (using free sound effects)
+// Sound effects using local files
 const tickSound = new Howl({
-  src: ['https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'],
+  src: ['/sounds/tick.wav'],
   volume: 0.3,
+  onload: () => console.log('[Timer Sound] Tick sound loaded successfully'),
+  onloaderror: (id, error) => console.error('[Timer Sound] Failed to load tick sound:', error),
 });
 
 const warningSound = new Howl({
-  src: ['https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3'],
+  src: ['/sounds/warning.wav'],
   volume: 0.5,
+  onload: () => console.log('[Timer Sound] Warning sound loaded successfully'),
+  onloaderror: (id, error) => console.error('[Timer Sound] Failed to load warning sound:', error),
 });
 
-const buzzerSound = new Howl({
-  src: ['https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'],
+const timeUpSound = new Howl({
+  src: ['/sounds/finish.mp3'],
   volume: 0.7,
+  onload: () => console.log('[Timer Sound] Time-up sound loaded successfully'),
+  onloaderror: (id, error) => console.error('[Timer Sound] Failed to load time-up sound:', error),
 });
 
 interface TimerProps {
@@ -26,34 +32,52 @@ interface TimerProps {
 export const Timer = ({ compact = false }: TimerProps) => {
   const { timerValue, isTimerRunning, tick } = useQuizStore();
   const lastTickRef = useRef<number>(timerValue);
-  const hasPlayedBuzzer = useRef(false);
+  const hasPlayedTimeUp = useRef(false);
 
-  // Timer interval is disabled - we rely on sync system from CoHostInterface
-  // This prevents double-ticking when both cohost and main display try to manage timer
+  // Timer interval for local countdown on main display
   useEffect(() => {
-    // No interval - timer is managed by CoHostInterface via sync
-    return () => {};
-  }, []);
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (isTimerRunning && timerValue > 0) {
+      interval = setInterval(() => {
+        tick();
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isTimerRunning, timerValue, tick]);
 
   // Sound effects
   useEffect(() => {
     if (isTimerRunning && timerValue !== lastTickRef.current) {
-      if (timerValue <= 10 && timerValue > 0) {
-        tickSound.play();
-      }
+      console.log(`[Timer Sound] Value: ${timerValue}, Running: ${isTimerRunning}, Last: ${lastTickRef.current}`);
+      
+      // Play warning sound at exactly 10 seconds
       if (timerValue === 10) {
+        console.log('[Timer Sound] Playing warning sound at 10s');
         warningSound.play();
       }
-      if (timerValue === 0 && !hasPlayedBuzzer.current) {
-        buzzerSound.play();
-        hasPlayedBuzzer.current = true;
+      // Play tick sound for 59, 58, 57, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37, 36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 9, 8, 7, 6, 5, 4, 3, 2, 1 seconds
+      else if (timerValue <= 59 && timerValue > 0 && timerValue !== 10) {
+        console.log(`[Timer Sound] Playing tick sound at ${timerValue}s`);
+        tickSound.play();
+      }
+      // Play time-up sound when timer reaches 0 (only once)
+      else if (timerValue === 0 && !hasPlayedTimeUp.current) {
+        console.log('[Timer Sound] Playing time-up sound at 0s');
+        timeUpSound.play();
+        hasPlayedTimeUp.current = true;
       }
       lastTickRef.current = timerValue;
     }
     
-    // Reset buzzer flag when timer resets
+    // Reset time-up flag when timer resets above 0
     if (timerValue > 10) {
-      hasPlayedBuzzer.current = false;
+      hasPlayedTimeUp.current = false;
     }
   }, [timerValue, isTimerRunning]);
 

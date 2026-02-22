@@ -11,6 +11,58 @@ import { OnlyConnect } from '@/components/rounds/OnlyConnect';
 import { ElliesTellies } from '@/components/rounds/ElliesTellies';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
+import questionsData from '@/data/questions.json';
+
+// Preload all images for the quiz
+const preloadAllImages = () => {
+  console.log('[MainDisplay] Preloading all images...');
+  let totalImages = 0;
+  
+  // Preload World Rankings images
+  const worldRankings = questionsData['world-rankings']?.questions || [];
+  worldRankings.forEach((question: any) => {
+    question.options?.forEach((option: any) => {
+      if (option.imageUrl) {
+        const img = document.createElement('img');
+        img.src = option.imageUrl;
+        totalImages++;
+      }
+    });
+  });
+  
+  // Preload Picture Board images
+  const pictureBoards = questionsData['picture-board']?.boards || [];
+  pictureBoards.forEach((board: any) => {
+    // Preload board thumbnail
+    if (board.imageUrl) {
+      const boardImg = document.createElement('img');
+      boardImg.src = board.imageUrl;
+      totalImages++;
+    }
+    
+    // Preload all pictures in the board
+    board.pictures?.forEach((picture: any) => {
+      if (picture.imageUrl) {
+        const pictureImg = document.createElement('img');
+        pictureImg.src = picture.imageUrl;
+        totalImages++;
+      }
+    });
+  });
+  
+  // Preload Ellie's Tellies images
+  const elliesTellies = questionsData['ellies-tellies']?.questions || [];
+  elliesTellies.forEach((question: any) => {
+    if (question.imageUrl) {
+      const img = document.createElement('img');
+      img.src = question.imageUrl;
+      totalImages++;
+    }
+  });
+  
+  console.log(`[MainDisplay] Preloaded ${totalImages} total images across all rounds`);
+};
 
 const componentMap: Record<string, React.ComponentType<any>> = {
   'F1GrandPrix': F1GrandPrix,
@@ -27,6 +79,11 @@ export const MainDisplay = () => {
   const currentRound = ROUNDS[currentRoundIndex];
   
   console.log('[MainDisplay] Render - currentRound:', currentRound?.component);
+  
+  // Preload all images when component mounts
+  useEffect(() => {
+    preloadAllImages();
+  }, []);
   
   // MainDisplay should NEVER call useQuizSync - only CoHostInterface should broadcast
   // The store state is updated through the sync system automatically

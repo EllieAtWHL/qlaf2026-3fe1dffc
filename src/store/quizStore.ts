@@ -256,9 +256,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   tick: () => {
     const { timerValue, isTimerRunning } = get();
     if (isTimerRunning && timerValue > 0) {
-      set({ timerValue: timerValue - 1 });
-    } else if (timerValue === 0) {
-      set({ isTimerRunning: false });
+      const newValue = timerValue - 1;
+      set({ 
+        timerValue: newValue,
+        isTimerRunning: newValue > 0 ? true : false
+      });
     }
   },
   
@@ -385,7 +387,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     if (teamId === get().currentTeamSelecting) {
       const selectedBoard = pictureBoards.find(board => board.id === boardId);
       if (selectedBoard) {
-        set({ currentBoard: selectedBoard });
+        set({ 
+          currentBoard: selectedBoard,
+          timerValue: 60, // Reset timer to 60 seconds when board is selected
+          isTimerRunning: true // Automatically start timer
+        });
       }
     }
   },

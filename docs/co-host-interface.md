@@ -82,7 +82,7 @@ export const CoHostInterface = () => {
       {/* Header */}
       {/* Quiz Control */}
       {/* Question Controls */}
-      {/* Timer Controls */}
+      {/* Timer Management (auto-start logic, no UI) */}
       {/* Team Scores */}
       {/* F1 Controls */}
     </div>
@@ -109,11 +109,11 @@ export const CoHostInterface = () => {
 - Question content preview
 - Answer display when shown
 
-#### 4. Timer Controls (when round has timer)
-- Start/Pause timer
-- Reset timer
-- Quick 30-second reset
-- Visual timer display with color coding
+#### 4. Timer Management (handled automatically)
+- **Auto-start**: Timer automatically starts for Picture Board rounds
+- **Control Actions**: Start/pause/reset broadcast to main display (no UI controls)
+- **Visual Display**: Timer shown on main display only
+- **Picture Board Auto-start**: Timer starts when first picture appears
 
 #### 5. Team Scores
 - Score adjustment controls (+/- buttons)
@@ -165,10 +165,11 @@ const syncedAction = () => {
 2. **Show Answers**: Click "Show" to reveal answer, "Hide" to conceal
 3. **Auto-advance**: "Next" button automatically moves to next round when questions are complete
 
-#### Using Timer (when available)
-1. **Start/Pause**: Use play/pause button to control timer
-2. **Reset**: Reset to round duration or 30 seconds
-3. **Visual Feedback**: Timer changes color based on remaining time
+#### Using Timer (automatic behavior)
+1. **Auto-start**: Timer automatically starts for Picture Board rounds when first picture appears
+2. **Visual Display**: Timer countdown is shown on main display only
+3. **No Controls**: Timer management is handled automatically by the system
+4. **Picture Board**: Timer starts automatically when team selects board and first picture shows
 
 #### Managing Scores
 1. **Adjust Scores**: Use +/- buttons for quick adjustments
@@ -215,8 +216,6 @@ const syncedAction = () => {
 | Scores | Show score screen | Always available |
 | Prev/Next | Navigate questions | During active round |
 | Show/Hide | Toggle answer visibility | During active round |
-| Play/Pause | Control timer | Timed rounds only |
-| Reset | Reset timer | Timed rounds only |
 | +/- | Adjust scores | Always available |
 | +5%/+10% | Advance F1 cars | F1 round only |
 
