@@ -282,3 +282,5 @@ This document tracks items that need to be fixed or improved but are not current
 4. **MEDIUM**: Enhance Ellie's Tellies static effect and image overlay positioning
 5. **LOW**: Implement GenericRound question transition enhancements for better visual presentation
 6. **LOW**: Move Only Connect progressive reveal controls into questions section
+
+7. **LOW**: Create additional Only Connect questions and add to  (track assets in )
