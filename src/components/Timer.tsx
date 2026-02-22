@@ -3,19 +3,19 @@ import { motion } from 'framer-motion';
 import { useQuizStore } from '@/store/quizStore';
 import { Howl } from 'howler';
 
-// Sound URLs (using alternative sources that work)
+// Sound URLs (using local sounds to avoid CORS issues)
 const tickSound = new Howl({
-  src: ['https://www.soundjay.com/misc/sounds/click-up.mp3'],
+  src: ['/sounds/tick.mp3'],
   volume: 0.3,
 });
 
 const warningSound = new Howl({
-  src: ['https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'],
+  src: ['/sounds/warning.mp3'],
   volume: 0.5,
 });
 
-const buzzerSound = new Howl({
-  src: ['https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'],
+const timeUpSound = new Howl({
+  src: ['/sounds/time-up.mp3'],
   volume: 0.7,
 });
 
@@ -26,7 +26,7 @@ interface TimerProps {
 export const Timer = ({ compact = false }: TimerProps) => {
   const { timerValue, isTimerRunning, tick } = useQuizStore();
   const lastTickRef = useRef<number>(timerValue);
-  const hasPlayedBuzzer = useRef(false);
+  const hasPlayedTimeUp = useRef(false);
 
   // Timer interval for local countdown on main display
   useEffect(() => {
@@ -60,18 +60,18 @@ export const Timer = ({ compact = false }: TimerProps) => {
         console.log(`[Timer Sound] Playing tick sound at ${timerValue}s`);
         tickSound.play();
       }
-      // Play buzzer when timer reaches 0 (only once)
-      else if (timerValue === 0 && !hasPlayedBuzzer.current) {
-        console.log('[Timer Sound] Playing buzzer sound at 0s');
-        buzzerSound.play();
-        hasPlayedBuzzer.current = true;
+      // Play time-up sound when timer reaches 0 (only once)
+      else if (timerValue === 0 && !hasPlayedTimeUp.current) {
+        console.log('[Timer Sound] Playing time-up sound at 0s');
+        timeUpSound.play();
+        hasPlayedTimeUp.current = true;
       }
       lastTickRef.current = timerValue;
     }
     
-    // Reset buzzer flag when timer resets above 0
+    // Reset time-up flag when timer resets above 0
     if (timerValue > 10) {
-      hasPlayedBuzzer.current = false;
+      hasPlayedTimeUp.current = false;
     }
   }, [timerValue, isTimerRunning]);
 
