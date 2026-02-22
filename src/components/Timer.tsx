@@ -33,33 +33,6 @@ export const Timer = ({ compact = false }: TimerProps) => {
   const { timerValue, isTimerRunning, tick } = useQuizStore();
   const lastTickRef = useRef<number>(timerValue);
   const hasPlayedTimeUp = useRef(false);
-  const audioContextInitialized = useRef(false);
-
-  // Initialize AudioContext on first user interaction
-  useEffect(() => {
-    const handleUserInteraction = () => {
-      if (!audioContextInitialized.current && Howler.ctx) {
-        Howler.ctx.resume().then(() => {
-          console.log('[Timer Sound] AudioContext resumed successfully');
-          audioContextInitialized.current = true;
-        }).catch(error => {
-          console.error('[Timer Sound] Failed to resume AudioContext:', error);
-        });
-      }
-    };
-
-    // Add event listeners for user interactions
-    const events = ['click', 'keydown', 'touchstart'];
-    events.forEach(event => {
-      document.addEventListener(event, handleUserInteraction, { once: true });
-    });
-
-    return () => {
-      events.forEach(event => {
-        document.removeEventListener(event, handleUserInteraction);
-      });
-    };
-  }, []);
 
   // Timer interval for local countdown on main display
   useEffect(() => {
@@ -82,14 +55,6 @@ export const Timer = ({ compact = false }: TimerProps) => {
   useEffect(() => {
     if (isTimerRunning && timerValue !== lastTickRef.current) {
       console.log(`[Timer Sound] Value: ${timerValue}, Running: ${isTimerRunning}, Last: ${lastTickRef.current}`);
-      
-      // Try to resume AudioContext if not initialized
-      if (!audioContextInitialized.current && Howler.ctx && Howler.ctx.state === 'suspended') {
-        Howler.ctx.resume().then(() => {
-          console.log('[Timer Sound] AudioContext resumed on sound play');
-          audioContextInitialized.current = true;
-        });
-      }
       
       // Play warning sound at exactly 10 seconds
       if (timerValue === 10) {

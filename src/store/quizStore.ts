@@ -387,7 +387,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     if (teamId === get().currentTeamSelecting) {
       const selectedBoard = pictureBoards.find(board => board.id === boardId);
       if (selectedBoard) {
-        set({ currentBoard: selectedBoard });
+        set({ 
+          currentBoard: selectedBoard,
+          timerValue: 60, // Reset timer to 60 seconds when board is selected
+          isTimerRunning: true // Automatically start timer
+        });
       }
     }
   },
