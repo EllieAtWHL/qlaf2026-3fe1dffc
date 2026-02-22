@@ -54,46 +54,41 @@ export const OnlyConnect = () => {
     return (
       <motion.div
         key={index}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ 
           opacity: 1,
-          y: 0,
           scale: 1
         }}
         transition={{ delay: index * 0.1 }}
-        className="glass-card rounded-xl p-4 h-48 w-full"
+        className="glass-card rounded-xl p-6 overflow-hidden flex items-center justify-center"
+        style={{ 
+          width: '366px',
+          height: '327px'
+        }}
       >
-        <div className="flex items-center gap-4 h-full">
-          <div className="flex-1 flex items-center justify-center min-h-0">
-            {option.text && !option.imageUrl && (
-              <p className="font-display text-2xl md:text-3xl text-foreground text-center leading-relaxed">
-                {option.text}
-              </p>
-            )}
-            
-            {option.imageUrl && !option.text && (
-              <div className="w-full h-full rounded-lg overflow-hidden bg-secondary/50">
-                <img 
-                  src={option.imageUrl} 
-                  alt={`Option ${index + 1}`}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    console.log(`[OnlyConnect] Failed to load image: ${option.imageUrl}`, e);
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                  onLoad={() => {
-                    console.log(`*** [OnlyConnect] Successfully loaded image: ${option.imageUrl}`);
-                    // Check if image element exists in DOM
-                    const imgElement = document.querySelector(`img[alt="Option ${index + 1}"]`);
-                    console.log(`*** [OnlyConnect] Image element found:`, imgElement);
-                    console.log(`*** [OnlyConnect] Image src:`, imgElement?.src);
-                    console.log(`*** [OnlyConnect] Image display:`, window.getComputedStyle(imgElement)?.display);
-                  }}
-                />
-              </div>
-            )}
+        {option.imageUrl ? (
+          <div className="bg-secondary/50 rounded-lg flex items-center justify-center flex-shrink-0">
+            <img 
+              src={option.imageUrl} 
+              alt={`Option ${index + 1}`}
+              className="object-contain"
+              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              onError={(e) => {
+                console.log(`[OnlyConnect] Failed to load image: ${option.imageUrl}`, e);
+                e.currentTarget.src = '/placeholder.svg';
+              }}
+              onLoad={() => {
+                console.log(`*** [OnlyConnect] Successfully loaded image: ${option.imageUrl}`);
+              }}
+            />
           </div>
-        </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center p-6">
+            <p className="font-display text-2xl md:text-3xl text-foreground text-center leading-relaxed">
+              {option.text}
+            </p>
+          </div>
+        )}
       </motion.div>
     );
   };
@@ -142,67 +137,47 @@ export const OnlyConnect = () => {
         <h2 className="font-display text-2xl md:text-3xl text-foreground mb-2">
           {question.content}
         </h2>
-        <p className="font-body text-muted-foreground">
-          What connects these items?
-        </p>
       </motion.div>
 
-      {/* Options */}
-      <div className="max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          {question.options?.map((option, index) => renderOption(option, index))}
-        </div>
-        
-        {/* Reveal Button */}
-        {question.options && onlyConnectRevealedOptions < question.options.length && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center mt-6"
-          >
-            <button
-              onClick={revealOnlyConnectOption}
-              className="control-btn bg-qlaf-warning text-white px-8 py-3 text-lg"
-            >
-              Reveal Next Clue
-            </button>
-          </motion.div>
-        )}
-        
-        {/* All clues revealed message */}
-        {question.options && onlyConnectRevealedOptions === question.options.length && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center mt-6"
-          >
-            <p className="font-display text-lg text-muted-foreground">
-              All clues revealed - 1 point available
-            </p>
-          </motion.div>
-        )}
-      </div>
-
-      {/* Answer */}
-      {showAnswer && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-8 text-center"
+      {/* Options and Answer Side by Side */}
+      <motion.div 
+        className="flex justify-center items-start gap-8 flex-1 px-4"
+        layout
+        transition={{ duration: 0.5, ease: 'easeInOut' }}
+      >
+        {/* Images on the left */}
+        <motion.div 
+          className="flex justify-center"
+          layout
         >
-          <div className="glass-card rounded-xl p-6 max-w-2xl mx-auto">
-            <div className="flex items-center justify-center gap-3 mb-3">
-              <Eye className="w-6 h-6 text-qlaf-success" />
-              <h3 className="font-display text-xl font-bold text-qlaf-success">
-                Connection
-              </h3>
-            </div>
-            <p className="font-display text-2xl text-foreground">
-              {question.answer}
-            </p>
+          <div className="grid grid-cols-2 gap-6 auto-rows-max w-fit">
+            {question.options?.map((option, index) => renderOption(option, index))}
           </div>
         </motion.div>
-      )}
+
+        {/* Answer on the right */}
+        {showAnswer && (
+          <motion.div
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="flex items-center"
+            layout
+          >
+            <div className="glass-card rounded-xl p-6 max-w-sm">
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <Eye className="w-6 h-6 text-qlaf-success" />
+                <h3 className="font-display text-xl font-bold text-qlaf-success">
+                  Connection
+                </h3>
+              </div>
+              <p className="font-display text-xl text-foreground">
+                {question.answer}
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
 
       {/* QLAF branding */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
