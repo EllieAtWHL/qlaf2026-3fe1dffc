@@ -281,50 +281,38 @@
       {
         "id": "oc-1",
         "type": "connection",
-        "content": "What connects these items?",
+        "content": "What connects these sports stars?",
         "options": [
-          { "text": "Federer" },
-          { "text": "Nadal" },
-          { "text": "Djokovic" },
-          { "text": "Murray" }
+          { "text": "Seth Curry", "imageUrl": "/images/only-connect/sethCurry.png" },
+          { "text": "Simone Inzaghi", "imageUrl": "/images/only-connect/simoneInzaghi.png" },
+          { "text": "Jonathan Brownlee", "imageUrl": "/images/only-connect/jonathanBrownlee.png" },
+          { "text": "Eli Manning", "imageUrl": "/images/only-connect/eliManning.png" }
         ],
-        "answer": "Grand Slam singles champions"
+        "answer": "Younger sporting brothers who played against their older sibling."
       },
       {
         "id": "oc-2",
         "type": "connection",
-        "content": "What connects these football clubs?",
+        "content": "What connects these sports stars?",
         "options": [
-          { "text": "Manchester United", "imageUrl": "/images/ellies-tellies/telly1.png" },
-          { "text": "Liverpool", "imageUrl": "/images/ellies-tellies/telly2.png" },
-          { "text": "Arsenal", "imageUrl": "/images/ellies-tellies/telly3.png" },
-          { "text": "Chelsea", "imageUrl": "/images/ellies-tellies/telly4.png" }
+          { "text": "Ellyse Perry", "imageUrl": "/images/only-connect/ellysePerry.png" },
+          { "text": "Bo Jackson", "imageUrl": "/images/only-connect/boJackson.png" },
+          { "text": "Rebecca Romero", "imageUrl": "/images/only-connect/rebeccaRomero.png" },
+          { "text": "Michael Jordan", "imageUrl": "/images/only-connect/michaelJordan.png" }
         ],
-        "answer": "Premier League clubs never relegated"
+        "answer": "All played in multiple sports at a professional level"
       },
       {
         "id": "oc-3",
         "type": "connection",
-        "content": "What connects these sporting events?",
+        "content": "What connects these images?",
         "options": [
-          { "text": "Olympics", "imageUrl": "/images/only-connect/olympics.jpg" },
-          { "text": "FIFA World Cup", "imageUrl": "/images/only-connect/world-cup.jpg" },
-          { "text": "Tour de France", "imageUrl": "/images/only-connect/tour-de-france.jpg" },
-          { "text": "Super Bowl", "imageUrl": "/images/only-connect/super-bowl.jpg" }
+          { "text": "Jam Tarts", "imageUrl": "/images/only-connect/jamTarts.png" },
+          { "text": "Cherries", "imageUrl": "/images/only-connect/cherries.png" },
+          { "text": "Canaries", "imageUrl": "/images/only-connect/canaries.png" },
+          { "text": "Toffees", "imageUrl": "/images/only-connect/toffees.png" }
         ],
-        "answer": "Major international sporting events"
-      },
-      {
-        "id": "oc-4",
-        "type": "connection",
-        "content": "What connects these athletes?",
-        "options": [
-          { "text": "Michael Jordan" },
-          { "text": "LeBron James" },
-          { "text": "Kobe Bryant" },
-          { "text": "Stephen Curry" }
-        ],
-        "answer": "NBA basketball legends"
+        "answer": "Nicknames for British football clubs"
       }
     ]
   },
