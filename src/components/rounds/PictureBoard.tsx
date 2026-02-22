@@ -111,12 +111,12 @@ export const PictureBoard = () => {
   const currentPicture = currentBoard.pictures[currentPictureIndex];
 
   return (
-    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-2 md:p-4 relative overflow-hidden">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6"
+        className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4"
       >
         <div className="flex items-center gap-4">
           <Image className="w-10 h-10 text-primary" />
@@ -137,13 +137,13 @@ export const PictureBoard = () => {
       </motion.div>
 
       {/* Picture display */}
-      <div className="flex-1 flex items-center justify-center px-4">
+      <div className="flex-1 flex items-center justify-center px-2">
         <motion.div
           key={`${currentPictureIndex}-${showAllPictures}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.1 }}
-          className="w-full h-full max-w-6xl max-h-[60vh]"
+          className="w-full h-full max-w-7xl"
         >
           {showAllPictures ? (
             <div className="w-full h-full flex flex-col items-center justify-center">
@@ -176,9 +176,9 @@ export const PictureBoard = () => {
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center relative">
               {/* Show single picture - much larger */}
-              <div className="w-full h-full max-h-[45vh] glass-card rounded-xl p-0 flex items-center justify-center relative">
+              <div className="w-full h-full glass-card rounded-xl p-0 flex items-center justify-center relative">
                 {/* Picture number circle in top-right corner */}
-                <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10">
+                <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10">
                   <span className="font-display text-lg font-bold text-primary-foreground">
                     {currentPictureIndex + 1}
                   </span>
