@@ -206,6 +206,6 @@ The reordering animation uses `framer-motion` with these features:
 ## Future Enhancements
 
 Potential improvements to consider:
-- Sound effects for animations
+- Sound effects for animations (timer sounds already implemented locally)
 - Image zoom functionality
 - Export/import question sets

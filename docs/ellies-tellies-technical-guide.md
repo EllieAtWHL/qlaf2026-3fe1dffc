@@ -95,7 +95,7 @@ In `src/data/questions.json`, under `"ellies-tellies"` → `"questions"`:
 
 ## Future Improvements (Backlog)
 - Refine static transition effects
-- Add sound effects for transitions
+- Add sound effects for transitions (timer sounds already implemented locally)
 - Optimize image loading performance
 - Enhance CRT authenticity
 

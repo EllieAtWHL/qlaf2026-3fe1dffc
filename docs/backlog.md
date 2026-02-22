@@ -141,21 +141,29 @@ This document tracks items that need to be fixed or improved but are not current
 ## �� Other Backlog Items
 
 ### 2. Timer Sound Effects
-**Status**: Working but with 403 errors  
+**Status**: ✅ RESOLVED - Local sounds implemented  
 **Priority**: Low  
-**Description**: Timer sound effects are failing to load due to 403 errors from external sound URLs.
+**Description**: Timer sound effects were failing to load due to 403 errors from external sound URLs.
 
-**Current Issues**:
-- `https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3` - 403 Forbidden
-- `https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3` - 403 Forbidden
+**Solution Implemented**:
+- Downloaded free CC0-licensed sounds from Pixabay
+- Hosted locally in `public/sounds/` directory
+- Updated Timer component to use local sound paths
+- Renamed buzzer to time-up for future buzz-in rounds
 
-**Files Involved**:
-- `src/components/Timer.tsx` - Sound effect initialization
+**Files Added**:
+- `public/sounds/tick.mp3` - Countdown tick sound
+- `public/sounds/warning.mp3` - 10-second warning bell
+- `public/sounds/time-up.mp3` - Time-up sound
 
-**Potential Solutions**:
-- Find alternative free sound sources
-- Host sounds locally
-- Remove sounds if not critical
+**Files Updated**:
+- `src/components/Timer.tsx` - Local sound paths and variable names
+
+**Benefits**:
+- No more CORS or 403 errors
+- Faster loading (no external requests)
+- Future-proof for buzz-in rounds
+- Reliable sound playback
 
 ---
 

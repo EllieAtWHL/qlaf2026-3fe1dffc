@@ -95,7 +95,7 @@ useEffect(() => {
 
 **Responsibilities:**
 - Manage local countdown with setInterval
-- Handle sound effects
+- Handle local sound effects (tick, warning, time-up)
 - Update visual display
 - No network communication
 
@@ -269,7 +269,7 @@ node tests/unit/timer-architecture-regression.test.js
 ### Potential Improvements
 1. **Timer Presets**: Quick duration presets for different round types
 2. **Visual Indicators**: Better visual feedback for timer states
-3. **Sound Customization**: Configurable sound effects
+3. **Sound Customization**: Local sound effects with configurable volume
 4. **Timer History**: Track timer usage patterns
 5. **Mobile Controls**: Touch-optimized timer controls if needed
 
