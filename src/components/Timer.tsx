@@ -53,7 +53,7 @@ export const Timer = ({ compact = false }: TimerProps) => {
 
   // Sound effects
   useEffect(() => {
-    if (isTimerRunning && timerValue !== lastTickRef.current) {
+    if (timerValue !== lastTickRef.current) {
       console.log(`[Timer Sound] Value: ${timerValue}, Running: ${isTimerRunning}, Last: ${lastTickRef.current}`);
       
       // Play warning sound at exactly 10 seconds
