@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 import { useQuizStore } from '@/store/quizStore';
 import { Howl } from 'howler';
 
-// Sound URLs (using free sound effects)
+// Sound URLs (using alternative sources that work)
 const tickSound = new Howl({
-  src: ['https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'],
+  src: ['https://www.soundjay.com/misc/sounds/click-up.mp3'],
   volume: 0.3,
 });
 
 const warningSound = new Howl({
-  src: ['https://assets.mixkit.co/active_storage/sfx/209/209-preview.mp3'],
+  src: ['https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3'],
   volume: 0.5,
 });
 
