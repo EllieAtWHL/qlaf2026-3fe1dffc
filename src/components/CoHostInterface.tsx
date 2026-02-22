@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { 
-  Play, Pause, RotateCcw, ChevronLeft, ChevronRight, 
+  ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
   SkipForward, Clock, Wifi, WifiOff, HelpCircle, Image, Link,
-  Bug, X, Grid3X3
+  Bug, X, Grid3X3, RotateCcw
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import React from 'react';
@@ -17,8 +17,6 @@ export const CoHostInterface = () => {
     gameState,
     currentRoundIndex,
     currentQuestionIndex,
-    isTimerRunning,
-    timerValue,
     teams,
     f1Positions,
     showAnswer,
@@ -30,8 +28,6 @@ export const CoHostInterface = () => {
     showScores,
     showTransition,
     startTimer,
-    pauseTimer,
-    resetTimer,
     updateTeamScore,
     advanceF1Car,
     toggleAnswer,
@@ -87,38 +83,6 @@ export const CoHostInterface = () => {
     return optionsWithOriginalIndex.sort((a, b) => (a._originalIndex || 0) - (b._originalIndex || 0));
   }, [currentQuestion?.id, currentQuestion?.options]);
 
-  // Timer broadcasting logic - OPTIMIZED to prevent navigation delays
-  useEffect(() => {
-    // Only broadcast ticks if timer is running AND we're in an active round
-    const shouldBroadcast = isTimerRunning && gameState === 'round';
-    
-    // Use requestAnimationFrame for better performance than setInterval
-    let animationId: number | null = null;
-    let lastBroadcastTime = 0;
-    const BROADCAST_INTERVAL = 1000; // 1 second intervals
-    
-    const broadcastTick = (timestamp: number) => {
-      if (shouldBroadcast && timestamp - lastBroadcastTime >= BROADCAST_INTERVAL) {
-        broadcastAction('tick');
-        lastBroadcastTime = timestamp;
-      }
-      
-      if (shouldBroadcast) {
-        animationId = requestAnimationFrame(broadcastTick);
-      }
-    };
-    
-    if (shouldBroadcast) {
-      animationId = requestAnimationFrame(broadcastTick);
-    }
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-    };
-  }, [isTimerRunning, gameState, broadcastAction]);
-
   // Auto-start timer for picture board when first picture is displayed - OPTIMIZED
   useEffect(() => {
     // Only run for picture board round
@@ -130,21 +94,21 @@ export const CoHostInterface = () => {
     const hasBoardSelected = selectedBoards[currentTeamSelecting];
     const isFirstPicture = currentPictureIndex === 0;
     const notShowingAll = !showAllPictures;
-    const timerNotRunning = !isTimerRunning;
     
     // Use a debounced approach to prevent rapid state changes
-    if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
+    if (hasBoardSelected && isFirstPicture && notShowingAll) {
       // Small delay to ensure state is stable before starting timer
       const timeoutId = setTimeout(() => {
         // Double-check conditions haven't changed
-        if (selectedBoards[currentTeamSelecting] && currentPictureIndex === 0 && !showAllPictures && !isTimerRunning) {
-          syncedStartTimer();
+        if (selectedBoards[currentTeamSelecting] && currentPictureIndex === 0 && !showAllPictures) {
+          startTimer();
+          broadcastAction('startTimer');
         }
       }, 100);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
+  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, currentRoundIndex, broadcastAction]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
@@ -182,22 +146,7 @@ export const CoHostInterface = () => {
     broadcastAction('showTransition');
   };
 
-  const syncedStartTimer = () => {
-    // Update local state first to enable broadcasting, then broadcast
-    startTimer();
-    broadcastAction('startTimer');
-  };
-
-  const syncedPauseTimer = () => {
-    pauseTimer();
-    broadcastAction('pauseTimer');
-  };
-
-  const syncedResetTimer = (duration?: number) => {
-    resetTimer(duration);
-    broadcastAction('resetTimer', { duration });
-  };
-
+  
   const syncedToggleAnswer = () => {
     toggleAnswer();
     broadcastAction('toggleAnswer');
@@ -778,48 +727,7 @@ export const CoHostInterface = () => {
         </motion.div>
       )}
 
-      {/* Timer Controls */}
-      {currentRound?.timerDuration && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card rounded-xl p-3 mb-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className={`font-display text-xl font-bold ${
-                timerValue <= 10 ? 'text-qlaf-danger' : timerValue <= 30 ? 'text-qlaf-warning' : 'text-qlaf-success'
-              }`}>
-                {Math.floor(timerValue / 60)}:{(timerValue % 60).toString().padStart(2, '0')}
-              </span>
-            </div>
-            
-            <div className="flex gap-1">
-              <button
-                onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
-                className={`p-3 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
-              >
-                {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={() => syncedResetTimer()}
-                className="p-3 rounded-lg bg-secondary text-foreground"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => syncedResetTimer(30)}
-                className="p-3 rounded-lg bg-secondary text-foreground text-xs font-semibold"
-              >
-                30s
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
+      
       {/* Team Scores */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -987,10 +895,7 @@ export const CoHostInterface = () => {
             <p className="text-xs font-mono text-muted-foreground">
               Question: <span className="text-foreground font-semibold">{currentQuestionIndex + 1}/{totalQuestions || 0}</span>
             </p>
-            <p className="text-xs font-mono text-muted-foreground">
-              Timer: <span className="text-foreground font-semibold">{timerValue}s ({isTimerRunning ? 'running' : 'stopped'})</span>
-            </p>
-            <p className="text-xs font-mono text-muted-foreground">
+                        <p className="text-xs font-mono text-muted-foreground">
               Show Answer: <span className="text-foreground font-semibold">{showAnswer ? 'true' : 'false'}</span>
             </p>
             {currentRound?.id === 'picture-board' && (
