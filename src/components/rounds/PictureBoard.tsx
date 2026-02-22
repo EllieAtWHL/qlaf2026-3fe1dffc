@@ -1,125 +1,14 @@
 import { motion } from 'framer-motion';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
-import { useEffect, useState, useRef } from 'react';
-import { useQuestions } from '@/hooks/useQuestions';
 import { Scoreboard } from '@/components/Scoreboard';
 import { Timer } from '@/components/Timer';
-import { Image, Users, Clock } from 'lucide-react';
-
-const BoardSelection = () => {
-  // This component shows available boards on the main screen
-  const { availableBoards, selectedBoards, currentTeamSelecting, pictureBoards } = useQuizStore();
-  
-  const currentTeamBoardId = selectedBoards[currentTeamSelecting];
-  const currentTeamBoard = pictureBoards.find(board => board.id === currentTeamBoardId);
-  
-  return (
-    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6"
-      >
-        <div className="flex items-center gap-4">
-          <Users className="w-10 h-10 text-primary" />
-          <div>
-            <span className="font-display text-sm text-muted-foreground uppercase tracking-[0.3em]">
-              Board Selection
-            </span>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground text-glow-primary">
-              Choose Your Board
-            </h1>
-          </div>
-        </div>
-      </motion.div>
-      
-      {/* Available Boards */}
-      <div className="flex-1 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl"
-        >
-          {availableBoards.map((boardId, index) => {
-            const board = pictureBoards.find(b => b.id === boardId);
-            if (!board) return null;
-            
-            return (
-              <motion.div
-                key={boardId}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="glass-card rounded-xl p-6"
-              >
-                <div className="text-center">
-                  {/* Board Image */}
-                  <div className="w-full h-32 mb-4 rounded-lg overflow-hidden bg-secondary/50">
-                    <img 
-                      src={board.imageUrl} 
-                      alt={board.name}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = '/placeholder.svg';
-                      }}
-                    />
-                  </div>
-                  <h3 className="font-display text-xl font-bold text-foreground mb-2">
-                    {board.name}
-                  </h3>
-                  <p className="font-body text-muted-foreground text-sm">
-                    12 Pictures
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-      </div>
-      
-      {/* Selection Status */}
-      <div className="mt-8">
-        <div className="glass-card rounded-xl p-4 max-w-2xl mx-auto">
-          <h3 className="font-display text-lg font-bold text-foreground mb-3 text-center">
-            Board Selection Status
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            {[1, 2, 3].map(teamId => (
-              <div key={teamId} className="text-center">
-                <div className="font-display text-sm text-muted-foreground mb-1">
-                  Board {teamId}
-                </div>
-                <div className="font-body text-foreground">
-                  {selectedBoards[teamId] ? (
-                    <span className="text-qlaf-success">
-                      {pictureBoards.find(b => b.id === selectedBoards[teamId])?.name}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground">Not selected</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
-      {/* QLAF branding */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
-        <span className="font-display text-sm text-muted-foreground/50 tracking-[0.5em]">
-          QLAF 2026
-        </span>
-      </div>
-    </div>
-  );
-};
+import { Image } from 'lucide-react';
+import { useEffect } from 'react';
 
 export const PictureBoard = () => {
   const {
     currentRoundIndex,
     showAnswer,
-    availableBoards,
     selectedBoards,
     currentTeamSelecting,
     pictureBoards,
@@ -136,19 +25,17 @@ export const PictureBoard = () => {
   } = useQuizStore();
 
   const round = ROUNDS[currentRoundIndex];
-  const previousBoardId = useRef<string | null>(null);
-  
-  // Reset picture board state when a new board is selected
+
+  // Preload all images from current board to eliminate first-time load delays
   useEffect(() => {
-    const currentBoardId = selectedBoards[currentTeamSelecting];
-    if (currentBoardId && currentBoardId !== previousBoardId.current) {
-      previousBoardId.current = currentBoardId;
-      resetPictureBoard();
+    if (currentBoard) {
+      currentBoard.pictures.forEach((picture) => {
+        const img = document.createElement('img');
+        img.src = picture.imageUrl;
+      });
     }
-  }, [selectedBoards, currentTeamSelecting]);
-  
-  // Note: Timer should only be started from CoHostInterface to follow architecture rules
-  
+  }, [currentBoard]);
+
   // Show completion message when all teams are done
   if (currentTeamSelecting === 4) {
     return (
@@ -174,7 +61,6 @@ export const PictureBoard = () => {
   
   // Show board selection UI if current team hasn't selected a board yet
   if (!selectedBoards[currentTeamSelecting]) {
-    // Render board selection inline instead of separate component to prevent unmounting
     return (
       <div className="min-h-screen qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-qlaf-blue/20 to-qlaf-purple/20 pointer-events-none"></div>
@@ -186,55 +72,33 @@ export const PictureBoard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-            {availableBoards.map((boardId, index) => {
-              const board = pictureBoards.find(b => b.id === boardId);
-              if (!board) return null;
-              
-              return (
-                <motion.div
-                  key={boardId}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300"
-                >
-                  <div className="aspect-video mb-4 rounded-lg overflow-hidden bg-white/5">
-                    <img 
-                      src={board.imageUrl} 
-                      alt={board.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{board.name}</h3>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div className="mt-8 bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <h3 className="text-xl font-bold text-white mb-4">Team Selection Status</h3>
-            <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map(teamId => (
-                <div key={teamId} className="text-center">
-                  <div className="font-semibold text-white">Team {teamId}</div>
-                  <div className={selectedBoards[teamId] ? 'text-qlaf-success' : 'text-white/70'}>
-                    {selectedBoards[teamId] 
-                      ? pictureBoards.find(b => b.id === selectedBoards[teamId])?.name 
-                      : 'Not selected'
-                    }
-                  </div>
+            {pictureBoards.map((board, index) => (
+              <motion.div
+                key={board.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300"
+              >
+                <div className="aspect-video mb-4 rounded-lg overflow-hidden bg-white/5">
+                  <img 
+                    src={board.imageUrl} 
+                    alt={board.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-              ))}
-            </div>
+                <h3 className="text-xl font-bold text-white mb-2">{board.name}</h3>
+              </motion.div>
+            ))}
           </div>
         </div>
       </div>
     );
   }
   
-  // Show the selected board for the current team
+  // Show loading if no current board
   if (!currentBoard) {
-    return <div>Loading board...</div>;
+    return <div className="min-h-screen qlaf-bg flex items-center justify-center text-white">Loading board...</div>;
   }
   
   const currentPicture = currentBoard.pictures[currentPictureIndex];
@@ -268,6 +132,7 @@ export const PictureBoard = () => {
       {/* Picture display */}
       <div className="flex-1 flex items-center justify-center px-4">
         <motion.div
+          key={`${currentPictureIndex}-${showAllPictures}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.1 }}
@@ -278,11 +143,8 @@ export const PictureBoard = () => {
               {/* Show all pictures in a grid - 4x3 with rectangular images */}
               <div className="grid grid-cols-4 gap-1 md:gap-2 w-full h-full">
                 {currentBoard.pictures.map((picture, index) => (
-                  <motion.div
+                  <div
                     key={picture.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: index * 0.02 }}
                     className="aspect-video glass-card rounded-lg p-1 flex items-center justify-center relative"
                   >
                     {/* Picture number circle in top-right corner */}
@@ -300,27 +162,20 @@ export const PictureBoard = () => {
                         e.currentTarget.src = '/placeholder.svg';
                       }}
                     />
-                  </motion.div>
+                  </div>
                 ))}
               </div>
             </div>
           ) : (
             <div className="w-full h-full flex flex-col items-center justify-center relative">
               {/* Show single picture - much larger */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.1 }}
-                className="w-full h-full max-h-[45vh] glass-card rounded-xl p-0 flex items-center justify-center relative"
-              >
+              <div className="w-full h-full max-h-[45vh] glass-card rounded-xl p-0 flex items-center justify-center relative">
                 {/* Picture number circle in top-right corner */}
-                {!showAllPictures && (
-                  <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10">
-                    <span className="font-display text-lg font-bold text-primary-foreground">
-                      {currentPictureIndex + 1}
-                    </span>
-                  </div>
-                )}
+                <div className="absolute top-6 right-6 w-12 h-12 rounded-full bg-primary flex items-center justify-center z-10">
+                  <span className="font-display text-lg font-bold text-primary-foreground">
+                    {currentPictureIndex + 1}
+                  </span>
+                </div>
                 <img 
                   src={currentPicture.imageUrl} 
                   alt={currentPicture.answer}
@@ -330,7 +185,7 @@ export const PictureBoard = () => {
                     e.currentTarget.src = '/placeholder.svg';
                   }}
                 />
-              </motion.div>
+              </div>
             </div>
           )}
         </motion.div>

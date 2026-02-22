@@ -1,0 +1,13 @@
+{
+  "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/cohost",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
