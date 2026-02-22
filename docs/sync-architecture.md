@@ -30,7 +30,7 @@ When multiple components call `useQuizSync`, they create multiple Supabase chann
   - OneMinuteRound.tsx
   - PictureBoard.tsx
   - GenericRound.tsx
-- **Timer.tsx** - ❌ Timer broadcasting moved to CoHostInterface
+- **Timer.tsx** - ❌ Timer countdown is managed locally, no broadcasting needed
 
 ---
 
@@ -57,7 +57,7 @@ useQuizSync system → Store updates → MainDisplay/Round Components read from 
 | OneMinuteRound.tsx | ✅ No useQuizSync | Reader only |
 | PictureBoard.tsx | ✅ No useQuizSync | Reader only |
 | GenericRound.tsx | ✅ No useQuizSync | Reader only |
-| Timer.tsx | ✅ No useQuizSync | Broadcasting moved to CoHostInterface |
+| Timer.tsx | ✅ No useQuizSync | Local countdown only |
 
 ---
 
@@ -74,8 +74,9 @@ Before deploying changes that affect sync:
 
 ### Timer Sync:
 - [ ] Timer starts/stops correctly on both displays
-- [ ] Timer ticks sync properly
-- [ ] No interference with other actions
+- [ ] Timer countdown works locally on main display only
+- [ ] No ongoing network traffic during countdown
+- [ ] Picture Board auto-start works correctly
 
 ### Other Rounds:
 - [ ] World Rankings still works
@@ -159,7 +160,7 @@ If you see double-actions or weird sync behavior:
 
 1. **State Changes:** If you need to sync new state, add the action to CoHostInterface
 2. **New Round Components:** Never add useQuizSync, only read from store
-3. **Timer Features:** Add timer broadcasting to CoHostInterface, not Timer component
+3. **Timer Features:** Add timer control actions to CoHostInterface, countdown managed locally on MainDisplay
 4. **Testing:** Always test sync behavior with both displays open
 
 ### Code Review Checklist:
@@ -167,7 +168,8 @@ If you see double-actions or weird sync behavior:
 - [ ] No new useQuizSync calls outside CoHostInterface
 - [ ] All state changes go through CoHostInterface broadcasting
 - [ ] Round components only read from store
-- [ ] Timer broadcasting is in CoHostInterface if needed
+- [ ] Timer control actions are in CoHostInterface only
+- [ ] Timer countdown is managed locally on MainDisplay
 
 ---
 
