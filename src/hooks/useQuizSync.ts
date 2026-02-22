@@ -90,7 +90,7 @@ function applyStateUpdate(action: string, data: any) {
   switch (action) {
     case 'startGame':
       useQuizStore.setState({ gameState: 'round-transition', currentRoundIndex: 0 });
-      loadQuestionsForCurrentRound();
+      // Don't load questions yet - wait until round starts
       break;
     case 'startRound':
       useQuizStore.setState({ gameState: 'round', isTransitioning: false });
@@ -203,11 +203,25 @@ function applyStateUpdate(action: string, data: any) {
       break;
     case 'previousQuestion':
       if (store.currentQuestionIndex > 0) {
-        useQuizStore.setState({ currentQuestionIndex: store.currentQuestionIndex - 1, showAnswer: false });
+        useQuizStore.setState({ 
+          currentQuestionIndex: store.currentQuestionIndex - 1, 
+          showAnswer: false,
+          onlyConnectRevealedOptions: 1,
+          // Reset Dave's Dozen answers when changing questions
+          davesDozenRevealedAnswers: new Set(),
+          davesDozenShowRedCross: false
+        });
       }
       break;
     case 'goToQuestion':
-      useQuizStore.setState({ currentQuestionIndex: data.index, showAnswer: false });
+      useQuizStore.setState({ 
+        currentQuestionIndex: data.index, 
+        showAnswer: false,
+        onlyConnectRevealedOptions: 1,
+        // Reset Dave's Dozen answers when changing questions
+        davesDozenRevealedAnswers: new Set(),
+        davesDozenShowRedCross: false
+      });
       break;
     case 'resetGame':
       useQuizStore.setState({

@@ -101,6 +101,7 @@ export const CoHostInterface = () => {
   const confirmStartGame = () => {
     setShowSetupReminder(false);
     startGame();
+    broadcastAction('startGame');
   };
   const [isRevealing, setIsRevealing] = useState(false);
 
