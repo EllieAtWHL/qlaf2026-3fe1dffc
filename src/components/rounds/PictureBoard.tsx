@@ -72,7 +72,11 @@ export const PictureBoard = () => {
             <p className="text-xl text-white/90">Team {currentTeamSelecting} - Select Your Board</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+          <div className={`grid gap-6 w-full max-w-4xl ${
+            availableBoards.length === 1 ? 'grid-cols-1' : 
+            availableBoards.length === 2 ? 'md:grid-cols-2' : 
+            'md:grid-cols-3'
+          } justify-items-center`}>
             {pictureBoards
               .filter(board => availableBoards.includes(board.id))
               .map((board, index) => (
@@ -81,7 +85,7 @@ export const PictureBoard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300"
+                className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 w-full max-w-sm"
               >
                 <div className="aspect-video mb-4 rounded-lg overflow-hidden bg-white/5">
                   <img 
