@@ -254,6 +254,100 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
+## 🧪 Test Quality Improvements
+
+### 9. DavesDozen Test Suite Enhancements
+**Status**: Test Optimization Needed  
+**Priority**: Low  
+**Date Added**: 2026-02-22  
+**Description**: Improve test quality and reduce over-mocking in DavesDozen test suite while adding missing edge case coverage.
+
+**Current Assessment**:
+- ✅ **Good foundation**: Tests are sturdy and follow React Testing Library best practices
+- ✅ **Appropriate mocking**: Correctly mocks external dependencies (useQuizStore, useQuestions)
+- ✅ **Realistic data**: Uses complete interfaces and proper typing
+- ⚠️ **Over-mocking**: Mocks entire ROUNDS array when only specific round needed
+- ⚠️ **Missing edge cases**: No tests for showAnswer state, partial revealing, different round indices
+
+**Improvements Needed**:
+
+**1. Reduce Mock Scope**:
+```typescript
+// Current: Mocking entire ROUNDS array
+ROUNDS: [/* full 6-round array */]
+
+// Better: Only mock what's needed
+ROUNDS: [
+  { id: 'daves-dozen', name: "Dave's Dozen", timerDuration: null }
+]
+```
+
+**2. Add Missing Test Cases**:
+- Test `showAnswer` state functionality
+- Test partial answer revealing (e.g., 6 of 12 answers revealed)
+- Test different `currentRoundIndex` values
+- Test edge cases like all answers revealed vs none revealed
+
+**3. Consolidate Test Data**:
+- Remove duplicate `mockStore` objects between test suites
+- Create shared test constants for better maintainability
+- Standardize mock data structure across all tests
+
+**Files Involved**:
+- `src/__tests__/daves-dozen.test.tsx` - Main test file to optimize
+
+**Specific Tasks**:
+- [ ] Refactor ROUNDS mock to only include necessary round
+- [ ] Add test for `showAnswer` state
+- [ ] Add test for partial answer revealing scenarios
+- [ ] Add test for different `currentRoundIndex` values
+- [ ] Consolidate duplicate mock store objects
+- [ ] Create shared test constants for better maintainability
+
+**Expected Benefits**:
+- Faster test execution (reduced mock overhead)
+- Better test maintainability
+- More comprehensive edge case coverage
+- Cleaner, more focused test code
+
+**Impact**: Low - Improves code quality and test reliability but doesn't affect user functionality
+
+---
+
+## 🎯 Dave's Dozen Round Enhancement
+
+### 8. Add More Questions to Dave's Dozen
+**Status**: Content Development Needed  
+**Priority**: Medium  
+**Date Added**: 2026-02-22  
+**Description**: Expand Dave's Dozen question set beyond current 2 questions to provide variety for quiz gameplay.
+
+**Current Questions**:
+- ✅ dd-1: "Name every goalscorer for Tottenham in their successful Europa League run" (12 players)
+- ✅ dd-2: "Name every current Scottish Premiership team" (12 teams)
+
+**Additional Question Ideas**:
+- Premier League Golden Boot winners
+- England cricket World Cup winners
+- F1 drivers with multiple championships
+- Olympic sports with British gold medalists
+- Tennis Grand Slam winners by nationality
+- Rugby World Cup winning captains
+
+**Files Involved**:
+- `src/data/questions.json` - Add new question objects with answers array
+- `/public/images/daves-dozen/` - Add corresponding image assets
+
+**Action Required**:
+1. Research and verify 12 items for each question topic
+2. Create or source appropriate images for each answer
+3. Add new question objects to questions.json following existing format
+4. Test new questions with Dave's Dozen functionality
+
+**Impact**: Medium - Increases quiz variety and replay value
+
+---
+
 ## 📝 Notes for Future Development
 
 ### Architecture Rules to Maintain:
@@ -284,3 +378,4 @@ This document tracks items that need to be fixed or improved but are not current
 6. **LOW**: Move Only Connect progressive reveal controls into questions section
 
 7. **LOW**: Create additional Only Connect questions and add to  (track assets in )
+8. **LOW**: Optimize DavesDozen test suite (reduce mocking, add edge cases, consolidate test data)

@@ -328,4 +328,14 @@
     height: 100%;
     overflow: hidden;
   }
+
+  /* TV Scanlines Animation for Ellie's Tellies */
+  @keyframes scanlines {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 4px;
+    }
+  }
 }
