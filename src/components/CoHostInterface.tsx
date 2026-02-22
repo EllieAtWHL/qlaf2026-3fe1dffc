@@ -1037,11 +1037,11 @@ export const CoHostInterface = () => {
               <div className="space-y-2">
                 <div className="flex items-start gap-2">
                   <span className="text-qlaf-success">•</span>
-                  <span><strong>Click once on the main display</strong> to enable timer sounds</span>
+                  <span><strong>Click once on main display</strong> to enable timer sounds</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="text-qlaf-success">•</span>
-                  <span>Images will be <strong>automatically preloaded</strong> for smooth gameplay</span>
+                  <span><strong>All images are automatically preloaded</strong> for smooth gameplay</span>
                 </div>
               </div>
               <p className="text-xs pt-2">This only needs to be done once per browser session.</p>
