@@ -61,13 +61,13 @@ export const DavesDozen = () => {
       </motion.div>
 
       {/* 12 boxes grid */}
-      <div className="flex-1 flex items-center justify-center px-4">
+      <div className="flex-1 flex items-center justify-center px-2 md:px-4 max-h-[75vh]">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-6xl"
+          className="w-full h-full max-w-6xl"
         >
-          <div className="grid grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 h-full" data-testid="daves-dozen-grid">
             {currentQuestion?.answers?.map((answer: any) => {
               const isRevealed = davesDozenRevealedAnswers.has(answer.number);
               
@@ -77,43 +77,36 @@ export const DavesDozen = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: answer.number * 0.05 }}
-                  className="aspect-square glass-card rounded-xl p-4 flex flex-col items-center justify-center relative"
+                  className="aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col items-center justify-center relative max-h-[28vh] md:max-h-[30vh]"
+                  data-testid={`answer-box-${answer.number}`}
                 >
                   {/* Number badge */}
-                  <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-primary flex items-center justify-center z-10">
-                    <span className="font-display text-sm font-bold text-primary-foreground">
+                  <div className="absolute top-1 right-1 w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center z-10">
+                    <span className="font-display text-xs md:text-sm font-bold text-primary-foreground">
                       {answer.number}
                     </span>
                   </div>
 
                   {/* Content */}
                   {isRevealed ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                       {/* Reveal image */}
-                      <div className="w-full h-3/4 mb-2 rounded-lg overflow-hidden bg-secondary/50">
+                      <div className="w-full h-full rounded overflow-hidden bg-secondary/50">
                         <img 
                           src={answer.imageUrl} 
                           alt={answer.text}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                           onError={(e) => {
                             e.currentTarget.src = '/placeholder.svg';
                           }}
                         />
                       </div>
-                      {/* Answer text */}
-                      <div className="text-center">
-                        <p className="font-display text-sm font-semibold text-foreground">
-                          {answer.text}
-                        </p>
-                      </div>
                     </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <div className="w-16 h-16 rounded-full bg-secondary/50 flex items-center justify-center">
-                        <span className="font-display text-2xl font-bold text-muted-foreground">
-                          {answer.number}
-                        </span>
-                      </div>
+                      <span className="font-display text-2xl md:text-3xl font-bold text-muted-foreground/50 tracking-[0.3em]">
+                        QLAF
+                      </span>
                     </div>
                   )}
                 </motion.div>
@@ -130,6 +123,7 @@ export const DavesDozen = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           className="absolute inset-0 flex items-center justify-center pointer-events-none z-50"
+          data-testid="red-cross-overlay"
         >
           <div className="relative">
             <X className="w-64 h-64 text-red-500 stroke-[8]" />

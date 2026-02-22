@@ -9,6 +9,7 @@ import { WorldRankings } from '@/components/rounds/WorldRankings';
 import { PictureBoard } from '@/components/rounds/PictureBoard';
 import { OnlyConnect } from '@/components/rounds/OnlyConnect';
 import { ElliesTellies } from '@/components/rounds/ElliesTellies';
+import { DavesDozen } from '@/components/rounds/DavesDozen';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
@@ -71,6 +72,7 @@ const componentMap: Record<string, React.ComponentType<any>> = {
   'PictureBoard': PictureBoard,
   'OnlyConnect': OnlyConnect,
   'ElliesTellies': ElliesTellies,
+  'DavesDozen': DavesDozen,
   'GenericRound': GenericRound,
 };
 

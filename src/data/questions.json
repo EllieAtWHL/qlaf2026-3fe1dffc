@@ -345,20 +345,39 @@
       {
         "id": "dd-1",
         "type": "auction",
-        "content": "Name 12 Premier League teams that have never been relegated",
+        "content": "Name every goalscorer for Tottenham in their successful Europa League run",
         "answers": [
-          { "number": 1, "text": "Arsenal", "imageUrl": "/images/daves-dozen/arsenal.png" },
-          { "number": 2, "text": "Liverpool", "imageUrl": "/images/daves-dozen/liverpool.png" },
-          { "number": 3, "text": "Manchester United", "imageUrl": "/images/daves-dozen/manchester-united.png" },
-          { "number": 4, "text": "Everton", "imageUrl": "/images/daves-dozen/everton.png" },
-          { "number": 5, "text": "Tottenham", "imageUrl": "/images/daves-dozen/tottenham.png" },
-          { "number": 6, "text": "Manchester City", "imageUrl": "/images/daves-dozen/manchester-city.png" },
-          { "number": 7, "text": "Chelsea", "imageUrl": "/images/daves-dozen/chelsea.png" },
-          { "number": 8, "text": "Brighton", "imageUrl": "/images/daves-dozen/brighton.png" },
-          { "number": 9, "text": "Bournemouth", "imageUrl": "/images/daves-dozen/bournemouth.png" },
-          { "number": 10, "text": "Brentford", "imageUrl": "/images/daves-dozen/brentford.png" },
-          { "number": 11, "text": "Nottingham Forest", "imageUrl": "/images/daves-dozen/nottingham-forest.png" },
-          { "number": 12, "text": "Fulham", "imageUrl": "/images/daves-dozen/fulham.png" }
+          { "number": 1, "text": "Solanke", "imageUrl": "/images/daves-dozen/solanke.png" },
+          { "number": 2, "text": "Johnson", "imageUrl": "/images/daves-dozen/johnson.png" },
+          { "number": 3, "text": "Son", "imageUrl": "/images/daves-dozen/son.png" },
+          { "number": 4, "text": "Maddison", "imageUrl": "/images/daves-dozen/maddison.png" },
+          { "number": 5, "text": "Sarr", "imageUrl": "/images/daves-dozen/sarr.png" },
+          { "number": 6, "text": "Porro", "imageUrl": "/images/daves-dozen/porro.png" },
+          { "number": 7, "text": "Odobert", "imageUrl": "/images/daves-dozen/odobert.png" },
+          { "number": 8, "text": "Deki", "imageUrl": "/images/daves-dozen/deki.png" },
+          { "number": 9, "text": "Moore", "imageUrl": "/images/daves-dozen/moore.png" },
+          { "number": 10, "text": "Richarlison", "imageUrl": "/images/daves-dozen/richarlison.png" },
+          { "number": 11, "text": "Scarlett", "imageUrl": "/images/daves-dozen/scarlett.png" },
+          { "number": 12, "text": "Ajayi", "imageUrl": "/images/daves-dozen/ajayi.png" }
+        ]
+      },
+      {
+        "id": "dd-2",
+        "type": "auction",
+        "content": "Name every current Scottich Premiership team",
+        "answers": [
+          { "number": 1, "text": "Hearts", "imageUrl": "/images/daves-dozen/hearts.png" },
+          { "number": 2, "text": "Celtic", "imageUrl": "/images/daves-dozen/celtic.png" },
+          { "number": 3, "text": "Rangers", "imageUrl": "/images/daves-dozen/rangers.png" },
+          { "number": 4, "text": "Motherwell", "imageUrl": "/images/daves-dozen/motherwell.png" },
+          { "number": 5, "text": "Hibernian", "imageUrl": "/images/daves-dozen/hibernian.png" },
+          { "number": 6, "text": "Dundee United", "imageUrl": "/images/daves-dozen/dundeeUnited.png" },
+          { "number": 7, "text": "Aberdeen", "imageUrl": "/images/daves-dozen/aberdeen.png" },
+          { "number": 8, "text": "Falkirk", "imageUrl": "/images/daves-dozen/falkirk.png" },
+          { "number": 9, "text": "Dundee", "imageUrl": "/images/daves-dozen/dundee.png" },
+          { "number": 10, "text": "St Mirren", "imageUrl": "/images/daves-dozen/stMirren.png" },
+          { "number": 11, "text": "Kilmarnock", "imageUrl": "/images/daves-dozen/kilmarnock.png" },
+          { "number": 12, "text": "Livingston", "imageUrl": "/images/daves-dozen/livingston.png" }
         ]
       }
     ]

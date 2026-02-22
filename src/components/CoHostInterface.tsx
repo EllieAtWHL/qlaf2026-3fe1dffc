@@ -560,7 +560,7 @@ export const CoHostInterface = () => {
       )}
 
       {/* Answer for Co-host (Always Visible) */}
-      {totalQuestions > 0 && gameState === 'round' && currentQuestion && (
+      {totalQuestions > 0 && gameState === 'round' && currentQuestion && currentRound?.id !== 'daves-dozen' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -778,6 +778,54 @@ export const CoHostInterface = () => {
       )}
 
       
+      {/* Dave's Dozen Controls */}
+      {currentRound?.id === 'daves-dozen' && gameState === 'round' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Grid3X3 className="w-4 h-4" />
+            Dave's Dozen - Answer Selection
+          </h3>
+          
+          <div className="space-y-3">
+            {/* Answer Grid */}
+            <div className="grid grid-cols-4 md:grid-cols-4 gap-2">
+              {currentQuestion?.answers?.map((answer: any) => (
+                <button
+                  key={answer.number}
+                  onClick={() => syncedRevealDavesDozenAnswer(answer.number)}
+                  className="control-btn bg-secondary text-foreground text-xs p-3 flex flex-col items-center gap-1"
+                >
+                  <span className="text-xs leading-tight text-center">{answer.text}</span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={syncedShowIncorrectAnswer}
+                className="control-btn bg-red-500 text-white text-xs"
+              >
+                <X className="w-4 h-4 inline mr-1" />
+                Incorrect
+              </button>
+              <button
+                onClick={syncedResetDavesDozen}
+                className="control-btn bg-secondary text-foreground text-xs"
+              >
+                <RotateCcw className="w-4 h-4 inline mr-1" />
+                Reset
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
       {/* Team Scores */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -826,54 +874,6 @@ export const CoHostInterface = () => {
         </div>
       </motion.div>
 
-      {/* Dave's Dozen Controls */}
-      {currentRound?.id === 'daves-dozen' && gameState === 'round' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="glass-card rounded-xl p-4 mb-4"
-        >
-          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Grid3X3 className="w-4 h-4" />
-            Dave's Dozen - Answer Selection
-          </h3>
-          
-          <div className="space-y-3">
-            {/* Answer Grid */}
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
-              {currentQuestion?.answers?.map((answer: any) => (
-                <button
-                  key={answer.number}
-                  onClick={() => syncedRevealDavesDozenAnswer(answer.number)}
-                  className="control-btn bg-secondary text-foreground text-xs p-3 flex flex-col items-center gap-1"
-                >
-                  <span className="font-bold text-lg">{answer.number}</span>
-                  <span className="text-xs leading-tight">{answer.text}</span>
-                </button>
-              ))}
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={syncedShowIncorrectAnswer}
-                className="control-btn bg-red-500 text-white text-xs"
-              >
-                <X className="w-4 h-4 inline mr-1" />
-                Incorrect
-              </button>
-              <button
-                onClick={syncedResetDavesDozen}
-                className="control-btn bg-secondary text-foreground text-xs"
-              >
-                <RotateCcw className="w-4 h-4 inline mr-1" />
-                Reset
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
 
       {/* F1 Controls (only for F1 round) */}
       {currentRound?.id === 'f1-grand-prix' && (
