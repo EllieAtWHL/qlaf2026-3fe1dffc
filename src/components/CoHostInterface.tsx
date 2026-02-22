@@ -602,102 +602,12 @@ export const CoHostInterface = () => {
         </motion.div>
       )}
 
-      {/* Timer Controls */}
-      {currentRound?.timerDuration && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="glass-card rounded-xl p-3 mb-4"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className={`font-display text-xl font-bold ${
-                timerValue <= 10 ? 'text-qlaf-danger' : timerValue <= 30 ? 'text-qlaf-warning' : 'text-qlaf-success'
-              }`}>
-                {Math.floor(timerValue / 60)}:{(timerValue % 60).toString().padStart(2, '0')}
-              </span>
-            </div>
-            
-            <div className="flex gap-1">
-              <button
-                onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
-                className={`p-3 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
-              >
-                {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              </button>
-              <button
-                onClick={() => syncedResetTimer()}
-                className="p-3 rounded-lg bg-secondary text-foreground"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => syncedResetTimer(30)}
-                className="p-3 rounded-lg bg-secondary text-foreground text-xs font-semibold"
-              >
-                30s
-              </button>
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Team Scores */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="glass-card rounded-xl p-4 mb-4"
-      >
-        <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3">
-          Round Scores
-        </h3>
-        
-        <div className="space-y-3">
-          {teams.map((team, index) => (
-            <div key={team.id} className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${teamColors[index]}`} />
-              <span className="font-display text-sm flex-1">{team.name}</span>
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => adjustScore(team.id, -1)}
-                  className="w-11 h-11 rounded-lg bg-destructive/20 text-destructive flex items-center justify-center"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <input
-                  type="number"
-                  value={scoreInputs[`${team.id}-${currentRoundIndex}`] || 0}
-                  onChange={(e) => handleScoreChange(team.id, e.target.value)}
-                  className="w-16 h-11 rounded-lg bg-input text-center font-display text-lg border-none"
-                />
-                <button
-                  onClick={() => adjustScore(team.id, 1)}
-                  className="w-11 h-11 rounded-lg bg-qlaf-success/20 text-qlaf-success flex items-center justify-center"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
-              
-              <div className="w-12 text-right">
-                <span className="font-display text-lg font-bold text-primary">
-                  {team.totalScore}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
-
       {/* Picture Board Controls */}
       {currentRound?.id === 'picture-board' && gameState === 'round' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
+          transition={{ delay: 0.12 }}
           className="glass-card rounded-xl p-4 mb-4"
         >
           <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -851,6 +761,96 @@ export const CoHostInterface = () => {
           )}
         </motion.div>
       )}
+
+      {/* Timer Controls */}
+      {currentRound?.timerDuration && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="glass-card rounded-xl p-3 mb-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <span className={`font-display text-xl font-bold ${
+                timerValue <= 10 ? 'text-qlaf-danger' : timerValue <= 30 ? 'text-qlaf-warning' : 'text-qlaf-success'
+              }`}>
+                {Math.floor(timerValue / 60)}:{(timerValue % 60).toString().padStart(2, '0')}
+              </span>
+            </div>
+            
+            <div className="flex gap-1">
+              <button
+                onClick={isTimerRunning ? syncedPauseTimer : syncedStartTimer}
+                className={`p-3 rounded-lg ${isTimerRunning ? 'bg-qlaf-warning text-white' : 'bg-qlaf-success text-white'}`}
+              >
+                {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              </button>
+              <button
+                onClick={() => syncedResetTimer()}
+                className="p-3 rounded-lg bg-secondary text-foreground"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => syncedResetTimer(30)}
+                className="p-3 rounded-lg bg-secondary text-foreground text-xs font-semibold"
+              >
+                30s
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Team Scores */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="glass-card rounded-xl p-4 mb-4"
+      >
+        <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3">
+          Round Scores
+        </h3>
+        
+        <div className="space-y-3">
+          {teams.map((team, index) => (
+            <div key={team.id} className="flex items-center gap-3">
+              <div className={`w-3 h-3 rounded-full ${teamColors[index]}`} />
+              <span className="font-display text-sm flex-1">{team.name}</span>
+              
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => adjustScore(team.id, -1)}
+                  className="w-11 h-11 rounded-lg bg-destructive/20 text-destructive flex items-center justify-center"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <input
+                  type="number"
+                  value={scoreInputs[`${team.id}-${currentRoundIndex}`] || 0}
+                  onChange={(e) => handleScoreChange(team.id, e.target.value)}
+                  className="w-16 h-11 rounded-lg bg-input text-center font-display text-lg border-none"
+                />
+                <button
+                  onClick={() => adjustScore(team.id, 1)}
+                  className="w-11 h-11 rounded-lg bg-qlaf-success/20 text-qlaf-success flex items-center justify-center"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="w-12 text-right">
+                <span className="font-display text-lg font-bold text-primary">
+                  {team.totalScore}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </motion.div>
 
       {/* Dave's Dozen Controls */}
       {currentRound?.id === 'daves-dozen' && gameState === 'round' && (
