@@ -716,11 +716,20 @@ export const CoHostInterface = () => {
                   )}
                   
                   <button
-                    onClick={syncedTeamTimeUp}
-                    className="control-btn bg-qlaf-warning text-white w-full"
+                    onClick={currentTeamSelecting === 3 ? syncedNextRound : syncedTeamTimeUp}
+                    className={`control-btn ${currentTeamSelecting === 3 ? 'bg-qlaf-success' : 'bg-qlaf-warning'} text-white w-full`}
                   >
-                    <Clock className="w-4 h-4 inline mr-2" />
-                    Next Team
+                    {currentTeamSelecting === 3 ? (
+                      <>
+                        <SkipForward className="w-4 h-4 inline mr-2" />
+                        Next Round
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-4 h-4 inline mr-2" />
+                        Next Team
+                      </>
+                    )}
                   </button>
                 </div>
               )}
