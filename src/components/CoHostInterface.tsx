@@ -93,6 +93,41 @@ export const CoHostInterface = () => {
   const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound } = useQuestions();
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
+  const [showSetupReminder, setShowSetupReminder] = useState(false);
+
+  // Preload all images for the quiz
+  const preloadAllImages = () => {
+    console.log('[CoHost] Preloading all images...');
+    
+    // Preload picture board images
+    const data = (require('@/data/questions.json') as any)['picture-board'];
+    const boards = data?.boards || [];
+    
+    boards.forEach((board: any) => {
+      // Preload board thumbnail
+      const boardImg = document.createElement('img');
+      boardImg.src = board.imageUrl;
+      
+      // Preload all pictures in the board
+      board.pictures?.forEach((picture: any) => {
+        const pictureImg = document.createElement('img');
+        pictureImg.src = picture.imageUrl;
+      });
+    });
+    
+    console.log(`[CoHost] Preloaded ${boards.length} picture boards with images`);
+  };
+
+  // Handle start game with reminder
+  const handleStartGame = () => {
+    setShowSetupReminder(true);
+  };
+
+  const confirmStartGame = () => {
+    setShowSetupReminder(false);
+    preloadAllImages();
+    startGame();
+  };
   const [isRevealing, setIsRevealing] = useState(false);
 
   // Create a stable copy of options for display to prevent reordering
@@ -148,8 +183,7 @@ export const CoHostInterface = () => {
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
-    startGame();
-    broadcastAction('startGame');
+    handleStartGame();
   };
 
   const syncedStartRound = () => {
@@ -1012,6 +1046,47 @@ export const CoHostInterface = () => {
           </div>
         </div>
       </motion.div>
+
+      {/* Setup Reminder Modal */}
+      {showSetupReminder && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-background rounded-xl p-6 max-w-md w-full border shadow-lg"
+          >
+            <h2 className="text-xl font-bold text-foreground mb-4">Setup Reminder</h2>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>Before starting the quiz, please complete these steps:</p>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-qlaf-success">•</span>
+                  <span><strong>Click once on the main display</strong> to enable timer sounds</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-qlaf-success">•</span>
+                  <span>Images will be <strong>automatically preloaded</strong> for smooth gameplay</span>
+                </div>
+              </div>
+              <p className="text-xs pt-2">This only needs to be done once per browser session.</p>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowSetupReminder(false)}
+                className="flex-1 px-4 py-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmStartGame}
+                className="flex-1 px-4 py-2 bg-qlaf-success text-white rounded-lg hover:bg-qlaf-success/90 transition-colors"
+              >
+                I've Done This - Start Game
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
