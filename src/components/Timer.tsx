@@ -28,12 +28,22 @@ export const Timer = ({ compact = false }: TimerProps) => {
   const lastTickRef = useRef<number>(timerValue);
   const hasPlayedBuzzer = useRef(false);
 
-  // Timer interval is disabled - we rely on sync system from CoHostInterface
-  // This prevents double-ticking when both cohost and main display try to manage timer
+  // Timer interval for local countdown on main display
   useEffect(() => {
-    // No interval - timer is managed by CoHostInterface via sync
-    return () => {};
-  }, []);
+    let interval: NodeJS.Timeout | null = null;
+    
+    if (isTimerRunning && timerValue > 0) {
+      interval = setInterval(() => {
+        tick();
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isTimerRunning, timerValue, tick]);
 
   // Sound effects
   useEffect(() => {

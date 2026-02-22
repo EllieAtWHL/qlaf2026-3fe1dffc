@@ -214,9 +214,6 @@ function applyStateUpdate(action: string, data: any) {
         isTimerRunning: false 
       });
       break;
-    case 'tick':
-      store.tick();
-      break;
     case 'updateTeamScore':
       const teamsForUpdate = [...store.teams];
       const teamToUpdate = teamsForUpdate.find(t => t.id === data.teamId);
