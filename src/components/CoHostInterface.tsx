@@ -87,57 +87,57 @@ export const CoHostInterface = () => {
     return optionsWithOriginalIndex.sort((a, b) => (a._originalIndex || 0) - (b._originalIndex || 0));
   }, [currentQuestion?.id, currentQuestion?.options]);
 
-  // Timer broadcasting logic
-  useEffect(() => {
-    // Don't broadcast ticks if timer is not running OR if we're not in an active round
-    const shouldBroadcast = isTimerRunning && gameState === 'round';
+  // Timer broadcasting logic - DISABLED TEMPORARILY
+  // useEffect(() => {
+  //   // Don't broadcast ticks if timer is not running OR if we're not in an active round
+  //   const shouldBroadcast = isTimerRunning && gameState === 'round';
     
-    const interval = shouldBroadcast ? setInterval(() => {
-      broadcastAction('tick');
-    }, 1000) : null;
+  //   const interval = shouldBroadcast ? setInterval(() => {
+  //     broadcastAction('tick');
+  //   }, 1000) : null;
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isTimerRunning, gameState, broadcastAction]);
+  //   return () => {
+  //     if (interval) clearInterval(interval);
+  //   };
+  // }, [isTimerRunning, gameState, broadcastAction]);
 
-  // Auto-start timer for picture board when first picture is displayed
-  useEffect(() => {
-    console.log('[CoHostInterface] Picture board timer check:', {
-      currentRoundId: ROUNDS[currentRoundIndex]?.id,
-      currentRoundIndex,
-      selectedBoards,
-      currentTeamSelecting,
-      currentPictureIndex,
-      showAllPictures,
-      isTimerRunning
-    });
+  // Auto-start timer for picture board when first picture is displayed - DISABLED TEMPORARILY
+  // useEffect(() => {
+  //   console.log('[CoHostInterface] Picture board timer check:', {
+  //     currentRoundId: ROUNDS[currentRoundIndex]?.id,
+  //     currentRoundIndex,
+  //     selectedBoards,
+  //     currentTeamSelecting,
+  //     currentPictureIndex,
+  //     showAllPictures,
+  //     isTimerRunning
+  //   });
     
-    // Only run for picture board round
-    if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
-      console.log('[CoHostInterface] Not picture board round, skipping');
-      return;
-    }
+  //   // Only run for picture board round
+  //   if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
+  //     console.log('[CoHostInterface] Not picture board round, skipping');
+  //     return;
+  //   }
     
-    // Check if a board is selected and this is the first picture
-    const hasBoardSelected = selectedBoards[currentTeamSelecting];
-    const isFirstPicture = currentPictureIndex === 0;
-    const notShowingAll = !showAllPictures;
-    const timerNotRunning = !isTimerRunning;
+  //   // Check if a board is selected and this is the first picture
+  //   const hasBoardSelected = selectedBoards[currentTeamSelecting];
+  //   const isFirstPicture = currentPictureIndex === 0;
+  //   const notShowingAll = !showAllPictures;
+  //   const timerNotRunning = !isTimerRunning;
     
-    console.log('[CoHostInterface] Timer conditions:', {
-      hasBoardSelected,
-      isFirstPicture,
-      notShowingAll,
-      timerNotRunning,
-      shouldStart: hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning
-    });
+  //   console.log('[CoHostInterface] Timer conditions:', {
+  //     hasBoardSelected,
+  //     isFirstPicture,
+  //     notShowingAll,
+  //     timerNotRunning,
+  //     shouldStart: hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning
+  //   });
     
-    if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
-      console.log('[CoHostInterface] Auto-starting timer for picture board first picture');
-      syncedStartTimer();
-    }
-  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
+  //   if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
+  //     console.log('[CoHostInterface] Auto-starting timer for picture board first picture');
+  //     syncedStartTimer();
+  //   }
+  // }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
@@ -225,6 +225,11 @@ export const CoHostInterface = () => {
   };
 
   const syncedNextPicture = () => {
+    console.log('[syncedNextPicture] Button clicked!', {
+      showAllPictures,
+      currentPictureIndex,
+      timestamp: new Date().toISOString()
+    });
     const startTime = performance.now();
     nextPicture();
     broadcastAction('nextPicture');
@@ -757,7 +762,10 @@ export const CoHostInterface = () => {
                         Previous
                       </button>
                       <button
-                        onClick={syncedNextPicture}
+                        onClick={() => {
+                          console.log('[Button] onClick triggered!', new Date().toISOString());
+                          syncedNextPicture();
+                        }}
                         disabled={showAllPictures}
                         className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
                       >
