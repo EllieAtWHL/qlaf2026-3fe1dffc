@@ -1,37 +1,23 @@
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useQuizStore } from '@/store/quizStore';
+import { Howl } from 'howler';
 
-// Sound effects using Web Audio API (no external files needed)
-const createBeep = (frequency: number, duration: number, volume: number = 0.3) => {
-  return {
-    play: () => {
-      try {
-        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.value = frequency;
-        oscillator.type = 'sine';
-        
-        gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-        
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + duration);
-      } catch (error) {
-        console.log('[Timer Sound] Audio API not available:', error);
-      }
-    }
-  };
-};
+// Sound effects using local files
+const tickSound = new Howl({
+  src: ['/sounds/tick.wav'],
+  volume: 0.3,
+});
 
-const tickSound = createBeep(800, 0.1, 0.3);    // High pitch, short
-const warningSound = createBeep(1200, 0.3, 0.5);  // Higher pitch, longer
-const timeUpSound = createBeep(400, 0.5, 0.7);    // Low pitch, longest
+const warningSound = new Howl({
+  src: ['/sounds/warning.wav'],
+  volume: 0.5,
+});
+
+const timeUpSound = new Howl({
+  src: ['/sounds/finish.mp3'],
+  volume: 0.7,
+});
 
 interface TimerProps {
   compact?: boolean;
