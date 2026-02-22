@@ -29,7 +29,15 @@ export const normalizeOption = (option: string | QuestionOption): QuestionOption
   if (typeof option === 'string') {
     return { label: option };
   }
-  return option;
+
+  // Some question data uses `text` instead of `label` (e.g., Only Connect).
+  // Normalize to always provide a `label` property for downstream components.
+  const anyOpt = option as any;
+  const label = option.label || anyOpt.text || anyOpt.label || '';
+  return {
+    ...option,
+    label,
+  };
 };
 
 export interface PictureBoard {
