@@ -95,29 +95,6 @@ export const CoHostInterface = () => {
   const [isConnected, setIsConnected] = useState(true);
   const [showSetupReminder, setShowSetupReminder] = useState(false);
 
-  // Preload all images for the quiz
-  const preloadAllImages = () => {
-    console.log('[CoHost] Preloading all images...');
-    
-    // Preload picture board images
-    const data = (require('@/data/questions.json') as any)['picture-board'];
-    const boards = data?.boards || [];
-    
-    boards.forEach((board: any) => {
-      // Preload board thumbnail
-      const boardImg = document.createElement('img');
-      boardImg.src = board.imageUrl;
-      
-      // Preload all pictures in the board
-      board.pictures?.forEach((picture: any) => {
-        const pictureImg = document.createElement('img');
-        pictureImg.src = picture.imageUrl;
-      });
-    });
-    
-    console.log(`[CoHost] Preloaded ${boards.length} picture boards with images`);
-  };
-
   // Handle start game with reminder
   const handleStartGame = () => {
     setShowSetupReminder(true);
@@ -125,7 +102,6 @@ export const CoHostInterface = () => {
 
   const confirmStartGame = () => {
     setShowSetupReminder(false);
-    preloadAllImages();
     startGame();
   };
   const [isRevealing, setIsRevealing] = useState(false);
