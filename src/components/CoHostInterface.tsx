@@ -87,57 +87,64 @@ export const CoHostInterface = () => {
     return optionsWithOriginalIndex.sort((a, b) => (a._originalIndex || 0) - (b._originalIndex || 0));
   }, [currentQuestion?.id, currentQuestion?.options]);
 
-  // Timer broadcasting logic - DISABLED TEMPORARILY
-  // useEffect(() => {
-  //   // Don't broadcast ticks if timer is not running OR if we're not in an active round
-  //   const shouldBroadcast = isTimerRunning && gameState === 'round';
+  // Timer broadcasting logic - OPTIMIZED to prevent navigation delays
+  useEffect(() => {
+    // Only broadcast ticks if timer is running AND we're in an active round
+    const shouldBroadcast = isTimerRunning && gameState === 'round';
     
-  //   const interval = shouldBroadcast ? setInterval(() => {
-  //     broadcastAction('tick');
-  //   }, 1000) : null;
+    // Use requestAnimationFrame for better performance than setInterval
+    let animationId: number | null = null;
+    let lastBroadcastTime = 0;
+    const BROADCAST_INTERVAL = 1000; // 1 second intervals
+    
+    const broadcastTick = (timestamp: number) => {
+      if (shouldBroadcast && timestamp - lastBroadcastTime >= BROADCAST_INTERVAL) {
+        broadcastAction('tick');
+        lastBroadcastTime = timestamp;
+      }
+      
+      if (shouldBroadcast) {
+        animationId = requestAnimationFrame(broadcastTick);
+      }
+    };
+    
+    if (shouldBroadcast) {
+      animationId = requestAnimationFrame(broadcastTick);
+    }
 
-  //   return () => {
-  //     if (interval) clearInterval(interval);
-  //   };
-  // }, [isTimerRunning, gameState, broadcastAction]);
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [isTimerRunning, gameState, broadcastAction]);
 
-  // Auto-start timer for picture board when first picture is displayed - DISABLED TEMPORARILY
-  // useEffect(() => {
-  //   console.log('[CoHostInterface] Picture board timer check:', {
-  //     currentRoundId: ROUNDS[currentRoundIndex]?.id,
-  //     currentRoundIndex,
-  //     selectedBoards,
-  //     currentTeamSelecting,
-  //     currentPictureIndex,
-  //     showAllPictures,
-  //     isTimerRunning
-  //   });
+  // Auto-start timer for picture board when first picture is displayed - OPTIMIZED
+  useEffect(() => {
+    // Only run for picture board round
+    if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
+      return;
+    }
     
-  //   // Only run for picture board round
-  //   if (ROUNDS[currentRoundIndex]?.id !== 'picture-board') {
-  //     console.log('[CoHostInterface] Not picture board round, skipping');
-  //     return;
-  //   }
+    // Check if a board is selected and this is the first picture
+    const hasBoardSelected = selectedBoards[currentTeamSelecting];
+    const isFirstPicture = currentPictureIndex === 0;
+    const notShowingAll = !showAllPictures;
+    const timerNotRunning = !isTimerRunning;
     
-  //   // Check if a board is selected and this is the first picture
-  //   const hasBoardSelected = selectedBoards[currentTeamSelecting];
-  //   const isFirstPicture = currentPictureIndex === 0;
-  //   const notShowingAll = !showAllPictures;
-  //   const timerNotRunning = !isTimerRunning;
-    
-  //   console.log('[CoHostInterface] Timer conditions:', {
-  //     hasBoardSelected,
-  //     isFirstPicture,
-  //     notShowingAll,
-  //     timerNotRunning,
-  //     shouldStart: hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning
-  //   });
-    
-  //   if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
-  //     console.log('[CoHostInterface] Auto-starting timer for picture board first picture');
-  //     syncedStartTimer();
-  //   }
-  // }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
+    // Use a debounced approach to prevent rapid state changes
+    if (hasBoardSelected && isFirstPicture && notShowingAll && timerNotRunning) {
+      // Small delay to ensure state is stable before starting timer
+      const timeoutId = setTimeout(() => {
+        // Double-check conditions haven't changed
+        if (selectedBoards[currentTeamSelecting] && currentPictureIndex === 0 && !showAllPictures && !isTimerRunning) {
+          syncedStartTimer();
+        }
+      }, 100);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, isTimerRunning, currentRoundIndex]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
