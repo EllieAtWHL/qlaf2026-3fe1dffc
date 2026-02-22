@@ -12,13 +12,12 @@ import { ElliesTellies } from '@/components/rounds/ElliesTellies';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
+import questionsData from '@/data/questions.json';
 
 // Preload all images for the quiz
 const preloadAllImages = () => {
   console.log('[MainDisplay] Preloading all images...');
   let totalImages = 0;
-  
-  const questionsData = require('@/data/questions.json') as any;
   
   // Preload World Rankings images
   const worldRankings = questionsData['world-rankings']?.questions || [];
