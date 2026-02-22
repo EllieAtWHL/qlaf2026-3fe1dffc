@@ -1,6 +1,28 @@
 {
   "rewrites": [
     {
+      "source": "/cohost",
+      "destination": "/index.html",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "text/html"
+        }
+      ]
+    },
+    {
+      "source": "/cohost/",
+      "destination": "/index.html",
+      "has": [
+        {
+          "type": "header",
+          "key": "accept",
+          "value": "text/html"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html",
       "has": [
