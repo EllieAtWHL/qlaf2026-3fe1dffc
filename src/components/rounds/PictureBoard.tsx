@@ -3,6 +3,7 @@ import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { Scoreboard } from '@/components/Scoreboard';
 import { Timer } from '@/components/Timer';
 import { Image } from 'lucide-react';
+import { useEffect } from 'react';
 
 export const PictureBoard = () => {
   const {
@@ -24,6 +25,16 @@ export const PictureBoard = () => {
   } = useQuizStore();
 
   const round = ROUNDS[currentRoundIndex];
+
+  // Preload all images from current board to eliminate first-time load delays
+  useEffect(() => {
+    if (currentBoard) {
+      currentBoard.pictures.forEach((picture) => {
+        const img = document.createElement('img');
+        img.src = picture.imageUrl;
+      });
+    }
+  }, [currentBoard]);
 
   // Show completion message when all teams are done
   if (currentTeamSelecting === 4) {
