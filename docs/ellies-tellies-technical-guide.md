@@ -54,6 +54,7 @@ Ellie's Tellies is a picture-based quiz round where contestants identify sports 
 - **Animation Duration**: 2 seconds for smooth transitions
 - **Realistic Timing**: Different animation speeds for authentic TV feel
 - **CSS Keyframes**: Custom `scanlines` animation in `src/index.css`
+- **Audio Integration**: TV static sound plays during transitions (volume: 0.4, looped)
 
 ### Image Transition System
 1. **Static Appears**: Immediate when question changes
@@ -141,9 +142,9 @@ setTimeout(() => {
 src/
 ├── components/
 │   └── rounds/
-│       └── ElliesTellies.tsx          # Main component (397 lines)
+│       └── ElliesTellies.tsx          # Main component (410 lines)
 ├── __tests__/
-│   └── ellies-tellies.test.tsx        # Test suite (207 lines)
+│   └── ellies-tellies.test.tsx        # Test suite (220 lines)
 ├── hooks/
 │   └── useQuestions.ts                # Question data hook
 ├── data/
@@ -151,10 +152,12 @@ src/
 └── index.css                          # Static animation CSS
 
 public/
-└── images/
-    └── ellies-tellies/
-        ├── tvFrame.png               # TV frame image
-        └── telly*.png                # Question images
+├── images/
+│   └── ellies-tellies/
+│       ├── tvFrame.png               # TV frame image
+│       └── telly*.png                # Question images
+└── sounds/
+    └── tv-static.wav                 # TV static sound effect
 ```
 
 ---
@@ -259,6 +262,8 @@ In `src/data/questions.json`, under `"ellies-tellies"` → `"questions"`:
 - ✅ Improved error handling and fallbacks
 - ✅ Enhanced responsive behavior
 - ✅ Refined animation timing for realistic TV feel
+- ✅ **NEW**: Integrated TV static sound effects during transitions
+- ✅ **NEW**: Added Howler.js audio integration with proper cleanup
 
 ---
 

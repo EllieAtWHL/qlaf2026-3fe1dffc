@@ -26,6 +26,15 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
+vi.mock('howler', () => ({
+  Howl: vi.fn().mockImplementation(() => ({
+    play: vi.fn(),
+    stop: vi.fn(),
+    onload: vi.fn(),
+    onloaderror: vi.fn(),
+  })),
+}));
+
 import React from 'react';
 import { ElliesTellies } from '@/components/rounds/ElliesTellies';
 import { useQuizStore } from '@/store/quizStore';

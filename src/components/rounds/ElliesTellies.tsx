@@ -1,9 +1,19 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
-import { useEffect, useState } from 'react';
 import { useQuestions } from '@/hooks/useQuestions';
+import { Howl } from 'howler';
 import { Scoreboard } from '@/components/Scoreboard';
 import { Tv } from 'lucide-react';
+
+// TV static sound effect
+const staticSound = new Howl({
+  src: ['/sounds/tv-static.wav'],
+  volume: 0.4,
+  loop: true,
+  onload: () => console.log('[Ellies Tellies] Static sound loaded successfully'),
+  onloaderror: (id, error) => console.error('[Ellies Tellies] Failed to load static sound:', error),
+});
 
 interface ElliesTelliesProps {
   roundId?: string;
@@ -45,6 +55,9 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
       setIsImageTransitioning(true); // Show static on initial load
       setIsImageLoading(true);
       
+      // Start static sound
+      staticSound.play();
+      
       const img = new Image();
       img.onload = () => {
         setIsImageLoading(false);
@@ -52,6 +65,8 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
           setDisplayedImage(currentQuestion.imageUrl);
           setTimeout(() => {
             setIsImageTransitioning(false);
+            // Stop static sound when transition completes
+            staticSound.stop();
             // Preload next image
             preloadNextImage();
           }, 1500);
@@ -61,9 +76,16 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
         setImageError(true);
         setIsImageLoading(false);
         setIsImageTransitioning(false);
+        // Stop static sound on error
+        staticSound.stop();
       };
       img.src = currentQuestion.imageUrl;
     }
+    
+    // Cleanup sound on unmount
+    return () => {
+      staticSound.stop();
+    };
   }, []); // Only run once on mount
 
   // Handle image transitions between questions
@@ -108,15 +130,21 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
       setIsImageLoading(true);
       setImageError(false);
       
+      // Start static sound for question transition
+      staticSound.play();
+      
       const img = new Image();
       img.onload = () => {
         setIsImageLoading(false);
+        
         // Show static for a moment, then transition to image
         setTimeout(() => {
           setDisplayedImage(currentQuestion.imageUrl);
           // Keep static for a bit longer while image transitions in
           setTimeout(() => {
             setIsImageTransitioning(false);
+            // Stop static sound when transition completes
+            staticSound.stop();
             preloadNextImage();
           }, 2000); // Match image transition duration
         }, 500); // Static duration before image appears
@@ -126,6 +154,8 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
         setImageError(true);
         setIsImageLoading(false);
         setIsImageTransitioning(false);
+        // Stop static sound on error
+        staticSound.stop();
       };
       
       img.src = currentQuestion.imageUrl;
