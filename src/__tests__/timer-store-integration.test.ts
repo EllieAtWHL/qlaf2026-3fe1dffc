@@ -72,7 +72,7 @@ describe('Timer Store Integration', () => {
     // Set timer to 1 and start
     useQuizStore.setState({ timerValue: 1, isTimerRunning: true });
     
-    // Tick (should go to 0 and stop)
+    // Tick to 0 (should stop automatically)
     store.tick();
     
     const newState = useQuizStore.getState();
