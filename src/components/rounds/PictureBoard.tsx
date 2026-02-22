@@ -12,6 +12,7 @@ export const PictureBoard = () => {
     selectedBoards,
     currentTeamSelecting,
     pictureBoards,
+    availableBoards,
     currentBoard,
     currentPictureIndex,
     showAllPictures,
@@ -72,7 +73,9 @@ export const PictureBoard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-            {pictureBoards.map((board, index) => (
+            {pictureBoards
+              .filter(board => availableBoards.includes(board.id))
+              .map((board, index) => (
               <motion.div
                 key={board.id}
                 initial={{ opacity: 0, y: 20 }}
