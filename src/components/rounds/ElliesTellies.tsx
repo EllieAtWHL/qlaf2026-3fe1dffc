@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { useEffect, useState } from 'react';
 import { useQuestions } from '@/hooks/useQuestions';
@@ -19,27 +19,118 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
   } = useQuizStore();
   const {
     currentQuestion,
-    totalQuestions
+    totalQuestions,
+    getQuestionsForRound
   } = useQuestions();
   const round = ROUNDS[currentRoundIndex];
   const [isImageTransitioning, setIsImageTransitioning] = useState(false);
   const [displayedImage, setDisplayedImage] = useState(currentQuestion?.imageUrl || '/placeholder.svg');
+  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isAnswerRevealing, setIsAnswerRevealing] = useState(false);
+  
+  // Preload next question image for smoother transitions
+  const preloadNextImage = () => {
+    const questions = getQuestionsForRound('ellies-tellies');
+    const nextQuestion = questions[currentQuestionIndex + 1];
+    if (nextQuestion?.imageUrl) {
+      const img = new Image();
+      img.src = nextQuestion.imageUrl;
+    }
+  };
+
+  // Initial preload when component mounts
+  useEffect(() => {
+    if (currentQuestion?.imageUrl) {
+      setIsImageTransitioning(true); // Show static on initial load
+      setIsImageLoading(true);
+      
+      const img = new Image();
+      img.onload = () => {
+        setIsImageLoading(false);
+        setTimeout(() => {
+          setDisplayedImage(currentQuestion.imageUrl);
+          setTimeout(() => {
+            setIsImageTransitioning(false);
+            // Preload next image
+            preloadNextImage();
+          }, 1500);
+        }, 200);
+      };
+      img.onerror = () => {
+        setImageError(true);
+        setIsImageLoading(false);
+        setIsImageTransitioning(false);
+      };
+      img.src = currentQuestion.imageUrl;
+    }
+  }, []); // Only run once on mount
 
   // Handle image transitions between questions
   useEffect(() => {
     if (currentQuestion?.imageUrl && currentQuestion.imageUrl !== displayedImage) {
       setIsImageTransitioning(true);
-      // Start static effect
-      const timer = setTimeout(() => {
-        setDisplayedImage(currentQuestion.imageUrl);
-        // Clear static after new image loads
-        setTimeout(() => {
-          setIsImageTransitioning(false);
-        }, 4500);
-      }, 500);
-      return () => clearTimeout(timer);
+      setIsImageLoading(true);
+      setImageError(false);
+      
+      // Preload new image before showing it
+      const img = new Image();
+      img.onload = () => {
+        setIsImageLoading(false);
+        // Start static effect
+        const timer = setTimeout(() => {
+          setDisplayedImage(currentQuestion.imageUrl);
+          // Clear static after new image loads - matched to animation duration
+          setTimeout(() => {
+            setIsImageTransitioning(false);
+            // Preload next image for smoother transitions
+            preloadNextImage();
+          }, 1500);
+        }, 200);
+        return () => clearTimeout(timer);
+      };
+      
+      img.onerror = () => {
+        setIsImageLoading(false);
+        setImageError(true);
+        setIsImageTransitioning(false);
+      };
+      
+      img.src = currentQuestion.imageUrl;
     }
   }, [currentQuestion?.imageUrl, displayedImage]);
+
+  // Trigger static effect when currentQuestionIndex changes (new question)
+  useEffect(() => {
+    if (currentQuestion?.imageUrl) {
+      // Start with static immediately
+      setIsImageTransitioning(true);
+      setIsImageLoading(true);
+      setImageError(false);
+      
+      const img = new Image();
+      img.onload = () => {
+        setIsImageLoading(false);
+        // Show static for a moment, then transition to image
+        setTimeout(() => {
+          setDisplayedImage(currentQuestion.imageUrl);
+          // Keep static for a bit longer while image transitions in
+          setTimeout(() => {
+            setIsImageTransitioning(false);
+            preloadNextImage();
+          }, 2000); // Match image transition duration
+        }, 500); // Static duration before image appears
+      };
+      
+      img.onerror = () => {
+        setImageError(true);
+        setIsImageLoading(false);
+        setIsImageTransitioning(false);
+      };
+      
+      img.src = currentQuestion.imageUrl;
+    }
+  }, [currentQuestionIndex]); // Trigger when question index changes
 
   // If we're transitioning or not in round state, don't render anything
   if (isTransitioning || gameState !== 'round') {
@@ -49,20 +140,20 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
   const questionImage = currentQuestion?.imageUrl || '/placeholder.svg';
 
   return (
-    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-8 relative overflow-hidden">
+    <div className="main-display-round qlaf-bg flex flex-col p-4 md:p-6 relative overflow-hidden h-screen">
       {/* Header with round info */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6"
+        className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4 flex-shrink-0"
       >
         <div className="flex items-center gap-4">
-          <Tv className="w-10 h-10 text-primary" />
+          <Tv className="w-8 h-8 md:w-10 md:h-10 text-primary" />
           <div>
-            <span className="font-display text-sm text-muted-foreground uppercase tracking-[0.3em]">
+            <span className="font-display text-xs md:text-sm text-muted-foreground uppercase tracking-[0.3em]">
               Round {currentRoundIndex + 1}
             </span>
-            <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground text-glow-primary">
+            <h1 className="font-display text-2xl md:text-4xl font-bold text-foreground text-glow-primary">
               {round.name}
             </h1>
           </div>
@@ -73,12 +164,12 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
       </motion.div>
 
       {/* Main content area - TV Display */}
-      <div className="flex-1 flex items-center justify-center py-[32px]">
+      <div className="flex-1 flex items-center justify-center py-4 min-h-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="glass-card rounded-2xl max-w-7xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px]"
+          className="glass-card rounded-2xl w-full h-full max-w-6xl text-center px-2 md:px-6 py-4 flex flex-col"
         >
           {currentQuestion ? (
             <>
@@ -89,20 +180,20 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                 </span>
               </div>
 
-              {/* Question prompt - moved above image */}
+              {/* Question prompt */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="mb-8"
+                className="mb-6 flex-shrink-0"
               >
-                <p className="font-body text-2xl md:text-4xl text-foreground leading-relaxed">
+                <p className="font-body text-lg md:text-2xl text-foreground leading-relaxed">
                   {currentQuestion.content}
                 </p>
               </motion.div>
 
               {/* Main content area - Animated layout */}
-              <div className="relative mb-8 min-h-[400px]">
+              <div className="flex-1 relative min-h-0 flex items-center">
                 {/* TV Container - Animated position */}
                 <motion.div 
                   className="absolute inset-0 flex items-center justify-center"
@@ -120,102 +211,120 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                   }}
                   transition={{ duration: 0.8, ease: "easeInOut" }}
                 >
-                  <div className="relative">
+                  <div className="relative w-full h-full max-w-4xl mx-auto">
+                    {/* TV Frame - separate image without screen */}
                     <img
-                      src="/images/ellies-tellies/telly.png"
+                      src="/images/ellies-tellies/tvFrame.png"
                       alt="TV Frame"
-                      className="w-full max-w-2xl h-auto"
+                      className="absolute inset-0 w-full h-full object-contain z-10"
                     />
                     
-                    {/* TV Screen - Question image with authentic CRT static effect */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      {/* Aggressive static noise overlay - enhanced for transitions */}
-                      <motion.div
-                        className="absolute inset-0 w-[85%] h-[85%] rounded-lg overflow-hidden"
-                        initial={{ opacity: isImageTransitioning ? 1 : 0 }}
-                        animate={{ 
-                          opacity: isImageTransitioning 
-                            ? [1, 0.9, 0.95, 0.8, 0.6, 0.4, 0.2, 0]
-                            : [0, 0.05, 0.02, 0.1, 0.08, 0.2, 0.4, 0.7, 0.9, 0]
-                        }}
-                        transition={{ 
-                          duration: isImageTransitioning ? 4 : 4.5, 
-                          times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1] 
-                        }}
-                      >
-                        {/* Multiple noise layers */}
-                        <div className="absolute inset-0 bg-black opacity-90" />
-                        <div className="absolute inset-0 opacity-70">
-                          <div className="w-full h-full bg-gradient-to-b from-transparent via-white to-transparent animate-pulse" style={{ animationDuration: '0.05s' }} />
+                    {/* TV Screen Container - positioned exactly where screen should be */}
+                    <div className="relative w-full h-full flex items-start justify-center z-20 pt-8 -mt-4">
+                      <div className="relative w-[81%] h-[91%] max-w-3xl overflow-hidden bg-black shadow-2xl border-4 border-gray-800 -ml-1">
+                        {/* Authentic CRT TV Static Effect */}
+                        <motion.div
+                          className="absolute inset-0 bg-black z-20"
+                          initial={{ opacity: isImageTransitioning ? 1 : 0 }}
+                          animate={{ 
+                            opacity: isImageTransitioning ? 1 : 0
+                          }}
+                          transition={{ 
+                            duration: 0.1
+                          }}
+                        >
+                          {/* Realistic TV static with multiple layers */}
+                          <div className="absolute inset-0 opacity-90">
+                            {/* Fast flickering noise */}
+                            <div className="w-full h-full animate-pulse" style={{ 
+                              backgroundImage: `url("data:image/svg+xml,%3Csvg width='2' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='static'%3E%3CfeTurbulence baseFrequency='2' numOctaves='4' seed='5' /%3E%3CfeColorMatrix type='saturate' values='0' /%3E%3Cfilter%3E%3Crect width='100%25' height='100%25' filter='url(%23static)' /%3E%3C/svg%3E")`,
+                              backgroundSize: '2px 2px',
+                              animationDuration: '0.05s'
+                            }} />
+                          </div>
+                          <div className="absolute inset-0 opacity-70">
+                            {/* Horizontal scanlines */}
+                            <div className="w-full h-full" style={{
+                              backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.1) 0px, transparent 1px, transparent 2px, rgba(255,255,255,0.05) 3px)',
+                              animation: 'scanlines 0.1s linear infinite'
+                            }} />
+                          </div>
+                          <div className="absolute inset-0 opacity-50">
+                            {/* Random noise bursts */}
+                            <div className="w-full h-full animate-pulse" style={{ 
+                              backgroundImage: `url("data:image/svg+xml,%3Csvg width='4' height='4' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise2'%3E%3CfeTurbulence baseFrequency='1.5' numOctaves='2' seed='10' /%3E%3CfeColorMatrix type='saturate' values='0' /%3E%3Cfilter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise2)' /%3E%3C/svg%3E")`,
+                              backgroundSize: '4px 4px',
+                              animationDuration: '0.08s'
+                            }} />
+                          </div>
+                          {/* Bright white flashes */}
+                          <div className="absolute inset-0 opacity-30 animate-pulse" style={{
+                            background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 70%)',
+                            animationDuration: '0.15s'
+                          }} />
+                        </motion.div>
+                        
+                        {/* Question Image - Animated from static and to static */}
+                        <AnimatePresence>
+                          <motion.img
+                            src={displayedImage}
+                            alt="Question Image"
+                            className="absolute inset-0 w-full h-full object-cover z-10"
+                            initial={{ 
+                              opacity: 0,
+                              filter: 'brightness(0) contrast(5) saturate(0) blur(2px)',
+                            }}
+                            animate={{ 
+                              opacity: 1,
+                              filter: 'brightness(1) contrast(1) saturate(1) blur(0px)',
+                            }}
+                            exit={{
+                              opacity: 0,
+                              filter: 'brightness(0) contrast(5) saturate(0) blur(2px)',
+                            }}
+                            transition={{
+                              duration: 2,
+                              ease: "easeInOut",
+                            }}
+                            key={displayedImage}
+                          />
+                        </AnimatePresence>
+                        
+                        {/* Loading indicator */}
+                        {isImageLoading && (
+                          <motion.div
+                            className="absolute inset-0 flex items-center justify-center bg-black/90 z-30"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
+                            <div className="text-center">
+                              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                              <p className="text-primary text-sm font-display">Tuning Channel...</p>
+                            </div>
+                          </motion.div>
+                        )}
+                        
+                        {/* Error state */}
+                        {imageError && (
+                          <motion.div
+                            className="absolute inset-0 flex items-center justify-center bg-red-900/90 z-30"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
+                            <div className="text-center">
+                              <p className="text-red-200 text-sm font-display mb-2">Signal Lost</p>
+                              <p className="text-red-300 text-xs">Unable to load image</p>
+                            </div>
+                          </motion.div>
+                        )}
+                        
+                        {/* Subtle scanlines overlay (always visible for CRT effect) */}
+                        <div className="absolute inset-0 pointer-events-none z-15 opacity-20 rounded-3xl overflow-hidden">
+                          <div className="w-full h-full" style={{
+                            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.3) 1px, rgba(0,0,0,0.3) 2px)',
+                          }} />
                         </div>
-                        <div className="absolute inset-0 opacity-50">
-                          <div className="w-full h-full bg-gradient-to-r from-transparent via-white to-transparent animate-pulse" style={{ animationDuration: '0.08s' }} />
-                        </div>
-                        {/* Random noise pattern */}
-                        <div className="absolute inset-0 opacity-30" style={{
-                          backgroundImage: `url("data:image/svg+xml,%3Csvg width='4' height='4' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-                          backgroundSize: '4px 4px'
-                        }} />
-                      </motion.div>
-                      
-                      {/* Main image with static interference - updated for transitions */}
-                      <motion.img
-                        src={displayedImage}
-                        alt="Question Image"
-                        className="w-[85%] h-[85%] object-cover rounded-lg relative z-10"
-                        initial={{ 
-                          opacity: isImageTransitioning ? 0 : 0,
-                          filter: isImageTransitioning 
-                            ? 'blur(15px) brightness(0.05) contrast(4) saturate(0) hue-rotate(180deg)'
-                            : 'blur(15px) brightness(0.05) contrast(4) saturate(0) hue-rotate(180deg)',
-                          x: 0,
-                          y: 0
-                        }}
-                        animate={{ 
-                          opacity: isImageTransitioning 
-                            ? [0, 0.05, 0.02, 0.1, 0.08, 0.2, 0.4, 0.7, 0.9, 1]
-                            : [0, 0.05, 0.02, 0.1, 0.08, 0.2, 0.4, 0.7, 0.9, 1],
-                          filter: [
-                            'blur(15px) brightness(0.05) contrast(4) saturate(0) hue-rotate(180deg)',
-                            'blur(18px) brightness(0.02) contrast(5) saturate(0) hue-rotate(120deg)',
-                            'blur(12px) brightness(0.08) contrast(4.5) saturate(0) hue-rotate(90deg)',
-                            'blur(20px) brightness(0.03) contrast(6) saturate(0.1) hue-rotate(60deg)',
-                            'blur(15px) brightness(0.06) contrast(4) saturate(0) hue-rotate(30deg)',
-                            'blur(10px) brightness(0.15) contrast(3) saturate(0.2) hue-rotate(15deg)',
-                            'blur(8px) brightness(0.4) contrast(2.5) saturate(0.4) hue-rotate(8deg)',
-                            'blur(5px) brightness(0.7) contrast(2) saturate(0.7) hue-rotate(3deg)',
-                            'blur(2px) brightness(0.9) contrast(1.5) saturate(0.9) hue-rotate(1deg)',
-                            'blur(0px) brightness(1) contrast(1) saturate(1) hue-rotate(0deg)'
-                          ],
-                          x: [0, 2, -1, 3, -2, 1, -1, 0, 0, 0],
-                          y: [0, -1, 2, -1, 1, -1, 0, 0, 0, 0]
-                        }}
-                        transition={{
-                          duration: isImageTransitioning ? 4 : 4.5,
-                          ease: "easeInOut",
-                          times: [0, 0.1, 0.2, 0.3, 0.4, 0.55, 0.7, 0.85, 0.95, 1]
-                        }}
-                        key={displayedImage} // Force re-render on image change
-                      />
-                      
-                      {/* Heavy scanlines effect - enhanced for transitions */}
-                      <motion.div
-                        className="absolute inset-0 w-[85%] h-[85%] rounded-lg pointer-events-none z-20"
-                        initial={{ opacity: isImageTransitioning ? 0.9 : 0.9 }}
-                        animate={{ 
-                          opacity: isImageTransitioning 
-                            ? [0.9, 0.8, 0.85, 0.7, 0.5, 0.3, 0.1, 0]
-                            : [0.9, 0.8, 0.85, 0.7, 0.5, 0.3, 0.1, 0]
-                        }}
-                        transition={{ 
-                          duration: isImageTransitioning ? 4 : 4.5, 
-                          times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 0.95, 1] 
-                        }}
-                      >
-                        <div className="w-full h-full" style={{
-                          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.5) 1px, rgba(0,0,0,0.5) 2px)',
-                        }} />
-                      </motion.div>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
