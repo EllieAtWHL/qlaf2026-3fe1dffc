@@ -194,23 +194,54 @@ const syncedResetTimer = (duration?: number) => {
 ### Unit Tests
 ```bash
 # Run timer functionality tests
-node tests/unit/timer-functionality.test.js
+npm test timer-functionality.test.ts
 
-# Run architecture regression tests
-node tests/unit/timer-architecture-regression.test.js
+# Run architecture regression tests  
+npm test timer-architecture-regression.test.ts
+
+# Run store integration tests
+npm test timer-store-integration.test.ts
 ```
 
 ### Integration Tests
-- Test CoHost → MainDisplay synchronization
-- Verify Picture Board auto-start
-- Confirm no ongoing network traffic
-- Validate timer accuracy
+```bash
+# Run all tests (unified Vitest structure)
+npm test
+# or use jest alias
+npm jest
 
-### Performance Tests
+# Run specific test categories
+npm test -- --grep "Timer"
+npm test -- --grep "Architecture"
+npm test -- --grep "Integration"
+```
+
+### Test Coverage
+- **Timer Logic**: Start, tick, pause, stop, reset functionality
+- **Store Integration**: Real state management and actions
+- **Component Rendering**: Timer display and color changes
+- **Architecture Compliance**: CoHost broadcasts, MainDisplay local countdown
+- **Auto-start Logic**: Picture Board timer initialization
+- **Sound Integration**: Howler.js sound playback with local files
+
+## 📊 Performance Tests
 - Measure network traffic during countdown
 - Test with slow network conditions
 - Verify local countdown reliability
 - Check memory usage
+
+## 🚨 Critical Fixes Applied
+
+**Infinite Loop Prevention:**
+- Added `!isTimerRunning` guard in auto-start logic to prevent infinite timer start loops
+- Fixed missing `isTimerRunning` variable in CoHostInterface destructuring
+- Timer now starts only once when conditions are met and timer is not already running
+
+**Enhanced Test Suite:**
+- Moved from Node.js tests to unified Vitest structure
+- Added real store integration tests (`timer-store-integration.test.ts`)
+- All tests now run with `npm test` or `npm jest`
+- Tests cover actual component rendering and store state management
 
 ## 🔧 Development Guidelines
 

@@ -36,6 +36,8 @@ export const CoHostInterface = () => {
     nextQuestion,
     previousQuestion,
     resetGame,
+    isTimerRunning,
+    timerValue,
     // Picture Board specific
     availableBoards,
     selectedBoards,
@@ -98,11 +100,12 @@ export const CoHostInterface = () => {
     const notShowingAll = !showAllPictures;
     
     // Use a debounced approach to prevent rapid state changes
-    if (hasBoardSelected && isFirstPicture && notShowingAll) {
+    // Add guard to prevent infinite loop - only start if timer is not already running
+    if (hasBoardSelected && isFirstPicture && notShowingAll && !isTimerRunning) {
       // Small delay to ensure state is stable before starting timer
       const timeoutId = setTimeout(() => {
         // Double-check conditions haven't changed
-        if (selectedBoards[currentTeamSelecting] && currentPictureIndex === 0 && !showAllPictures) {
+        if (selectedBoards[currentTeamSelecting] && currentPictureIndex === 0 && !showAllPictures && !isTimerRunning) {
           startTimer();
           broadcastAction('startTimer');
         }
@@ -110,7 +113,7 @@ export const CoHostInterface = () => {
       
       return () => clearTimeout(timeoutId);
     }
-  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, currentRoundIndex, broadcastAction]);
+  }, [selectedBoards[currentTeamSelecting], currentTeamSelecting, currentPictureIndex, showAllPictures, currentRoundIndex, broadcastAction, isTimerRunning]);
 
   // Wrapper functions that both update local state AND broadcast to main display
   const syncedStartGame = () => {
