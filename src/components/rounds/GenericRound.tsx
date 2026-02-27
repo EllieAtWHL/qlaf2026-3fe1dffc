@@ -116,16 +116,19 @@ export const GenericRound = ({
       </motion.div>
 
       {/* Main content area */}
-      <div className="flex-1 flex-row flex items-start justify-center py-[16px]">
+      <div className="flex-1 flex flex-col items-center justify-center py-[16px] relative">
+        {/* Question card */}
         <motion.div key={currentQuestionIndex} initial={{
         opacity: 0,
         scale: 0.95
       }} animate={{
         opacity: 1,
-        scale: 1
+        scale: 1,
+        y: showAnswer ? "-200%" : "0%"
       }} transition={{
-        delay: 0.1
-      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[60vh] overflow-y-auto relative" ref={scrollContainerRef}>
+        delay: 0.1,
+        y: { duration: 0.6, ease: "easeInOut" }
+      }} className="glass-card rounded-2xl max-w-4xl w-full text-center md:px-8 pt-2 pb-4 px-[3px] mx-0 py-[16px] max-h-[60vh] overflow-y-auto absolute" ref={scrollContainerRef}>
           {currentQuestion ? <>
               {/* Question number */}
               <div className="mb-4">
@@ -168,17 +171,35 @@ export const GenericRound = ({
               })}
                   </div>}
               </motion.div>
-              
-              {/* Answer reveal */}
-              {showAnswer && <motion.div initial={{
+            </> : <div className="mb-8">
+              <p className="font-body text-2xl md:text-3xl text-foreground">
+                {round.description}
+              </p>
+              <p className="font-body text-lg text-muted-foreground mt-4">
+                No questions loaded for this round
+              </p>
+            </div>}
+
+          {/* Timer for timed rounds */}
+          {round.timerDuration && <div className="flex justify-center mt-8">
+              <Timer />
+            </div>}
+        </motion.div>
+
+        {/* Answer card - separate from question card */}
+        {showAnswer && currentQuestion && <motion.div initial={{
             opacity: 0,
-            scale: 0.9
+            scale: 0.9,
+            y: 20
           }} animate={{
             opacity: 1,
-            scale: 1
-          }} className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8 mx-[16px] my-[16px]">
+            scale: 1,
+            y: 0
+          }} transition={{
+            delay: 0.2
+          }} className="glass-card rounded-2xl max-w-4xl w-full bg-qlaf-success/20 border-2 border-qlaf-success p-8 absolute top-56">
                   <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">Answer</span>
-                  {Array.isArray(currentQuestion.answer) ? currentQuestion.answer.length > 3 ? <div className="mt-2 max-h-56 overflow-y-auto" ref={innerScrollRef}>
+                  {Array.isArray(currentQuestion.answer) ? currentQuestion.answer.length > 3 ? <div className="mt-2 max-h-80 overflow-y-auto" ref={innerScrollRef}>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-left">
                           {currentQuestion.answer.map((answer, index) => {
                   const answerObj = typeof answer === 'object' ? answer : {
@@ -209,20 +230,6 @@ export const GenericRound = ({
                       {currentQuestion.points} point{currentQuestion.points !== 1 ? 's' : ''}
                     </p>}
                 </motion.div>}
-            </> : <div className="mb-8">
-              <p className="font-body text-2xl md:text-3xl text-foreground">
-                {round.description}
-              </p>
-              <p className="font-body text-lg text-muted-foreground mt-4">
-                No questions loaded for this round
-              </p>
-            </div>}
-
-          {/* Timer for timed rounds */}
-          {round.timerDuration && <div className="flex justify-center mt-8">
-              <Timer />
-            </div>}
-        </motion.div>
       </div>
 
       {/* QLAF branding */}
