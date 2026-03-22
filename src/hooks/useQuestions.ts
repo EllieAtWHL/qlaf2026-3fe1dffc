@@ -54,6 +54,8 @@ export const useQuestions = () => {
     return roundData.questions || [];
   };
   
+  const currentRoundType = currentRoundData?.type;
+
   return {
     questions,
     currentQuestion,
@@ -63,5 +65,6 @@ export const useQuestions = () => {
     hasPreviousQuestion,
     getQuestionsForRound,
     currentRoundId,
+    currentRoundType,
   };
 };

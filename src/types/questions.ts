@@ -14,9 +14,15 @@ export interface WipeoutOption {
   correct: boolean;
 }
 
+export interface ChrisStadiaCard {
+  id: number;
+  stadium: string;
+  visitType: 'work' | 'watch' | 'not_visited';
+  reason: string;
+}
+
 export interface Question {
   id: string;
-  type: 'single' | 'ranking' | 'picture' | 'connection' | 'auction' | 'average' | 'wipeout' | 'quickfire' | 'f1';
   content: string;
   options?: (string | QuestionOption | WipeoutOption)[];
   answer: string | string[];
@@ -25,6 +31,7 @@ export interface Question {
     text: string;
     imageUrl: string;
   }>;
+  cards?: ChrisStadiaCard[];
   correctOrder?: string[];
   imageUrl?: string;
   points: number;
@@ -58,7 +65,7 @@ export interface PictureBoard {
 }
 
 export interface RoundQuestions {
-  title: string;
+  type: 'single' | 'ranking' | 'picture' | 'connection' | 'auction' | 'average' | 'wipeout' | 'quickfire' | 'f1' | 'reveal';
   questions?: Question[];
   boards?: PictureBoard[];
 }

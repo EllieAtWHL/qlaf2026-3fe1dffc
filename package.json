@@ -11,7 +11,11 @@
     "preview": "vite preview",
     "test": "vitest run",
     "jest": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:chris-stadia": "./scripts/test-chris-stadia.sh",
+    "test:chris-stadia:store": "npm test -- --run src/store/__tests__/chris-stadia-store.automated.test.ts",
+    "test:chris-stadia:sync": "npm test -- --run src/hooks/__tests__/chris-stadia-sync.automated.test.ts",
+    "test:chris-stadia:logic": "npm test -- --run src/components/rounds/__tests__/chris-stadia-logic.automated.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

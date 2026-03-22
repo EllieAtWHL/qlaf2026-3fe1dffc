@@ -1,10 +1,9 @@
 {
   "world-rankings": {
-    "title": "World Rankings",
+    "type": "ranking",
     "questions": [
       {
         "id": "wr-0",
-        "type": "ranking",
         "content": "Rank these Olympians by most gold medals at a single Olympics, most to least",
         "options": [
           { "label": "Johannes Høsflot Klæbo", "sublabel": "Milano-Cortina 2026", "imageUrl": "/images/world-rankings/Klaebo.png", "order": 3, "answer": "6" },
@@ -15,7 +14,6 @@
       },
       {
         "id": "wr-1",
-        "type": "ranking",
         "content": "Rank these footballers by single transfer fee (highest to lowest)",
         "options": [
           { "label": "Keira Walsh", "sublabel": "Barcelona → Chelsea", "imageUrl": "/images/world-rankings/KeiraWalsh.png", "order": 4, "answer": "£400,000" },
@@ -26,7 +24,6 @@
       },
       {
         "id": "wr-2",
-        "type": "ranking",
         "content": "Rank these basketballers by NBA career playoff points scored (highest to lowest)",
         "options": [
           { "label": "Kareem Abdul-Jabbar", "imageUrl": "/images/world-rankings/KareemAbdulJabbar.png", "order": 2, "answer": "5,762" },
@@ -37,7 +34,6 @@
       },      
       {
         "id": "wr-3",
-        "type": "ranking",
         "content": "Rank these events by the cheapest retail ticket available (lowest to highest)",
         "options": [
           { "label": "FIFA World Cup 2022 Final", "imageUrl": "/images/world-rankings/FIFAWorldCup.png", "order": 3, "answer": "£440" },
@@ -48,7 +44,6 @@
       },      
       {
         "id": "wr-4",
-        "type": "ranking",
         "content": "Rank these crickers by most test centuries (highest to lowest)",
         "options": [
           { "label": "Ricky Ponting", "imageUrl": "/images/world-rankings/RickyPonting.png", "order": 2, "answer": "41" },
@@ -60,11 +55,10 @@
     ]
   },
   "just-one": {
-    "title": "Just One",
+    "type": "single",
     "questions": [
       {
         "id": "jo-2",
-        "type": "single",
         "content": "Name an NHL team (31)",
         "answer": [
             "Anaheim Ducks",
@@ -102,7 +96,6 @@
       },
       {
         "id": "jo-3",
-        "type": "single",
         "content": "Name a 2026 F1 circuit (24)",
         "answer": [
             "Melbourne (Australia)",
@@ -133,7 +126,6 @@
       },
       {
         "id": "jo-4",
-        "type": "single",
         "content": "Name a cricket test country (12)",
         "answer": [
             "Afghanistan",
@@ -152,7 +144,6 @@
       },
       {
         "id": "jo-5",
-        "type": "single",
         "content": "Name an event in the women's heptathlon (7)",
         "answer": [
             "100 metres hurdles",
@@ -167,7 +158,7 @@
     ]
   },
   "picture-board": {
-    "title": "Picture Board",
+    "type": "picture",
     "boards": [
       {
         "id": "board-1",
@@ -229,11 +220,10 @@
     ]
   },
   "only-connect": {
-    "title": "Only Connect",
+    "type": "connection",
     "questions": [
       {
         "id": "oc-1",
-        "type": "connection",
         "content": "What connects these sports stars?",
         "options": [
           { "text": "Seth Curry", "imageUrl": "/images/only-connect/sethCurry.png" },
@@ -245,7 +235,6 @@
       },
       {
         "id": "oc-2",
-        "type": "connection",
         "content": "What connects these sports stars?",
         "options": [
           { "text": "Ellyse Perry", "imageUrl": "/images/only-connect/ellysePerry.png" },
@@ -257,7 +246,6 @@
       },
       {
         "id": "oc-3",
-        "type": "connection",
         "content": "What connects these images?",
         "options": [
           { "text": "Jam Tarts", "imageUrl": "/images/only-connect/jamTarts.png" },
@@ -270,11 +258,10 @@
     ]
   },
   "round-robin": {
-    "title": "Round Robin",
+    "type": "single",
     "questions": [
       {
         "id": "rr-1",
-        "type": "single",
         "content": "Name a British gold medalist from the last Summer or Winter Olympics (41)",
         "answer": [
           {"name": "Alex Yee", "event": "Triathlon - Men's Individual"},
@@ -326,7 +313,6 @@
       },
       {
         "id": "rr-2",
-        "type": "single",
         "content": "Name a Super Bowl MVP (50)",
         "answer": [
             {"name": "Tom Brady", "event": "5"},
@@ -383,7 +369,6 @@
       },
       {
         "id": "rr-3",
-        "type": "single",
         "content": "Name a team that has won what is currently the Championship Playoffs (28)",
         "answer": [
           {"name": "Crystal Palace", "event": "4"},
@@ -419,11 +404,10 @@
     ]
   },
   "daves-dozen": {
-    "title": "Dave's Dozen",
+    "type": "auction",
     "questions": [
       {
         "id": "dd-1",
-        "type": "auction",
         "content": "Name every goalscorer for Tottenham in their successful Europa League run",
         "answers": [
           { "number": 1, "text": "Solanke", "imageUrl": "/images/daves-dozen/solanke.png" },
@@ -442,7 +426,6 @@
       },
       {
         "id": "dd-2",
-        "type": "auction",
         "content": "Name every current Scottich Premiership team",
         "answers": [
           { "number": 1, "text": "Hearts", "imageUrl": "/images/daves-dozen/hearts.png" },
@@ -462,11 +445,10 @@
     ]
   },
   "ellies-tellies": {
-    "title": "Ellie's Tellies",
+    "type": "picture",
     "questions": [
       {
         "id": "et-1",
-        "type": "picture",
         "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
         "imageUrl": "/images/ellies-tellies/telly1.png",
         "answer": [
@@ -479,7 +461,6 @@
       },
       {
         "id": "et-2",
-        "type": "picture",
         "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
         "imageUrl": "/images/ellies-tellies/telly2.png",
         "answer": [
@@ -492,7 +473,6 @@
       },
       {
         "id": "et-3",
-        "type": "picture",
         "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
         "imageUrl": "/images/ellies-tellies/telly3.png",
         "answer": [
@@ -505,7 +485,6 @@
       },
       {
         "id": "et-4",
-        "type": "picture",
         "content": "Name both sports personalities, the event, the location (city and country), and the month and year.",
         "imageUrl": "/images/ellies-tellies/telly4.png",
         "answer": [
@@ -519,34 +498,30 @@
     ]
   },
   "distinctly-average": {
-    "title": "Distinctly Average",
+    "type": "average",
     "questions": [
       {
         "id": "da-1",
-        "type": "average",
         "content": "What was the attendance at Seattle Torrents first home game in the PWHL?",
         "answer": "16,014"
       },
       {
         "id": "da-2",
-        "type": "average",
         "content": "How many London-based teams across the tp4 tier in mens snd top 2 tiers in womens football?",
         "answer": "21"
       },
       {
         "id": "da-3",
-        "type": "average",
         "content": "How many yards did Jaxon Smith-Njigba get in the most r2025 NFL Regular Season?",
         "answer": "1,793"
       }
     ]
   },
   "wipeout": {
-    "title": "Wipeout",
+    "type": "wipeout",
     "questions": [
       {
         "id": "wo-1",
-        "type": "wipeout",
         "content": "Clubs in the top 20 of Deloitte Football Money League 2026",
         "options": [
           {"text": "Newcastle United", "correct": true}, 
@@ -566,34 +541,105 @@
     ]
   },
   "one-minute-round": {
-    "title": "One Minute Round",
+    "type": "quickfire",
     "questions": [
       {
         "id": "omr-1",
-        "type": "quickfire",
         "content": "Sport with a shuttlecock?",
         "answer": "Badminton"
       },
       {
         "id": "omr-2",
-        "type": "quickfire",
         "content": "How many holes in a full round of golf?",
         "answer": "18"
       },
       {
         "id": "omr-3",
-        "type": "quickfire",
         "content": "Which country won the 2023 Rugby World Cup?",
         "answer": "South Africa"
       }
     ]
   },
+  "chris-stadia": {
+    "type": "reveal",
+    "questions": [
+      {
+        "id": "cs-1",
+        "content": "Which of these stadiums has Chris been to, and why?",
+        "cards": [
+          {
+            "id": 1,
+            "stadium": "Wembley Stadium",
+            "visitType": "work"
+          },
+          {
+            "id": 2,
+            "stadium": "Old Trafford",
+            "visitType": "watch",
+            "reason": "Manchester United vs Liverpool"
+          },
+          {
+            "id": 3,
+            "stadium": "Camp Nou",
+            "visitType": "work"
+          },
+          {
+            "id": 4,
+            "stadium": "Allianz Arena",
+            "visitType": "not_visited"
+          },
+          {
+            "id": 5,
+            "stadium": "Anfield",
+            "visitType": "watch",
+            "reason": "Liverpool vs Everton"
+          },
+          {
+            "id": 6,
+            "stadium": "Emirates Stadium",
+            "visitType": "work"
+          },
+          {
+            "id": 7,
+            "stadium": "Signal Iduna Park",
+            "visitType": "not_visited"
+          },
+          {
+            "id": 8,
+            "stadium": "Tottenham Hotspur Stadium",
+            "visitType": "work"
+          },
+          {
+            "id": 9,
+            "stadium": "Celtic Park",
+            "visitType": "watch",
+            "reason": "Celtic vs Rangers"
+          },
+          {
+            "id": 10,
+            "stadium": "San Siro",
+            "visitType": "not_visited"
+          },
+          {
+            "id": 11,
+            "stadium": "Ibrox Stadium",
+            "visitType": "work"
+          },
+          {
+            "id": 12,
+            "stadium": "Etihad Stadium",
+            "visitType": "not_visited"
+          }
+        ]
+      }
+    ]
+  },
+
   "f1-grand-prix": {
-    "title": "F1 Grand Prix Final",
+    "type": "f1",
     "questions": [
       {
         "id": "f1-1",
-        "type": "f1",
         "content": "Who has the most F1 World Championship titles?",
         "answer": "Michael Schumacher / Lewis Hamilton (7 each)"
       }

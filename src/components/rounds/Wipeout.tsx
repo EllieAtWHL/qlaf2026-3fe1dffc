@@ -100,7 +100,10 @@ export const Wipeout = () => {
                     duration: 0.6, 
                     ease: "easeInOut"
                   }}
-                  className={`aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col items-center justify-center relative max-h-[28vh] md:max-h-[30vh] transition-colors duration-300 ${
+                  className={`
+                    aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col 
+                    items-center justify-center relative max-h-[28vh] md:max-h-[30vh] 
+                    transition-colors duration-300 ${
                     isRevealed
                       ? isCorrect
                         ? 'bg-green-500/20 border-green-500/50'

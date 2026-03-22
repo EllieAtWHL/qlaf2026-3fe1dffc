@@ -211,7 +211,11 @@ function applyStateUpdate(action: string, data: any) {
           davesDozenRevealedAnswers: new Set(),
           davesDozenShowRedCross: false,
           // Reset Wipeout answers when changing questions
-          wipeoutRevealedAnswers: new Set()
+          wipeoutRevealedAnswers: new Set(),
+          // Reset Chris Stadia cards when changing questions
+          chrisStadiaRevealedCards: [],
+          chrisStadiaWatchRevealed: [],
+          chrisStadiaWatchShownOnScreen: []
         });
       }
       break;
@@ -224,7 +228,9 @@ function applyStateUpdate(action: string, data: any) {
         davesDozenRevealedAnswers: new Set(),
         davesDozenShowRedCross: false,
         // Reset Wipeout answers when changing questions
-        wipeoutRevealedAnswers: new Set()
+        wipeoutRevealedAnswers: new Set(),
+        // Reset Chris Stadia cards when changing questions
+        chrisStadiaRevealedCards: []
       });
       break;
     case 'resetGame':
@@ -273,6 +279,18 @@ function applyStateUpdate(action: string, data: any) {
       break;
     case 'resetWipeout':
       store.resetWipeout();
+      break;
+    case 'revealChrisStadiaCard':
+      store.setChrisStadiaRevealedCards(data.cards);
+      break;
+    case 'resetChrisStadia':
+      store.resetChrisStadia();
+      break;
+    case 'revealChrisStadiaWatchReason':
+      store.setChrisStadiaWatchRevealed(data.cardIds || []);
+      break;
+    case 'revealChrisStadiaWatchShownOnScreen':
+      store.setChrisStadiaWatchShownOnScreen(data.cardIds || []);
       break;
     default:
       console.warn('Unknown action:', action);
