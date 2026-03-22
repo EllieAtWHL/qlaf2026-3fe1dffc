@@ -78,7 +78,7 @@
       "description": "Risk vs reward",
       "timerDuration": null,
       "isTeamRound": true,
-      "component": "GenericRound",
+      "component": "Wipeout",
       "icon": "Skull"
     },
     {

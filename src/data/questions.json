@@ -547,9 +547,21 @@
       {
         "id": "wo-1",
         "type": "wipeout",
-        "content": "Which of these have won the Ballon d'Or?",
-        "options": ["Messi", "Ronaldo", "Neymar", "Modric", "Benzema", "Lewandowski", "Kane", "Salah"],
-        "answer": ["Messi", "Ronaldo", "Modric", "Benzema"]
+        "content": "Clubs in the top 20 of Deloitte Football Money League 2026",
+        "options": [
+          {"text": "Newcastle United", "correct": true}, 
+          {"text": "AC Milan", "correct": true}, 
+          {"text": "Porto", "correct": false}, 
+          {"text": "Borussia Dortmund", "correct": true}, 
+          {"text": "Atlético Madrid", "correct": true}, 
+          {"text": "West Ham United", "correct": true}, 
+          {"text": "VfB Stuttgart", "correct": true}, 
+          {"text": "Benifica", "correct": true},
+          {"text": "Juventus", "correct": true},
+          {"text": "Villarreal", "correct": false},
+          {"text": "Hamburg", "correct": false},
+          {"text": "Lazio", "correct": false}
+        ]
       }
     ]
   },

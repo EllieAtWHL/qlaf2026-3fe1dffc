@@ -94,6 +94,9 @@ interface QuizState {
   davesDozenRevealedAnswers: Set<number>;
   davesDozenShowRedCross: boolean;
   
+  // Wipeout specific
+  wipeoutRevealedAnswers: Set<number>;
+  
   // Actions
   startGame: () => void;
   startRound: () => void;
@@ -139,6 +142,10 @@ interface QuizState {
   showIncorrectAnswer: () => void;
   resetDavesDozen: () => void;
   
+  // Wipeout actions
+  revealWipeoutAnswer: (answerIndex: number) => void;
+  resetWipeout: () => void;
+  
   // Game actions
   // Reset
   resetGame: () => void;
@@ -178,6 +185,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   // Dave's Dozen initial state
   davesDozenRevealedAnswers: new Set(),
   davesDozenShowRedCross: false,
+  
+  // Wipeout initial state
+  wipeoutRevealedAnswers: new Set(),
   
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
@@ -306,7 +316,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         onlyConnectRevealedOptions: 1,
         // Reset Dave's Dozen answers when changing questions
         davesDozenRevealedAnswers: new Set(),
-        davesDozenShowRedCross: false
+        davesDozenShowRedCross: false,
+        // Reset Wipeout answers when changing questions
+        wipeoutRevealedAnswers: new Set()
       });
     }
   },
@@ -320,7 +332,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         onlyConnectRevealedOptions: 1,
         // Reset Dave's Dozen answers when changing questions
         davesDozenRevealedAnswers: new Set(),
-        davesDozenShowRedCross: false
+        davesDozenShowRedCross: false,
+        // Reset Wipeout answers when changing questions
+        wipeoutRevealedAnswers: new Set()
       });
     }
   },
@@ -332,7 +346,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       onlyConnectRevealedOptions: 1,
       // Reset Dave's Dozen answers when changing questions
       davesDozenRevealedAnswers: new Set(),
-      davesDozenShowRedCross: false
+      davesDozenShowRedCross: false,
+      // Reset Wipeout answers when changing questions
+      wipeoutRevealedAnswers: new Set()
     });
   },
   
@@ -514,6 +530,18 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     });
   },
   
+  // Wipeout actions
+  revealWipeoutAnswer: (answerIndex: number) => {
+    const { wipeoutRevealedAnswers } = get();
+    const newRevealed = new Set(wipeoutRevealedAnswers);
+    newRevealed.add(answerIndex);
+    set({ wipeoutRevealedAnswers: newRevealed });
+  },
+  
+  resetWipeout: () => {
+    set({ wipeoutRevealedAnswers: new Set() });
+  },
+  
   resetGame: () => set({
     gameState: 'welcome',
     currentRoundIndex: 0,
@@ -531,5 +559,6 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     onlyConnectRevealedOptions: 1,
     davesDozenRevealedAnswers: new Set(),
     davesDozenShowRedCross: false,
+    wipeoutRevealedAnswers: new Set(),
   }),
 }));
