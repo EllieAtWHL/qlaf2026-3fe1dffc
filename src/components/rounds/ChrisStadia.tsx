@@ -4,6 +4,7 @@ import { useQuestions } from '@/hooks/useQuestions';
 import { Scoreboard } from '@/components/Scoreboard';
 import { MapPin, Briefcase, Eye, EyeOff, Trophy } from 'lucide-react';
 import { ChrisStadiaCard } from '@/types/questions';
+import { GameCard, RevealGameCard } from '@/components/ui/GameCard';
 
 export const ChrisStadia = () => {
   const {
@@ -112,98 +113,82 @@ export const ChrisStadia = () => {
       </motion.div>
 
       {/* Cards Grid */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+      <div className="flex-1 flex items-center justify-center px-2 md:px-4 max-h-[75vh]">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
           className="w-full h-full max-w-6xl"
-      >
-        <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 h-full">
+        >
+          <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 h-full" data-testid="chris-stadia-grid">
           {cards.map((card, index) => {
             const revealed = isRevealed(card.id);
             
             return (
-              <motion.div
+              <RevealGameCard
                 key={card.id}
-                initial={{ opacity: 1, scale: 1 }}
-                animate={{ 
-                  opacity: 1,
-                  scale: isRevealed ? [1, 0.8, 1] : 1,
-                  rotateY: isRevealed ? [0, 90, 0] : 0
+                revealed={revealed}
+                onClick={() => {
+                  // This will be handled by CoHostInterface
                 }}
-                transition={{ 
-                  duration: 0.6, 
-                  ease: "easeInOut"
-                }}
-                className={`
-                  aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col 
-                  items-center justify-center relative max-h-[28vh] md:max-h-[30vh] 
-                  transition-colors duration-300
-                  ${revealed 
-                    ? `${getVisitColor(card.visitType)} border-opacity-100` 
-                    : 'bg-accent/20 border-accent/40 hover:bg-accent/30 hover:border-accent/60'
-                  }
-                `}
+                borderColor={revealed ? (
+                  card.visitType === 'work' ? 'rgb(59 130 246 / 0.5)' :
+                  card.visitType === 'watch' ? 'rgb(34 197 94 / 0.5)' :
+                  card.visitType === 'not_visited' ? 'rgb(239 68 68 / 0.5)' :
+                  'transparent'
+                ) : 'transparent'}
+                backgroundColor={revealed ? (
+                  card.visitType === 'work' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
+                  card.visitType === 'watch' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                  card.visitType === 'not_visited' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                  'bg-primary text-primary-foreground'
+                ) : 'bg-primary text-primary-foreground'}
+                iconAnimation={true}
+                icon={
+                  revealed ? (
+                    card.visitType === 'work' ? <Briefcase className="w-5 h-5" /> :
+                    card.visitType === 'watch' ? <Eye className="w-5 h-5" /> :
+                    card.visitType === 'not_visited' ? <EyeOff className="w-5 h-5" /> :
+                    <MapPin className="w-5 h-5" />
+                  ) : null
+                }
               >
-                {/* Card Content */}
-                <div className="p-3 flex flex-col items-center justify-center h-full text-center">
-                  {revealed ? (
-                    <>
-                      {/* Stadium Icon */}
-                      <div className="mb-2">
-                        {getVisitIcon(card.visitType)}
-                      </div>
-                      
-                      {/* Stadium Name */}
-                      <h3 className="font-display text-sm font-bold text-foreground mb-1 line-clamp-2">
-                        {card.stadium}
-                      </h3>
-                      
-                      {/* Visit Type Badge */}
-                      <div className={`text-xs px-2 py-1 rounded-full mb-2 ${getVisitColor(card.visitType)}`}>
-                        {card.visitType === 'work' && 'Work'}
-                        {card.visitType === 'watch' && 'Watch'}
-                        {card.visitType === 'not_visited' && 'Not Visited'}
-                      </div>
-                      
-                      {/* Reason */}
-                      {shouldShowReason(card) && card.reason && (
-                        <p className="font-body text-xs text-muted-foreground line-clamp-3">
-                          {card.reason}
-                        </p>
-                      )}
-                      {card.visitType === 'watch' && !shouldShowReason(card) && (
-                        <p className="font-body text-xs text-muted-foreground italic line-clamp-3">
-                          Bonus available
-                        </p>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      {/* Hidden State */}
-                      <div className="flex flex-col items-center justify-center">
-                        <MapPin className="w-8 h-8 text-muted-foreground mb-2" />
-                        <span className="font-body text-lg font-bold text-muted-foreground mt-1">
-                          {card.stadium}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-                
-                {/* Reveal Animation Overlay */}
-                {revealed && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="absolute inset-0 rounded-lg bg-gradient-to-br from-transparent via-transparent to-black/10 pointer-events-none"
-                  />
+                {revealed ? (
+                  <>
+                    {/* Stadium Name */}
+                    <h3 className="font-display text-sm font-bold text-foreground mb-1 line-clamp-2">
+                      {card.stadium}
+                    </h3>
+                    
+                    {/* Visit Type Badge */}
+                    <div className={`text-xs px-2 py-1 rounded-full mb-2 ${getVisitColor(card.visitType)}`}>
+                      {card.visitType === 'work' && 'Work'}
+                      {card.visitType === 'watch' && 'Watch'}
+                      {card.visitType === 'not_visited' && 'Not Visited'}
+                    </div>
+                    
+                    {/* Reason */}
+                    {shouldShowReason(card) && card.reason && (
+                      <p className="font-body text-xs text-muted-foreground line-clamp-3">
+                        {card.reason}
+                      </p>
+                    )}
+                    {card.visitType === 'watch' && !shouldShowReason(card) && (
+                      <p className="font-body text-xs text-muted-foreground italic line-clamp-3">
+                        Bonus available
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-md md:text-base font-medium text-center text-primary-foreground">
+                    {card.stadium}
+                  </div>
                 )}
-              </motion.div>
+              </RevealGameCard>
             );
           })}
         </div>
       </motion.div>
+      </div>
 
       {/* QLAF branding */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">

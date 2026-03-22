@@ -393,7 +393,55 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
-## 🧪 Test Quality Improvements
+## � GameCard Component Refactoring
+
+### 10. Refactor Round Components to Use GameCard Components
+**Status**: Development Needed  
+**Priority**: Medium  
+**Date Added**: 2026-03-22  
+**Description**: Refactor all round components to use the new reusable GameCard components for consistency and maintainability.
+
+**Background**:
+- ✅ **GameCard Components Created**: Successfully created reusable GameCard, RevealGameCard, ImageGameCard, and TextGameCard components
+- ✅ **Wipeout Integration**: Successfully refactored Wipeout round to use RevealGameCard with proper flip animations and glass styling
+- ✅ **Chris Stadia Integration**: Chris Stadia round is also working well with the new GameCard components
+- ✅ **Benefits Demonstrated**: Consistent animations, glass morphism styling, and reduced code duplication
+
+**Components to Refactor**:
+- **Picture Board round** - Replace custom card implementations with GameCard components
+- **Only Connect round** - Use RevealGameCard for clue reveals
+- **World Rankings round** - Use ImageGameCard for country/athlete displays
+- **Ellie's Tellies round** - Use ImageGameCard for TV screen overlays
+- **F1 Grand Prix round** - Use RevealGameCard for answer reveals
+- **One Minute round** - Use TextGameCard for rapid-fire questions
+- **Generic Round** - Use appropriate GameCard components for answer displays
+
+**Expected Benefits**:
+- **Visual Consistency**: All rounds will have the same flip animations and glass card styling
+- **Code Maintainability**: Card logic centralized in one location
+- **Reduced Duplication**: Eliminate repeated card styling and animation code
+- **Easier Development**: New rounds can instantly use polished card components
+- **Theme Integration**: Consistent use of QLAF theme colors and styling
+
+**Files Involved**:
+- `src/components/rounds/PictureBoard.tsx` - Replace custom card logic
+- `src/components/rounds/OnlyConnect.tsx` - Use RevealGameCard for clues
+- `src/components/rounds/WorldRankings.tsx` - Use ImageGameCard for displays
+- `src/components/rounds/ElliesTellies.tsx` - Use ImageGameCard for TV overlays
+- `src/components/rounds/F1GrandPrix.tsx` - Use RevealGameCard for answers
+- `src/components/rounds/OneMinuteRound.tsx` - Use TextGameCard for questions
+- `src/components/rounds/GenericRound.tsx` - Use appropriate GameCard components
+
+**Implementation Notes**:
+- Use RevealGameCard for any cards that need flip animations and reveal states
+- Use ImageGameCard for cards that primarily display images
+- Use TextGameCard for simple text-based cards
+- Maintain existing functionality while improving visual consistency
+- Ensure all rounds benefit from glass morphism styling and smooth animations
+
+**Impact**: Medium - Significantly improves code maintainability and visual consistency across the entire application
+
+---
 
 ### 9. DavesDozen Test Suite Enhancements
 **Status**: Test Optimization Needed  

@@ -35,6 +35,7 @@ export interface Question {
   correctOrder?: string[];
   imageUrl?: string;
   points: number;
+  stadium?: string; // Chris Stadia specific property
 }
 
 // Helper to normalize options to always have label/imageUrl
