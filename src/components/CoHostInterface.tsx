@@ -4,13 +4,13 @@ import {
   ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
   SkipForward, Clock, Wifi, WifiOff, HelpCircle, Image, Link,
-  Bug, X, Grid3X3, RotateCcw
+  Bug, X, Grid3X3, RotateCcw, Skull
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import React from 'react';
 import { useQuizSync } from '@/hooks/useQuizSync';
 import { useQuestions } from '@/hooks/useQuestions';
-import { normalizeOption } from '@/types/questions';
+import { normalizeOption, WipeoutOption } from '@/types/questions';
 import { Howl } from 'howler';
 
 // Initialize AudioContext for sound playback on main display
@@ -85,6 +85,10 @@ export const CoHostInterface = () => {
     onlyConnectRevealedOptions,
     revealOnlyConnectOption,
     resetOnlyConnect,
+    // Wipeout specific
+    wipeoutRevealedAnswers,
+    revealWipeoutAnswer,
+    resetWipeout,
   } = useQuizStore();
 
   const { broadcastAction } = useQuizSync(true);
@@ -193,8 +197,19 @@ export const CoHostInterface = () => {
 
   
   const syncedToggleAnswer = () => {
-    toggleAnswer();
-    broadcastAction('toggleAnswer');
+    // Special handling for Wipeout round - reveal all answers
+    if (currentRound?.id === 'wipeout') {
+      const options = currentQuestion?.options as Array<WipeoutOption>;
+      if (!options) return;
+      
+      // Reveal all answers (both correct and incorrect)
+      options.forEach((option, index) => {
+        broadcastAction('revealWipeoutAnswer', { answerIndex: index });
+      });
+    } else {
+      toggleAnswer();
+      broadcastAction('toggleAnswer');
+    }
   };
 
   const syncedResetGame = () => {
@@ -272,6 +287,15 @@ export const CoHostInterface = () => {
 
   const syncedResetDavesDozen = () => {
     broadcastAction('resetDavesDozen');
+  };
+
+  // Wipeout synced functions
+  const syncedRevealWipeoutAnswer = (answerIndex: number) => {
+    broadcastAction('revealWipeoutAnswer', { answerIndex });
+  };
+
+  const syncedResetWipeout = () => {
+    broadcastAction('resetWipeout');
   };
 
   const canAdvanceToNextRound = () => {
@@ -567,6 +591,11 @@ export const CoHostInterface = () => {
                     .sort((a, b) => (a.order || 999) - (b.order || 999))
                     .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer || 'No answer'})`)
                     .join(' → ')
+                : currentQuestion.type === 'wipeout' && currentQuestion.options
+                  ? (currentQuestion.options as Array<WipeoutOption>)
+                      .filter(option => !option.correct)
+                      .map(option => `🟥 ${option.text}`)
+                      .join(' | ')
                 : Array.isArray(currentQuestion.answer) 
                   ? currentQuestion.answer.map((answer: any) => {
                       if (answer && typeof answer === 'object' && 'name' in answer) {
@@ -796,6 +825,70 @@ export const CoHostInterface = () => {
               >
                 <RotateCcw className="w-4 h-4 inline mr-1" />
                 Reset
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
+      {/* Wipeout Controls */}
+      {currentRound?.id === 'wipeout' && gameState === 'round' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Skull className="w-4 h-4" />
+            Wipeout - Answer Selection
+          </h3>
+          
+          <div className="space-y-3">
+            {/* Answer Grid */}
+            <div className="grid grid-cols-4 md:grid-cols-4 gap-2">
+              {currentQuestion?.options?.map((option, index) => {
+                // Type guard to ensure we have the correct format for Wipeout
+                if (typeof option === 'string' || !('text' in option) || !('correct' in option)) {
+                  return null;
+                }
+                
+                const wipeoutOption = option as WipeoutOption;
+                const isRevealed = wipeoutRevealedAnswers?.has(index) || false;
+                const isCorrect = wipeoutOption.correct;
+                
+                return (
+                  <button
+                    key={index}
+                    onClick={() => syncedRevealWipeoutAnswer(index)}
+                    disabled={isRevealed}
+                    className={`control-btn text-xs p-3 flex flex-col items-center gap-1 ${
+                      isRevealed
+                        ? isCorrect
+                          ? 'bg-green-500 text-white'
+                          : 'bg-red-500 text-white'
+                        : 'bg-secondary text-foreground'
+                    } ${isRevealed ? 'opacity-75' : ''}`}
+                  >
+                    <span className="text-xs leading-tight text-center">{wipeoutOption.text}</span>
+                    {isRevealed && (
+                      <span className="text-xs">
+                        {isCorrect ? '✓' : '✗'}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                onClick={syncedResetWipeout}
+                className="control-btn bg-secondary text-foreground text-xs"
+              >
+                <RotateCcw className="w-4 h-4 inline mr-1" />
+                Reset All Answers
               </button>
             </div>
           </div>

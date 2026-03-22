@@ -209,7 +209,9 @@ function applyStateUpdate(action: string, data: any) {
           onlyConnectRevealedOptions: 1,
           // Reset Dave's Dozen answers when changing questions
           davesDozenRevealedAnswers: new Set(),
-          davesDozenShowRedCross: false
+          davesDozenShowRedCross: false,
+          // Reset Wipeout answers when changing questions
+          wipeoutRevealedAnswers: new Set()
         });
       }
       break;
@@ -220,7 +222,9 @@ function applyStateUpdate(action: string, data: any) {
         onlyConnectRevealedOptions: 1,
         // Reset Dave's Dozen answers when changing questions
         davesDozenRevealedAnswers: new Set(),
-        davesDozenShowRedCross: false
+        davesDozenShowRedCross: false,
+        // Reset Wipeout answers when changing questions
+        wipeoutRevealedAnswers: new Set()
       });
       break;
     case 'resetGame':
@@ -263,6 +267,12 @@ function applyStateUpdate(action: string, data: any) {
       break;
     case 'resetDavesDozen':
       store.resetDavesDozen();
+      break;
+    case 'revealWipeoutAnswer':
+      store.revealWipeoutAnswer(data.answerIndex);
+      break;
+    case 'resetWipeout':
+      store.resetWipeout();
       break;
     default:
       console.warn('Unknown action:', action);

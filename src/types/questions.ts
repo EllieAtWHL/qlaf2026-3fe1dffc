@@ -8,11 +8,17 @@ export interface QuestionOption {
   answer?: string;
 }
 
+// Wipeout-specific option format
+export interface WipeoutOption {
+  text: string;
+  correct: boolean;
+}
+
 export interface Question {
   id: string;
   type: 'single' | 'ranking' | 'picture' | 'connection' | 'auction' | 'average' | 'wipeout' | 'quickfire' | 'f1';
   content: string;
-  options?: (string | QuestionOption)[];
+  options?: (string | QuestionOption | WipeoutOption)[];
   answer: string | string[];
   answers?: Array<{
     number: number;
