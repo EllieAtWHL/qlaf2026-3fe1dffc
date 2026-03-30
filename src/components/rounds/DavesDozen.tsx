@@ -4,6 +4,7 @@ import { useQuestions } from '@/hooks/useQuestions';
 import { Scoreboard } from '@/components/Scoreboard';
 import { Timer } from '@/components/Timer';
 import { X, Grid3X3 } from 'lucide-react';
+import { ImageGameCard } from '@/components/ui/GameCard';
 
 export const DavesDozen = () => {
   const {
@@ -68,7 +69,7 @@ export const DavesDozen = () => {
           className="w-full h-full max-w-6xl"
         >
           <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 h-full" data-testid="daves-dozen-grid">
-            {currentQuestion?.answers?.map((answer: any) => {
+            {currentQuestion?.answers?.map((answer: { number: number; text: string; imageUrl: string }) => {
               const isRevealed = davesDozenRevealedAnswers.has(answer.number);
               
               return (
@@ -77,38 +78,21 @@ export const DavesDozen = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: answer.number * 0.05 }}
-                  className="aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col items-center justify-center relative max-h-[28vh] md:max-h-[30vh]"
-                  data-testid={`answer-box-${answer.number}`}
                 >
-                  {/* Number badge */}
-                  <div className="absolute top-1 right-1 w-6 h-6 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center z-10">
-                    <span className="font-display text-xs md:text-sm font-bold text-primary-foreground">
-                      {answer.number}
-                    </span>
-                  </div>
-
-                  {/* Content */}
-                  {isRevealed ? (
-                    <div className="w-full h-full flex items-center justify-center">
-                      {/* Reveal image */}
-                      <div className="w-full h-full rounded overflow-hidden bg-secondary/50">
-                        <img 
-                          src={answer.imageUrl} 
-                          alt={answer.text}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            e.currentTarget.src = '/placeholder.svg';
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="font-display text-2xl md:text-3xl font-bold text-muted-foreground/50 tracking-[0.3em]">
+                  <ImageGameCard
+                    imageUrl={answer.imageUrl}
+                    imageAlt={answer.text}
+                    text={answer.text}
+                    revealed={isRevealed}
+                    number={answer.number}
+                    data-testid={`answer-box-${answer.number}`}
+                  >
+                    {!isRevealed && (
+                      <span className="font-display text-2xl md:text-3xl font-bold text-primary-foreground tracking-[0.3em]">
                         QLAF
                       </span>
-                    </div>
-                  )}
+                    )}
+                  </ImageGameCard>
                 </motion.div>
               );
             })}

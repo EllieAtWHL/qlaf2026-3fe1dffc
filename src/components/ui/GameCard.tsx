@@ -23,6 +23,7 @@ export interface ImageGameCardProps extends BaseGameCardProps {
   imageAlt: string;
   revealed?: boolean;
   number?: number;
+  text?: string;
   'data-testid'?: string;
 }
 
@@ -64,7 +65,20 @@ export const GameCard = ({
       style={style}
       data-testid={dataTestId}
     >
-      {children}
+      <motion.div
+        initial={{ opacity: 1 }}
+        animate={{ 
+          opacity: revealed ? [1, 0, 0, 1] : 1
+        }}
+        transition={{ 
+          duration: 0.8, 
+          ease: "easeInOut",
+          times: revealed ? [0, 0.3, 0.7, 1] : undefined
+        }}
+        className="w-full h-full flex flex-col items-center justify-center"
+      >
+        {children}
+      </motion.div>
     </motion.div>
   );
 };
@@ -83,25 +97,15 @@ export const RevealGameCard = ({
   'data-testid': dataTestId
 }: RevealGameCardProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 1, scale: 1 }}
-      animate={{ 
-        opacity: 1,
-        scale: revealed ? [1, 0.8, 1] : 1,
-        rotateY: revealed ? [0, 90, 0] : 0
-      }}
-      transition={{ 
-        duration: 0.6, 
-        ease: "easeInOut"
-      }}
+    <GameCard
+      revealed={revealed}
+      onClick={onClick}
       className={cn(
-        "aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col items-center justify-center relative max-h-[28vh] md:max-h-[30vh] transition-colors duration-300 cursor-pointer",
         revealed
           ? backgroundColor
           : 'bg-primary text-primary-foreground',
         className
       )}
-      onClick={onClick}
       style={{
         borderColor: revealed ? borderColor : 'transparent',
         transitionDelay: revealed ? '0.6s' : '0s',
@@ -110,38 +114,25 @@ export const RevealGameCard = ({
       data-testid={dataTestId}
     >
       <div className="w-full h-full flex flex-col items-center justify-center p-2 md:p-3">
-        <motion.div
-          initial={{ opacity: 1 }}
-          animate={{ 
-            opacity: revealed ? [1, 0, 0, 1] : 1
-          }}
-          transition={{ 
-            duration: 0.8, 
-            ease: "easeInOut",
-            times: revealed ? [0, 0.3, 0.7, 1] : undefined
-          }}
-          className="w-full h-full flex flex-col items-center justify-center"
-        >
-          {iconAnimation && revealed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ 
-                opacity: revealed ? 1 : 0
-              }}
-              transition={{ 
-                duration: 0.2, 
-                delay: revealed ? 0.6 : 0
-              }}
-              className="flex items-center gap-1 mb-2"
-            >
-              {icon}
-            </motion.div>
-          )}
-          
-          {children}
-        </motion.div>
+        {iconAnimation && revealed && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ 
+              opacity: revealed ? 1 : 0
+            }}
+            transition={{ 
+              duration: 0.2, 
+              delay: revealed ? 0.6 : 0
+            }}
+            className="flex items-center gap-1 mb-2"
+          >
+            {icon}
+          </motion.div>
+        )}
+        
+        {children}
       </div>
-    </motion.div>
+    </GameCard>
   );
 };
 
@@ -154,6 +145,7 @@ export const ImageGameCard = ({
   onClick, 
   className = '', 
   number,
+  text,
   'data-testid': dataTestId
 }: ImageGameCardProps) => {
   return (
@@ -175,16 +167,37 @@ export const ImageGameCard = ({
         {children}
         
         {revealed && (
-          <div className="w-full h-full rounded overflow-hidden bg-secondary/50">
-            <img 
-              src={imageUrl} 
-              alt={imageAlt}
-              className="w-full h-full object-contain"
-              onError={(e) => {
-                e.currentTarget.src = '/placeholder.svg';
-              }}
-            />
-          </div>
+          <>
+            <motion.div 
+              className="absolute inset-0 w-full h-full rounded overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.3 }}
+            >
+              <img 
+                src={imageUrl} 
+                alt={imageAlt}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = '/placeholder.svg';
+                }}
+              />
+            </motion.div>
+            
+            {/* Text overlay with background for legibility */}
+            {text && (
+              <motion.div 
+                className="absolute bottom-0 left-0 right-0 bg-black/70 backdrop-blur-sm rounded-b-lg p-2 md:p-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.2 }}
+              >
+                <p className="font-body text-sm md:text-base text-white text-center font-medium leading-tight">
+                  {text}
+                </p>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
     </GameCard>

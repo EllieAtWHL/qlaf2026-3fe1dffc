@@ -153,7 +153,12 @@ export const ChrisStadia = () => {
                 }
               >
                 {revealed ? (
-                  <>
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3, duration: 0.3 }}
+                    className="w-full h-full flex flex-col items-center justify-center text-center"
+                  >
                     {/* Stadium Name */}
                     <h3 className="font-display text-sm font-bold text-foreground mb-1 line-clamp-2">
                       {card.stadium}
@@ -168,16 +173,26 @@ export const ChrisStadia = () => {
                     
                     {/* Reason */}
                     {shouldShowReason(card) && card.reason && (
-                      <p className="font-body text-xs text-muted-foreground line-clamp-3">
+                      <motion.p 
+                        className="font-body text-xs text-muted-foreground line-clamp-3 text-center"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4, duration: 0.2 }}
+                      >
                         {card.reason}
-                      </p>
+                      </motion.p>
                     )}
                     {card.visitType === 'watch' && !shouldShowReason(card) && (
-                      <p className="font-body text-xs text-muted-foreground italic line-clamp-3">
+                      <motion.p 
+                        className="font-body text-xs text-muted-foreground italic line-clamp-3 text-center"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4, duration: 0.2 }}
+                      >
                         Bonus available
-                      </p>
+                      </motion.p>
                     )}
-                  </>
+                  </motion.div>
                 ) : (
                   <div className="text-md md:text-base font-medium text-center text-primary-foreground">
                     {card.stadium}
