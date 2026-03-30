@@ -450,7 +450,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     if (nextTeam <= 3) {
       set({ 
         currentTeamSelecting: nextTeam,
-        lastTeamTimeUpCall: Date.now()
+        lastTeamTimeUpCall: Date.now(),
+        // Reset picture board progress for next team
+        currentPictureIndex: 0,
+        showAllPictures: false,
+        showAnswer: false
       });
       
       // Set the current board for the next team
