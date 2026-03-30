@@ -197,6 +197,17 @@ This document tracks items that need to be fixed or improved but are not current
 
 ---
 
+## 🐛 Bug Fixes & Issues
+
+### Recent Fixes
+- **Chris Stadia Round Transition Bug** (2026-03-30): Fixed hardcoded limit in sync handler preventing transitions from Chris Stadia to F1 Grand Prix. See `/docs/round-transition-hardcoded-limit-bug.md` for complete analysis.
+- **Only Connect Round Transition Bug** (2026-02-21): Fixed Only Connect round transition bug causing main display to break completely with JavaScript errors. See `/docs/only-connect-round-transition-bug.md` for complete analysis.
+
+### Known Issues
+- None currently identified
+
+---
+
 ## ✅ Resolved Issues
 
 ### 1. Wipeout Round Implementation

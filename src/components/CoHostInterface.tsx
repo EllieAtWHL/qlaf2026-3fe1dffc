@@ -100,7 +100,11 @@ export const CoHostInterface = () => {
   } = useQuizStore();
 
   const { broadcastAction } = useQuizSync(true);
-  const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound, currentRoundType } = useQuestions();
+  const { currentQuestion, questions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound, currentRoundType } = useQuestions();
+  const totalQuestions = questions.length;
+  const hasNextQuestionCalc = currentQuestionIndex < totalQuestions - 1;
+  const hasPreviousQuestionCalc = currentQuestionIndex > 0;
+
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
   const [showSetupReminder, setShowSetupReminder] = useState(false);
