@@ -4,7 +4,7 @@ import {
   ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
   SkipForward, Clock, Wifi, WifiOff, HelpCircle, Image, Link,
-  Bug, X, Grid3X3, RotateCcw, Skull
+  Bug, X, Grid3X3, RotateCcw, Skull, MapPin
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from 'react';
 import React from 'react';
@@ -89,10 +89,22 @@ export const CoHostInterface = () => {
     wipeoutRevealedAnswers,
     revealWipeoutAnswer,
     resetWipeout,
+    // Chris Stadia specific
+    chrisStadiaRevealedCards,
+    setChrisStadiaRevealedCards,
+    chrisStadiaWatchRevealed,
+    setChrisStadiaWatchRevealed,
+    chrisStadiaWatchShownOnScreen,
+    setChrisStadiaWatchShownOnScreen,
+    resetChrisStadia,
   } = useQuizStore();
 
   const { broadcastAction } = useQuizSync(true);
-  const { currentQuestion, totalQuestions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound } = useQuestions();
+  const { currentQuestion, questions, hasNextQuestion, hasPreviousQuestion, getQuestionsForRound, currentRoundType } = useQuestions();
+  const totalQuestions = questions.length;
+  const hasNextQuestionCalc = currentQuestionIndex < totalQuestions - 1;
+  const hasPreviousQuestionCalc = currentQuestionIndex > 0;
+
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [isConnected, setIsConnected] = useState(true);
   const [showSetupReminder, setShowSetupReminder] = useState(false);
@@ -206,6 +218,19 @@ export const CoHostInterface = () => {
       options.forEach((option, index) => {
         broadcastAction('revealWipeoutAnswer', { answerIndex: index });
       });
+    } else if (currentRound?.id === 'chris-stadia') {
+      // For Chris Stadia, manage watch reasons shown on screen
+      if (!showAnswer) {
+        // When showing answers, add all revealed watch reasons to shown on screen
+        setChrisStadiaWatchShownOnScreen(chrisStadiaWatchRevealed || []);
+        broadcastAction('revealChrisStadiaWatchShownOnScreen', { cardIds: chrisStadiaWatchRevealed || [] });
+      } else {
+        // When hiding answers, clear the shown on screen state
+        setChrisStadiaWatchShownOnScreen([]);
+        broadcastAction('revealChrisStadiaWatchShownOnScreen', { cardIds: [] });
+      }
+      toggleAnswer();
+      broadcastAction('toggleAnswer');
     } else {
       toggleAnswer();
       broadcastAction('toggleAnswer');
@@ -296,6 +321,41 @@ export const CoHostInterface = () => {
 
   const syncedResetWipeout = () => {
     broadcastAction('resetWipeout');
+  };
+
+  // Chris Stadia synced functions
+  const syncedRevealChrisStadiaCard = (cardId: number) => {
+    const currentRevealed = chrisStadiaRevealedCards || [];
+    const cards = currentQuestion?.cards as Array<{ id: number; visitType: string }>;
+    const card = cards?.find(c => c.id === cardId);
+    
+    if (!currentRevealed.includes(cardId)) {
+      const newRevealed = [...currentRevealed, cardId];
+      setChrisStadiaRevealedCards(newRevealed);
+      broadcastAction('revealChrisStadiaCard', { cards: newRevealed });
+      
+      // Reset showAnswer state when new card is clicked
+      if (showAnswer) {
+        toggleAnswer();
+        broadcastAction('toggleAnswer');
+      }
+      
+      // If this is a watch card, set watch reasons to only this card
+      if (card?.visitType === 'watch') {
+        setChrisStadiaWatchRevealed([cardId]);
+        broadcastAction('revealChrisStadiaWatchReason', { cardIds: [cardId] });
+      } else {
+        // If not a watch card, clear all watch reasons
+        setChrisStadiaWatchRevealed([]);
+        broadcastAction('revealChrisStadiaWatchReason', { cardIds: [] });
+      }
+    }
+  };
+
+  const syncedResetChrisStadia = () => {
+    setChrisStadiaRevealedCards([]);
+    setChrisStadiaWatchRevealed([]);
+    broadcastAction('resetChrisStadia');
   };
 
   const canAdvanceToNextRound = () => {
@@ -586,16 +646,23 @@ export const CoHostInterface = () => {
           
           <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
             <p className="text-sm text-foreground font-medium">
-              {currentQuestion.type === 'ranking' && currentQuestion.options
+              {currentRoundType === 'ranking' && currentQuestion.options
                 ? (currentQuestion.options as any[])
                     .sort((a, b) => (a.order || 999) - (b.order || 999))
                     .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer || 'No answer'})`)
                     .join(' → ')
-                : currentQuestion.type === 'wipeout' && currentQuestion.options
+                : currentRoundType === 'wipeout' && currentQuestion.options
                   ? (currentQuestion.options as Array<WipeoutOption>)
                       .filter(option => !option.correct)
                       .map(option => `🟥 ${option.text}`)
                       .join(' | ')
+                : currentRound?.id === 'chris-stadia' && chrisStadiaWatchRevealed && chrisStadiaWatchRevealed.length > 0
+                  ? currentQuestion?.cards?.map((card: any) => {
+                      if (card.visitType === 'watch' && chrisStadiaWatchRevealed.includes(card.id)) {
+                        return `${card.stadium}: ${card.reason}`;
+                      }
+                      return null;
+                    }).filter(Boolean).join(' | ')
                 : Array.isArray(currentQuestion.answer) 
                   ? currentQuestion.answer.map((answer: any) => {
                       if (answer && typeof answer === 'object' && 'name' in answer) {
@@ -889,6 +956,62 @@ export const CoHostInterface = () => {
               >
                 <RotateCcw className="w-4 h-4 inline mr-1" />
                 Reset All Answers
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
+      {/* Chris Stadia Controls */}
+      {currentRound?.id === 'chris-stadia' && gameState === 'round' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <MapPin className="w-4 h-4" />
+            Chris Stadia - Card Selection
+          </h3>
+          
+          <div className="space-y-3">
+            {/* Cards Grid */}
+            <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+              {currentQuestion?.cards?.map((card, index) => {
+                const isRevealed = chrisStadiaRevealedCards?.includes(card.id) || false;
+                
+                return (
+                  <button
+                    key={card.id}
+                    onClick={() => syncedRevealChrisStadiaCard(card.id)}
+                    disabled={isRevealed}
+                    className={`control-btn text-xs p-3 flex flex-col items-center gap-1 ${
+                      isRevealed
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-secondary text-foreground'
+                    } ${isRevealed ? 'opacity-75' : ''}`}
+                  >
+                    <span className="text-xs leading-tight text-center">{card.stadium}</span>
+                    {isRevealed && (
+                      <span className="text-xs">
+                        {card.visitType === 'work' && '💼'}
+                        {card.visitType === 'watch' && '👁️'}
+                        {card.visitType === 'not_visited' && '🚫'}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                onClick={syncedResetChrisStadia}
+                className="control-btn bg-secondary text-foreground text-xs"
+              >
+                <RotateCcw className="w-4 h-4 inline mr-1" />
+                Reset All Cards
               </button>
             </div>
           </div>

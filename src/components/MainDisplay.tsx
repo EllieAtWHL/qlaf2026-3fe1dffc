@@ -11,6 +11,7 @@ import { OnlyConnect } from '@/components/rounds/OnlyConnect';
 import { ElliesTellies } from '@/components/rounds/ElliesTellies';
 import { DavesDozen } from '@/components/rounds/DavesDozen';
 import { Wipeout } from '@/components/rounds/Wipeout';
+import { ChrisStadia } from '@/components/rounds/ChrisStadia';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
@@ -74,6 +75,7 @@ const componentMap: Record<string, React.ComponentType<any>> = {
   'ElliesTellies': ElliesTellies,
   'DavesDozen': DavesDozen,
   'Wipeout': Wipeout,
+  'ChrisStadia': ChrisStadia,
   'GenericRound': GenericRound,
 };
 

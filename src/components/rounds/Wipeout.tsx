@@ -4,6 +4,7 @@ import { useQuestions } from '@/hooks/useQuestions';
 import { Scoreboard } from '@/components/Scoreboard';
 import { Check, X, Skull } from 'lucide-react';
 import { WipeoutOption } from '@/types/questions';
+import { RevealGameCard } from '@/components/ui/GameCard';
 
 export const Wipeout = () => {
   const {
@@ -88,82 +89,39 @@ export const Wipeout = () => {
               const isCorrect = option.correct;
               
               return (
-                <motion.div
+                <RevealGameCard
                   key={index}
-                  initial={{ opacity: 1, scale: 1 }}
-                  animate={{ 
-                    opacity: 1,
-                    scale: isRevealed ? [1, 0.8, 1] : 1,
-                    rotateY: isRevealed ? [0, 90, 0] : 0
+                  revealed={isRevealed}
+                  onClick={() => {
+                    // This will be handled by CoHostInterface
                   }}
-                  transition={{ 
-                    duration: 0.6, 
-                    ease: "easeInOut"
-                  }}
-                  className={`aspect-video glass-card rounded-lg p-2 md:p-3 flex flex-col items-center justify-center relative max-h-[28vh] md:max-h-[30vh] transition-colors duration-300 ${
-                    isRevealed
-                      ? isCorrect
-                        ? 'bg-green-500/20 border-green-500/50'
-                        : 'bg-red-500/20 border-red-500/50'
-                      : 'bg-primary text-primary-foreground'
-                  }`}
+                  borderColor={isRevealed ? (isCorrect ? 'rgb(34 197 94 / 0.5)' : 'rgb(239 68 68 / 0.5)') : 'transparent'}
+                  backgroundColor={isRevealed ? (isCorrect ? 'bg-green-500/20 border-green-500/50' : 'bg-red-500/20 border-red-500/50') : 'bg-primary text-primary-foreground'}
+                  iconAnimation={true}
+                  icon={
+                    isRevealed ? (
+                      <>
+                        {isCorrect ? (
+                          <Check className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
+                        ) : (
+                          <X className="w-6 h-6 md:w-8 md:h-8 text-red-600" />
+                        )}
+                        <span className={`text-lg md:text-xl font-bold ${
+                          isCorrect ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {isCorrect ? 'CORRECT' : 'WIPEOUT'}
+                        </span>
+                      </>
+                    ) : null
+                  }
                   data-testid={`answer-box-${index}`}
-                  style={{
-                    borderColor: isRevealed ? (isCorrect ? 'rgb(34 197 94 / 0.5)' : 'rgb(239 68 68 / 0.5)') : 'transparent',
-                    transitionDelay: isRevealed ? '0.6s' : '0s'
-                  }}
                 >
-                  {/* Content */}
-                  <div className="w-full h-full flex flex-col items-center justify-center p-2 md:p-3">
-                    <motion.div
-                      initial={{ opacity: 1 }}
-                      animate={{ 
-                        opacity: isRevealed ? [1, 0, 0, 1] : 1
-                      }}
-                      transition={{ 
-                        duration: 0.8, 
-                        ease: "easeInOut",
-                        times: isRevealed ? [0, 0.3, 0.7, 1] : undefined
-                      }}
-                      className="w-full h-full flex flex-col items-center justify-center"
-                    >
-                      {isRevealed ? (
-                        <>
-                          {/* Only show correct/incorrect status when revealed */}
-                          <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ 
-                              opacity: isRevealed ? 1 : 0
-                            }}
-                            transition={{ 
-                              duration: 0.2, 
-                              delay: isRevealed ? 0.6 : 0
-                            }}
-                            className="flex items-center gap-1"
-                          >
-                            {isCorrect ? (
-                              <Check className="w-6 h-6 md:w-8 md:h-8 text-green-600" />
-                            ) : (
-                              <X className="w-6 h-6 md:w-8 md:h-8 text-red-600" />
-                            )}
-                            <span className={`text-lg md:text-xl font-bold ${
-                              isCorrect ? 'text-green-600' : 'text-red-600'
-                            }`}>
-                              {isCorrect ? 'CORRECT' : 'WIPEOUT'}
-                            </span>
-                          </motion.div>
-                        </>
-                      ) : (
-                        <>
-                          {/* Answer option text on card front before reveal */}
-                          <div className="text-md md:text-base font-medium text-center text-primary-foreground">
-                            {option.text}
-                          </div>
-                        </>
-                      )}
-                    </motion.div>
-                  </div>
-                </motion.div>
+                  {!isRevealed && (
+                    <div className="text-md md:text-base font-medium text-center text-primary-foreground">
+                      {option.text}
+                    </div>
+                  )}
+                </RevealGameCard>
               );
             })}
           </div>

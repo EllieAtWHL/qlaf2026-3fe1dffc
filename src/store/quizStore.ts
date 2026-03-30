@@ -14,7 +14,8 @@ export type RoundType =
   | 'distinctly-average'
   | 'wipeout'
   | 'one-minute-round'
-  | 'f1-grand-prix';
+  | 'f1-grand-prix'
+  | 'chris-stadia';
 
 export interface Round {
   id: string;
@@ -97,6 +98,11 @@ interface QuizState {
   // Wipeout specific
   wipeoutRevealedAnswers: Set<number>;
   
+  // Chris Stadia specific
+  chrisStadiaRevealedCards: number[];
+  chrisStadiaWatchRevealed: number[];
+  chrisStadiaWatchShownOnScreen: number[];
+  
   // Actions
   startGame: () => void;
   startRound: () => void;
@@ -146,6 +152,12 @@ interface QuizState {
   revealWipeoutAnswer: (answerIndex: number) => void;
   resetWipeout: () => void;
   
+  // Chris Stadia actions
+  setChrisStadiaRevealedCards: (cards: number[]) => void;
+  resetChrisStadia: () => void;
+  setChrisStadiaWatchRevealed: (cardIds: number[]) => void;
+  setChrisStadiaWatchShownOnScreen: (cardIds: number[]) => void;
+  
   // Game actions
   // Reset
   resetGame: () => void;
@@ -188,6 +200,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   // Wipeout initial state
   wipeoutRevealedAnswers: new Set(),
+  
+  // Chris Stadia initial state
+  chrisStadiaRevealedCards: [],
+  chrisStadiaWatchRevealed: [],
+  chrisStadiaWatchShownOnScreen: [],
   
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
@@ -433,7 +450,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     if (nextTeam <= 3) {
       set({ 
         currentTeamSelecting: nextTeam,
-        lastTeamTimeUpCall: Date.now()
+        lastTeamTimeUpCall: Date.now(),
+        // Reset picture board progress for next team
+        currentPictureIndex: 0,
+        showAllPictures: false,
+        showAnswer: false
       });
       
       // Set the current board for the next team
@@ -542,6 +563,27 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({ wipeoutRevealedAnswers: new Set() });
   },
   
+  // Chris Stadia actions
+  setChrisStadiaRevealedCards: (cards: number[]) => {
+    set({ chrisStadiaRevealedCards: cards });
+  },
+  
+  resetChrisStadia: () => {
+    set({ 
+      chrisStadiaRevealedCards: [], 
+      chrisStadiaWatchRevealed: [],
+      chrisStadiaWatchShownOnScreen: []
+    });
+  },
+
+  setChrisStadiaWatchRevealed: (cardIds: number[]) => {
+    set({ chrisStadiaWatchRevealed: cardIds });
+  },
+  
+  setChrisStadiaWatchShownOnScreen: (cardIds: number[]) => {
+    set({ chrisStadiaWatchShownOnScreen: cardIds });
+  },
+  
   resetGame: () => set({
     gameState: 'welcome',
     currentRoundIndex: 0,
@@ -560,5 +602,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     davesDozenRevealedAnswers: new Set(),
     davesDozenShowRedCross: false,
     wipeoutRevealedAnswers: new Set(),
+    chrisStadiaRevealedCards: [],
+    chrisStadiaWatchRevealed: [],
+    chrisStadiaWatchShownOnScreen: [],
   }),
 }));

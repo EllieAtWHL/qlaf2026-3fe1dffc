@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuizStore } from '@/store/quizStore';
+import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import questionsData from '@/data/questions.json';
 import { getRoundIdByIndex } from '@/utils/roundUtils';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -111,8 +111,10 @@ function applyStateUpdate(action: string, data: any) {
       }
       break;
     case 'nextRound':
-      if (store.currentRoundIndex < 10) {
+      if (store.currentRoundIndex < ROUNDS.length - 1) {
         const newRoundIndex = store.currentRoundIndex + 1;
+        
+        // Set transition state first
         useQuizStore.setState({ 
           currentRoundIndex: newRoundIndex, 
           gameState: 'round-transition',
@@ -122,8 +124,25 @@ function applyStateUpdate(action: string, data: any) {
           isTransitioning: true, // Explicitly mark as transitioning
         });
         
+        // Load questions after a brief delay to ensure transition state is set first
         setTimeout(() => {
-          loadQuestionsForCurrentRound();
+          // Load questions directly instead of calling store method
+          try {
+            const currentRoundId = getRoundIdByIndex(newRoundIndex);
+            const data = questionsData as any;
+            const currentRoundData = data[currentRoundId];
+            
+            if (!currentRoundData) {
+              useQuizStore.setState({ questions: [] });
+            } else {
+              const questions = currentRoundData?.questions || [];
+              useQuizStore.setState({ questions });
+            }
+          } catch (error) {
+            console.error('Failed to load questions:', error);
+            useQuizStore.setState({ questions: [] });
+          }
+          
           useQuizStore.setState({ isTransitioning: false }); // End transition after questions are loaded
         }, 100);
       }
@@ -211,7 +230,11 @@ function applyStateUpdate(action: string, data: any) {
           davesDozenRevealedAnswers: new Set(),
           davesDozenShowRedCross: false,
           // Reset Wipeout answers when changing questions
-          wipeoutRevealedAnswers: new Set()
+          wipeoutRevealedAnswers: new Set(),
+          // Reset Chris Stadia cards when changing questions
+          chrisStadiaRevealedCards: [],
+          chrisStadiaWatchRevealed: [],
+          chrisStadiaWatchShownOnScreen: []
         });
       }
       break;
@@ -224,7 +247,9 @@ function applyStateUpdate(action: string, data: any) {
         davesDozenRevealedAnswers: new Set(),
         davesDozenShowRedCross: false,
         // Reset Wipeout answers when changing questions
-        wipeoutRevealedAnswers: new Set()
+        wipeoutRevealedAnswers: new Set(),
+        // Reset Chris Stadia cards when changing questions
+        chrisStadiaRevealedCards: []
       });
       break;
     case 'resetGame':
@@ -273,6 +298,18 @@ function applyStateUpdate(action: string, data: any) {
       break;
     case 'resetWipeout':
       store.resetWipeout();
+      break;
+    case 'revealChrisStadiaCard':
+      store.setChrisStadiaRevealedCards(data.cards);
+      break;
+    case 'resetChrisStadia':
+      store.resetChrisStadia();
+      break;
+    case 'revealChrisStadiaWatchReason':
+      store.setChrisStadiaWatchRevealed(data.cardIds || []);
+      break;
+    case 'revealChrisStadiaWatchShownOnScreen':
+      store.setChrisStadiaWatchShownOnScreen(data.cardIds || []);
       break;
     default:
       console.warn('Unknown action:', action);

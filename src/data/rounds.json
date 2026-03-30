@@ -91,6 +91,15 @@
       "icon": "Clock"
     },
     {
+      "id": "chris-stadia",
+      "name": "Chris-Cross the Grounds",
+      "description": "Which stadiums has Chris been too, and why?",
+      "timerDuration": null,
+      "isTeamRound": true,
+      "component": "ChrisStadia",
+      "icon": "MapPin"
+    },
+    {
       "id": "f1-grand-prix",
       "name": "F1 Grand Prix Final",
       "description": "The final race!",
