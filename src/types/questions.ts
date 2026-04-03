@@ -17,8 +17,8 @@ export interface WipeoutOption {
 export interface ChrisStadiaCard {
   id: number;
   stadium: string;
-  visitType: 'work' | 'watch' | 'not_visited';
-  reason: string;
+  visitType: 'sporting_event' | 'fly_by';
+  reason?: string;
 }
 
 export interface Question {
