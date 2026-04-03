@@ -96,6 +96,8 @@ export const CoHostInterface = () => {
     setChrisStadiaWatchRevealed,
     chrisStadiaWatchShownOnScreen,
     setChrisStadiaWatchShownOnScreen,
+    chrisStadiaCurrentSportingEvent,
+    setChrisStadiaCurrentSportingEvent,
     resetChrisStadia,
   } = useQuizStore();
 
@@ -340,14 +342,12 @@ export const CoHostInterface = () => {
         broadcastAction('toggleAnswer');
       }
       
-      // If this is a watch card, set watch reasons to only this card
-      if (card?.visitType === 'watch') {
-        setChrisStadiaWatchRevealed([cardId]);
-        broadcastAction('revealChrisStadiaWatchReason', { cardIds: [cardId] });
+      // If this is a sporting_event card, set it as the current sporting event
+      if (card?.visitType === 'sporting_event') {
+        setChrisStadiaCurrentSportingEvent(cardId);
       } else {
-        // If not a watch card, clear all watch reasons
-        setChrisStadiaWatchRevealed([]);
-        broadcastAction('revealChrisStadiaWatchReason', { cardIds: [] });
+        // If not a sporting_event card, clear the current sporting event
+        setChrisStadiaCurrentSportingEvent(null);
       }
     }
   };
@@ -355,6 +355,7 @@ export const CoHostInterface = () => {
   const syncedResetChrisStadia = () => {
     setChrisStadiaRevealedCards([]);
     setChrisStadiaWatchRevealed([]);
+    setChrisStadiaCurrentSportingEvent(null);
     broadcastAction('resetChrisStadia');
   };
 
@@ -656,13 +657,13 @@ export const CoHostInterface = () => {
                       .filter(option => !option.correct)
                       .map(option => `🟥 ${option.text}`)
                       .join(' | ')
-                : currentRound?.id === 'chris-stadia' && chrisStadiaWatchRevealed && chrisStadiaWatchRevealed.length > 0
-                  ? currentQuestion?.cards?.map((card: any) => {
-                      if (card.visitType === 'watch' && chrisStadiaWatchRevealed.includes(card.id)) {
-                        return `${card.stadium}: ${card.reason}`;
-                      }
-                      return null;
-                    }).filter(Boolean).join(' | ')
+                : currentRound?.id === 'chris-stadia' && chrisStadiaCurrentSportingEvent
+                  ? (() => {
+                      const card = currentQuestion?.cards?.find((c: any) => c.id === chrisStadiaCurrentSportingEvent);
+                      return card && card.visitType === 'sporting_event' && card.reason 
+                        ? `${card.stadium}: ${card.reason}`
+                        : null;
+                    })()
                 : Array.isArray(currentQuestion.answer) 
                   ? currentQuestion.answer.map((answer: any) => {
                       if (answer && typeof answer === 'object' && 'name' in answer) {
@@ -994,9 +995,8 @@ export const CoHostInterface = () => {
                     <span className="text-xs leading-tight text-center">{card.stadium}</span>
                     {isRevealed && (
                       <span className="text-xs">
-                        {card.visitType === 'work' && '💼'}
-                        {card.visitType === 'watch' && '👁️'}
-                        {card.visitType === 'not_visited' && '🚫'}
+                        {card.visitType === 'sporting_event' && '🏆'}
+                        {card.visitType === 'fly_by' && '✈️'}
                       </span>
                     )}
                   </button>

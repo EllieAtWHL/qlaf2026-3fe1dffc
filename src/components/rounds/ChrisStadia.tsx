@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { useQuestions } from '@/hooks/useQuestions';
 import { Scoreboard } from '@/components/Scoreboard';
-import { MapPin, Briefcase, Eye, EyeOff, Trophy } from 'lucide-react';
+import { MapPin, Trophy, Plane, EyeOff } from 'lucide-react';
 import { ChrisStadiaCard } from '@/types/questions';
 import { GameCard, RevealGameCard } from '@/components/ui/GameCard';
 
@@ -46,17 +46,15 @@ export const ChrisStadia = () => {
   const isWatchReasonRevealed = (cardId: number) => watchRevealed.includes(cardId);
   const isWatchReasonShownOnScreen = (cardId: number) => watchShownOnScreen.includes(cardId);
   const shouldShowReason = (card: ChrisStadiaCard) => {
-    return showAnswer || (card.visitType === 'watch' && isWatchReasonShownOnScreen(card.id));
+    return showAnswer && card.reason;
   };
 
   const getVisitIcon = (visitType: string) => {
     switch (visitType) {
-      case 'work':
-        return <Briefcase className="w-5 h-5" />;
-      case 'watch':
-        return <Eye className="w-5 h-5" />;
-      case 'not_visited':
-        return <EyeOff className="w-5 h-5" />;
+      case 'sporting_event':
+        return <Trophy className="w-5 h-5" />;
+      case 'fly_by':
+        return <Plane className="w-5 h-5" />;
       default:
         return <MapPin className="w-5 h-5" />;
     }
@@ -64,12 +62,10 @@ export const ChrisStadia = () => {
 
   const getVisitColor = (visitType: string) => {
     switch (visitType) {
-      case 'work':
-        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'watch':
+      case 'sporting_event':
         return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'not_visited':
-        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'fly_by':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
       default:
         return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
@@ -131,23 +127,20 @@ export const ChrisStadia = () => {
                   // This will be handled by CoHostInterface
                 }}
                 borderColor={revealed ? (
-                  card.visitType === 'work' ? 'rgb(59 130 246 / 0.5)' :
-                  card.visitType === 'watch' ? 'rgb(34 197 94 / 0.5)' :
-                  card.visitType === 'not_visited' ? 'rgb(239 68 68 / 0.5)' :
+                  card.visitType === 'sporting_event' ? 'rgb(34 197 94 / 0.5)' :
+                  card.visitType === 'fly_by' ? 'rgb(59 130 246 / 0.5)' :
                   'transparent'
                 ) : 'transparent'}
                 backgroundColor={revealed ? (
-                  card.visitType === 'work' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
-                  card.visitType === 'watch' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                  card.visitType === 'not_visited' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                  card.visitType === 'sporting_event' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                  card.visitType === 'fly_by' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
                   'bg-primary text-primary-foreground'
                 ) : 'bg-primary text-primary-foreground'}
                 iconAnimation={true}
                 icon={
                   revealed ? (
-                    card.visitType === 'work' ? <Briefcase className="w-5 h-5" /> :
-                    card.visitType === 'watch' ? <Eye className="w-5 h-5" /> :
-                    card.visitType === 'not_visited' ? <EyeOff className="w-5 h-5" /> :
+                    card.visitType === 'sporting_event' ? <Trophy className="w-5 h-5" /> :
+                    card.visitType === 'fly_by' ? <Plane className="w-5 h-5" /> :
                     <MapPin className="w-5 h-5" />
                   ) : null
                 }
@@ -166,9 +159,8 @@ export const ChrisStadia = () => {
                     
                     {/* Visit Type Badge */}
                     <div className={`text-xs px-2 py-1 rounded-full mb-2 ${getVisitColor(card.visitType)}`}>
-                      {card.visitType === 'work' && 'Work'}
-                      {card.visitType === 'watch' && 'Watch'}
-                      {card.visitType === 'not_visited' && 'Not Visited'}
+                      {card.visitType === 'sporting_event' && 'Sporting Event'}
+                      {card.visitType === 'fly_by' && 'Fly By'}
                     </div>
                     
                     {/* Reason */}
@@ -180,16 +172,6 @@ export const ChrisStadia = () => {
                         transition={{ delay: 0.4, duration: 0.2 }}
                       >
                         {card.reason}
-                      </motion.p>
-                    )}
-                    {card.visitType === 'watch' && !shouldShowReason(card) && (
-                      <motion.p 
-                        className="font-body text-xs text-muted-foreground italic line-clamp-3 text-center"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.2 }}
-                      >
-                        Bonus available
                       </motion.p>
                     )}
                   </motion.div>

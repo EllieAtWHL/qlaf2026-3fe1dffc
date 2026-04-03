@@ -102,6 +102,7 @@ interface QuizState {
   chrisStadiaRevealedCards: number[];
   chrisStadiaWatchRevealed: number[];
   chrisStadiaWatchShownOnScreen: number[];
+  chrisStadiaCurrentSportingEvent: number | null;
   
   // Actions
   startGame: () => void;
@@ -157,6 +158,7 @@ interface QuizState {
   resetChrisStadia: () => void;
   setChrisStadiaWatchRevealed: (cardIds: number[]) => void;
   setChrisStadiaWatchShownOnScreen: (cardIds: number[]) => void;
+  setChrisStadiaCurrentSportingEvent: (cardId: number | null) => void;
   
   // Game actions
   // Reset
@@ -205,6 +207,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   chrisStadiaRevealedCards: [],
   chrisStadiaWatchRevealed: [],
   chrisStadiaWatchShownOnScreen: [],
+  chrisStadiaCurrentSportingEvent: null,
   
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
@@ -572,8 +575,13 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({ 
       chrisStadiaRevealedCards: [], 
       chrisStadiaWatchRevealed: [],
-      chrisStadiaWatchShownOnScreen: []
+      chrisStadiaWatchShownOnScreen: [],
+      chrisStadiaCurrentSportingEvent: null
     });
+  },
+  
+  setChrisStadiaCurrentSportingEvent: (cardId: number | null) => {
+    set({ chrisStadiaCurrentSportingEvent: cardId });
   },
 
   setChrisStadiaWatchRevealed: (cardIds: number[]) => {
@@ -605,5 +613,6 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     chrisStadiaRevealedCards: [],
     chrisStadiaWatchRevealed: [],
     chrisStadiaWatchShownOnScreen: [],
+    chrisStadiaCurrentSportingEvent: null,
   }),
 }));
