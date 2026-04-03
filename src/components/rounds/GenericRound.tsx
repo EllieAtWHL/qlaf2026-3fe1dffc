@@ -124,7 +124,7 @@ export const GenericRound = ({
       }} animate={{
         opacity: 1,
         scale: 1,
-        y: showAnswer ? "-200%" : "0%"
+        y: showAnswer ? "-120%" : "0%"
       }} transition={{
         delay: 0.1,
         y: { duration: 0.6, ease: "easeInOut" }
