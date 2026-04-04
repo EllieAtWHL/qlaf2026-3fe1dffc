@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useQuizStore, ROUNDS } from '@/store/quizStore';
+import { useQuizStore, ROUNDS, OneMinuteBoard, PictureBoard } from '@/store/quizStore';
 import { 
   ChevronLeft, ChevronRight, 
   Trophy, Plus, Minus, Eye, EyeOff, Home, Car,
@@ -811,21 +811,21 @@ export const CoHostInterface = () => {
                   </div>
                   
                   {/* Current Picture Answer */}
-                  {!showAllPictures && currentBoard && (
+                  {!showAllPictures && currentBoard && 'pictures' in currentBoard && (
                     <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
                       <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
                       <p className="text-sm text-foreground font-medium">
-                        {currentBoard.pictures[currentPictureIndex]?.answer || "No answer"}
+                        {(currentBoard as PictureBoard).pictures[currentPictureIndex]?.answer || "No answer"}
                       </p>
                     </div>
                   )}
                   
                   {/* All Answers Grid */}
-                  {showAllPictures && currentBoard && (
+                  {showAllPictures && currentBoard && 'pictures' in currentBoard && (
                     <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
                       <p className="text-xs font-semibold text-qlaf-success mb-2">All Answers:</p>
                       <div className="grid grid-cols-2 gap-2 text-xs">
-                        {currentBoard.pictures.map((picture, index) => (
+                        {(currentBoard as PictureBoard).pictures.map((picture, index) => (
                           <div key={picture.id} className="flex items-start gap-1">
                             <span className="text-muted-foreground">{index + 1}.</span>
                             <span className="text-foreground">{picture.answer}</span>
@@ -948,7 +948,7 @@ export const CoHostInterface = () => {
                 {/* Question Progress */}
                 <div className="space-y-2">
                   <p className="text-xs text-muted-foreground">
-                    Question {currentQuestionIndex + 1} of 9
+                    Question {Math.min(currentQuestionIndex + 1, 8)} of 8
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     <button
@@ -960,7 +960,7 @@ export const CoHostInterface = () => {
                     </button>
                     <button
                       onClick={syncedNextOneMinuteQuestion}
-                      disabled={currentQuestionIndex >= 8}
+                      disabled={currentQuestionIndex >= 7}
                       className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
                     >
                       Next Question
@@ -1057,7 +1057,7 @@ export const CoHostInterface = () => {
                   </>
                 )}
                 
-                {currentQuestionIndex === 3 && logoBlurLevel === 0 && (
+                {currentQuestionIndex === 3 && (
                   <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
                     <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
                     <p className="text-sm text-foreground font-medium">
@@ -1071,13 +1071,13 @@ export const CoHostInterface = () => {
                     <div className="bg-qlaf-info/10 border border-qlaf-info/30 rounded-lg p-3 mb-3">
                       <p className="text-xs font-semibold text-qlaf-info mb-1">Question:</p>
                       <p className="text-sm text-foreground font-medium">
-                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex]?.content || "No question"}
+                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex - 1]?.content || "No question"}
                       </p>
                     </div>
                     <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
                       <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
                       <p className="text-sm text-foreground font-medium">
-                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex]?.answer || "No answer"}
+                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex - 1]?.answer || "No answer"}
                       </p>
                     </div>
                   </>
