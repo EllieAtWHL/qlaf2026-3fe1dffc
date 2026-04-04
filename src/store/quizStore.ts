@@ -158,6 +158,7 @@ interface QuizState {
   
   // Team actions
   updateTeamScore: (teamId: number, roundIndex: number, score: number) => void;
+  updateTeamName: (teamId: number, name: string) => void;
   addToTeamScore: (teamId: number, points: number) => void;
   advanceF1Car: (teamId: number, amount: number) => void;
   
@@ -286,6 +287,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         showAnswer: false,
         questions: [], // Clear questions during transition
         isTransitioning: true, // Explicitly mark as transitioning
+        timerValue: 60, // Reset timer to 60 seconds when changing rounds
+        isTimerRunning: false, // Stop timer during transition
         // Always reset currentBoard when changing rounds
         currentBoard: null
       });
@@ -308,6 +311,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         currentQuestionIndex: 0,
         showAnswer: false,
         questions: [], // Clear questions during transition
+        timerValue: 60, // Reset timer to 60 seconds when changing rounds
+        isTimerRunning: false, // Stop timer during transition
+        currentBoard: null // Always reset currentBoard when changing rounds
       });
     }
   },
@@ -326,6 +332,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       currentQuestionIndex: 0,
       showAnswer: false,
       questions: [], // Clear questions during transition
+      timerValue: 60, // Reset timer to 60 seconds when changing rounds
+      isTimerRunning: false, // Stop timer during transition
       // Always reset currentBoard when changing rounds
       currentBoard: null
     });
@@ -374,6 +382,20 @@ export const useQuizStore = create<QuizState>((set, get) => ({
           ...team,
           scores: newScores,
           totalScore: newScores.reduce((a, b) => a + b, 0),
+        };
+      }
+      return team;
+    });
+    set({ teams: updatedTeams });
+  },
+  
+  updateTeamName: (teamId: number, name: string) => {
+    const { teams } = get();
+    const updatedTeams = teams.map(team => {
+      if (team.id === teamId) {
+        return {
+          ...team,
+          name,
         };
       }
       return team;
@@ -475,6 +497,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       set({ 
         oneMinuteBoards: boards,
         availableBoards: ['board-1', 'board-2', 'board-3'],
+        selectedBoards: {},
+        currentTeamSelecting: 1,
         currentBoard: null,
         currentQuestionIndex: 0,
         logoBlurLevel: 20,
@@ -627,7 +651,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     console.log('initializeOneMinuteBoards: setting', boards.length, 'boards and available boards');
     set({ 
       oneMinuteBoards: boards,
-      availableBoards: ['board-1', 'board-2', 'board-3'], // Add missing available boards reset
+      availableBoards: ['board-1', 'board-2', 'board-3'],
+      selectedBoards: {},
+      currentTeamSelecting: 1,
       currentBoard: null,
       currentQuestionIndex: 0,
       logoBlurLevel: 20,
@@ -638,39 +664,58 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   selectOneMinuteBoard: (boardId: string) => {
     console.log('selectOneMinuteBoard called with boardId:', boardId);
     const { oneMinuteBoards, availableBoards, selectedBoards, currentTeamSelecting } = get();
+    console.log('selectOneMinuteBoard - oneMinuteBoards count:', oneMinuteBoards?.length || 'undefined');
+    console.log('selectOneMinuteBoard - availableBoards:', availableBoards);
+    console.log('selectOneMinuteBoard - selectedBoards:', selectedBoards);
+    console.log('selectOneMinuteBoard - currentTeamSelecting:', currentTeamSelecting);
+    
     const selectedBoard = oneMinuteBoards.find(board => board.id === boardId);
     console.log('selectOneMinuteBoard - found board:', selectedBoard?.name);
     if (selectedBoard) {
       console.log('selectOneMinuteBoard - setting currentBoard and starting timer');
       
-      // Track the board selection for the current team
       const newSelectedBoards = { ...selectedBoards, [currentTeamSelecting]: boardId };
       const newAvailableBoards = availableBoards.filter(id => id !== boardId);
       
       set({ 
+        currentBoard: selectedBoard,
         selectedBoards: newSelectedBoards,
         availableBoards: newAvailableBoards,
-        currentBoard: selectedBoard,
+        // Reset question index when selecting new board
         currentQuestionIndex: 0,
-        logoBlurLevel: 20,
-        revealedFillBlanks: [],
+        // Reset timer to 60 seconds when selecting One Minute Round board
         timerValue: 60,
-        isTimerRunning: true
+        isTimerRunning: true // Auto-start timer for One Minute Round
       });
     } else {
-      console.log('selectOneMinuteBoard - board not found!');
+      console.log('selectOneMinuteBoard - board not found! Available boards:', oneMinuteBoards?.map(b => b.id));
+      console.log('selectOneMinuteBoard - Available board IDs:', oneMinuteBoards?.map(b => b.id));
     }
   },
   
   nextOneMinuteQuestion: () => {
     const { currentQuestionIndex } = get();
-    set({ currentQuestionIndex: currentQuestionIndex + 1 });
+    console.log('[OneMinuteRound] nextOneMinuteQuestion called, currentQuestionIndex:', currentQuestionIndex);
+    // One Minute Round has 9 questions total (indices 0-8)
+    // Questions 0-5: oral questions, 6: logo, 7-9: fill-in-the-blank
+    if (currentQuestionIndex < 8) {
+      const newIndex = currentQuestionIndex + 1;
+      console.log('[OneMinuteRound] Advancing to question index:', newIndex);
+      set({ currentQuestionIndex: newIndex });
+    } else {
+      console.log('[OneMinuteRound] Already at last question, cannot advance');
+    }
   },
   
   previousOneMinuteQuestion: () => {
     const { currentQuestionIndex } = get();
+    console.log('[OneMinuteRound] previousOneMinuteQuestion called, currentQuestionIndex:', currentQuestionIndex);
     if (currentQuestionIndex > 0) {
-      set({ currentQuestionIndex: currentQuestionIndex - 1 });
+      const newIndex = currentQuestionIndex - 1;
+      console.log('[OneMinuteRound] Going back to question index:', newIndex);
+      set({ currentQuestionIndex: newIndex });
+    } else {
+      console.log('[OneMinuteRound] Already at first question, cannot go back');
     }
   },
   

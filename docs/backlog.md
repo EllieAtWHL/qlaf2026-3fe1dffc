@@ -84,16 +84,14 @@ This document tracks items that need to be fixed or improved but are not current
 **Items to Replace**:
 
 **Board A (Sporting A)**:
-- ID 7: Andy Murray - `/images/picture-board/AndyMurray.png`
-- ID 11: Gary Lineker - `/images/picture-board/GaryLineker.png`
+- ID 3: Andy Murray - `/images/picture-board/AndyMurray.png`
+- ID 10: Gary Lineker - `/images/picture-board/GaryLineker.png`
 
 **Board B (B Sports)**:
 - ID 3: Luke Littler - `/images/picture-board/LukeLittler.png`
 
 **Board C (C Sport)**:
-- ID 2: Dennis Taylor - `/images/picture-board/DennisTaylor.png`
-- ID 7: Ally McCoist - `/images/picture-board/AllyMcCoist.png`
-- ID 8: Neymar - `/images/picture-board/Neymar.png`
+- ID 10: Neymar - `/images/picture-board/Neymar.png`
 
 **Files Involved**:
 - `src/data/questions.json` - Remove TODO comments after replacement

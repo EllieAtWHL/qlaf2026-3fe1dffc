@@ -92,16 +92,8 @@ export const OneMinuteRound = () => {
     console.log('OneMinuteRound: useEffect - checking state');
     
     // If we're in One Minute Round but state is not properly initialized, fix it
-    if (round?.id === 'one-minute-round') {
-      const needsInit = 
-        currentBoard !== null || 
-        availableBoards.length === 0 || 
-        oneMinuteBoards.length === 0;
-      
-      // Only initialize if boards are not loaded, not if currentBoard is set (that means board was selected)
-      const actuallyNeedsInit = 
-        availableBoards.length === 0 || 
-        oneMinuteBoards.length === 0;
+    if (round.id === 'one-minute-round') {
+      const actuallyNeedsInit = !oneMinuteBoards || oneMinuteBoards.length === 0;
       
       if (actuallyNeedsInit) {
         console.log('OneMinuteRound: initializing state due to missing data');
@@ -110,7 +102,7 @@ export const OneMinuteRound = () => {
         console.log('OneMinuteRound: state is good, no initialization needed');
       }
     }
-  }, [round?.id, oneMinuteBoards.length, initializeOneMinuteBoards]); // Remove availableBoards.length dependency
+  }, [currentRoundIndex]); // Only run when round index changes
 
   // Show board selection screen
   if (!currentBoard) {

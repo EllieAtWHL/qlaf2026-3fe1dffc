@@ -22,6 +22,12 @@ export const useQuestions = () => {
       return [];
     }
     
+    // Handle One Minute Round which uses 'boards' instead of 'questions'
+    if (currentRoundId === 'one-minute-round' && currentRoundData?.boards) {
+      // Return empty array for One Minute Round since it has its own selection system
+      return [];
+    }
+    
     return currentRoundData?.questions || [];
   }, [currentRoundData, currentRoundId]);
   
@@ -40,13 +46,27 @@ export const useQuestions = () => {
     // Handle Picture Board round which uses 'boards' instead of 'questions'
     if (roundId === 'picture-board' && roundData.boards) {
       // Convert boards to a format that works with the question system
-      return roundData.boards.map((board: any, index: number) => ({
+      return roundData.boards.map((board: { id: string; name: string; pictures: Array<{ imageUrl?: string }> }, index: number) => ({
         id: board.id,
         roundType: 'picture-board' as RoundType,
         type: 'picture',
         content: `Select board: ${board.name}`,
         answer: board.name,
         imageUrl: board.pictures[0]?.imageUrl || '/placeholder.svg',
+        points: 0,
+      }));
+    }
+    
+    // Handle One Minute Round which uses 'boards' instead of 'questions'
+    if (roundId === 'one-minute-round' && roundData.boards) {
+      // Convert boards to a format that works with the question system
+      return roundData.boards.map((board: { id: string; name: string; imageUrl?: string }, index: number) => ({
+        id: board.id,
+        roundType: 'one-minute-round' as RoundType,
+        type: 'one-minute',
+        content: `Select board: ${board.name}`,
+        answer: board.name,
+        imageUrl: board.imageUrl || '/placeholder.svg',
         points: 0,
       }));
     }

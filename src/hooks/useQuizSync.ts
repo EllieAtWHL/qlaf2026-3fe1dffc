@@ -188,7 +188,7 @@ function applyStateUpdate(action: string, data: any) {
         isTimerRunning: false 
       });
       break;
-    case 'updateTeamScore':
+    case 'updateTeamScore': {
       const teamsForUpdate = [...store.teams];
       const teamToUpdate = teamsForUpdate.find(t => t.id === data.teamId);
       if (teamToUpdate) {
@@ -197,6 +197,16 @@ function applyStateUpdate(action: string, data: any) {
         useQuizStore.setState({ teams: teamsForUpdate });
       }
       break;
+    }
+    case 'updateTeamName': {
+      const teamsForNameUpdate = [...store.teams];
+      const teamToNameUpdate = teamsForNameUpdate.find(t => t.id === data.teamId);
+      if (teamToNameUpdate) {
+        teamToNameUpdate.name = data.name;
+        useQuizStore.setState({ teams: teamsForNameUpdate });
+      }
+      break;
+    }
     case 'addToTeamScore':
       const teamsForAdd = [...store.teams];
       const teamToAdd = teamsForAdd.find(t => t.id === data.teamId);
@@ -299,9 +309,13 @@ function applyStateUpdate(action: string, data: any) {
     case 'resetWipeout':
       store.resetWipeout();
       break;
-    case 'revealChrisStadiaCard':
-      store.setChrisStadiaRevealedCards(data.cards);
+    case 'revealChrisStadiaCard': {
+      const currentRevealed = store.chrisStadiaRevealedCards || [];
+      if (!currentRevealed.includes(data.cardId)) {
+        store.setChrisStadiaRevealedCards([...currentRevealed, data.cardId]);
+      }
       break;
+    }
     case 'resetChrisStadia':
       store.resetChrisStadia();
       break;
