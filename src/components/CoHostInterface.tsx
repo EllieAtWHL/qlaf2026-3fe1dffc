@@ -123,7 +123,7 @@ export const CoHostInterface = () => {
 
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
   const [teamNameInputs, setTeamNameInputs] = useState<{ [key: number]: string }>({});
-  const [isDebugPanelMinimized, setIsDebugPanelMinimized] = useState(false);
+  const [isDebugPanelMinimized, setIsDebugPanelMinimized] = useState(true);
   const [isConnected, setIsConnected] = useState(true);
   const [showSetupReminder, setShowSetupReminder] = useState(false);
 
@@ -1291,59 +1291,61 @@ export const CoHostInterface = () => {
         </motion.div>
       )}
       
-      {/* Team Scores */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="glass-card rounded-xl p-4 mb-4"
-      >
-        <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3">
-          Round Scores
-        </h3>
-        
-        <div className="space-y-3">
-          {teams.map((team, index) => (
-            <div key={team.id} className="flex items-center gap-3">
-              <div className={`w-3 h-3 rounded-full ${teamColors[index]}`} />
-              <input
-                type="text"
-                value={teamNameInputs[team.id] || team.name}
-                onChange={(e) => handleTeamNameChange(team.id, e.target.value)}
-                className="font-display text-sm flex-1 bg-transparent border-b border-border/50 focus:border-primary outline-none px-1 py-0.5 text-foreground"
-                placeholder="Team name"
-              />
-              
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => adjustScore(team.id, -1)}
-                  className="w-11 h-11 rounded-lg bg-destructive/20 text-destructive flex items-center justify-center"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
+      {/* Team Scores - Hidden for F1 Grand Prix as it's a race to the end */}
+      {currentRound?.id !== 'f1-grand-prix' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3">
+            Round Scores
+          </h3>
+          
+          <div className="space-y-3">
+            {teams.map((team, index) => (
+              <div key={team.id} className="flex items-center gap-3">
+                <div className={`w-3 h-3 rounded-full ${teamColors[index]}`} />
                 <input
-                  type="number"
-                  value={scoreInputs[`${team.id}-${currentRoundIndex}`] || 0}
-                  onChange={(e) => handleScoreChange(team.id, e.target.value)}
-                  className="w-16 h-11 rounded-lg bg-input text-center font-display text-lg border-none"
+                  type="text"
+                  value={teamNameInputs[team.id] || team.name}
+                  onChange={(e) => handleTeamNameChange(team.id, e.target.value)}
+                  className="font-display text-sm flex-1 bg-transparent border-b border-border/50 focus:border-primary outline-none px-1 py-0.5 text-foreground"
+                  placeholder="Team name"
                 />
-                <button
-                  onClick={() => adjustScore(team.id, 1)}
-                  className="w-11 h-11 rounded-lg bg-qlaf-success/20 text-qlaf-success flex items-center justify-center"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => adjustScore(team.id, -1)}
+                    className="w-11 h-11 rounded-lg bg-destructive/20 text-destructive flex items-center justify-center"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <input
+                    type="number"
+                    value={scoreInputs[`${team.id}-${currentRoundIndex}`] || 0}
+                    onChange={(e) => handleScoreChange(team.id, e.target.value)}
+                    className="w-16 h-11 rounded-lg bg-input text-center font-display text-lg border-none"
+                  />
+                  <button
+                    onClick={() => adjustScore(team.id, 1)}
+                    className="w-11 h-11 rounded-lg bg-qlaf-success/20 text-qlaf-success flex items-center justify-center"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="w-12 text-right">
+                  <span className="font-display text-lg font-bold text-primary">
+                    {team.totalScore}
+                  </span>
+                </div>
               </div>
-              
-              <div className="w-12 text-right">
-                <span className="font-display text-lg font-bold text-primary">
-                  {team.totalScore}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
 
       {/* F1 Controls (only for F1 round) */}

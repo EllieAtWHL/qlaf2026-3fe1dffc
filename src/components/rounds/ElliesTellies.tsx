@@ -234,8 +234,8 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                       scale: 1,
                     },
                     left: {
-                      x: "-25%",
-                      scale: 0.8,
+                      x: "-35%",
+                      scale: 0.7,
                     }
                   }}
                   transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -249,8 +249,8 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                     />
                     
                     {/* TV Screen Container - positioned exactly where screen should be */}
-                    <div className="relative w-full h-full flex items-start justify-center z-20 pt-8 -mt-4">
-                      <div className="relative w-[81%] h-[91%] max-w-3xl overflow-hidden bg-black shadow-2xl border-4 border-gray-800 -ml-1">
+                    <div className="relative w-full h-full flex items-start justify-center z-20 pt-20 -mt-4">
+                      <div className="relative w-[95%] h-[85%] max-w-5xl overflow-hidden bg-black shadow-2xl border-4 border-gray-800 -ml-1">
                         {/* Authentic CRT TV Static Effect */}
                         <motion.div
                           className="absolute inset-0 bg-black z-20"
@@ -371,7 +371,7 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.4, duration: 0.4 }}
-                      className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8 w-full max-w-lg text-left"
+                      className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-6 w-full max-w-md text-left"
                     >
                       <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">
                         Answer
