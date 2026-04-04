@@ -55,6 +55,15 @@
       "icon": "Gavel"
     },
     {
+      "id": "one-minute-round",
+      "name": "One Minute Round",
+      "description": "Quick fire questions",
+      "timerDuration": 60,
+      "isTeamRound": true,
+      "component": "OneMinuteRound",
+      "icon": "Clock"
+    },
+    {
       "id": "ellies-tellies",
       "name": "Ellie's Tellies",
       "description": "Picture round",
@@ -80,15 +89,6 @@
       "isTeamRound": true,
       "component": "Wipeout",
       "icon": "Skull"
-    },
-    {
-      "id": "one-minute-round",
-      "name": "One Minute Round",
-      "description": "Quick fire questions",
-      "timerDuration": 60,
-      "isTeamRound": true,
-      "component": "OneMinuteRound",
-      "icon": "Clock"
     },
     {
       "id": "chris-stadia",

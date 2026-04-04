@@ -3,6 +3,7 @@ import { useQuizStore, ROUNDS } from '@/store/quizStore';
 import { Scoreboard } from '@/components/Scoreboard';
 import { Timer } from '@/components/Timer';
 import { Image } from 'lucide-react';
+import { BoardSelection } from '@/components/shared/BoardSelection';
 import { useEffect } from 'react';
 
 export const PictureBoard = () => {
@@ -71,33 +72,14 @@ export const PictureBoard = () => {
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">Picture Board</h1>
             <p className="text-xl text-white/90">Team {currentTeamSelecting} - Select Your Board</p>
           </div>
-
-          <div className={`grid gap-6 w-full max-w-4xl ${
-            availableBoards.length === 1 ? 'grid-cols-1' : 
-            availableBoards.length === 2 ? 'md:grid-cols-2' : 
-            'md:grid-cols-3'
-          } justify-items-center`}>
-            {pictureBoards
-              .filter(board => availableBoards.includes(board.id))
-              .map((board, index) => (
-              <motion.div
-                key={board.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 w-full max-w-sm"
-              >
-                <div className="aspect-video mb-4 rounded-lg overflow-hidden bg-white/5">
-                  <img 
-                    src={board.imageUrl} 
-                    alt={board.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-2">{board.name}</h3>
-              </motion.div>
-            ))}
-          </div>
+          
+          <BoardSelection
+            boards={availableBoards.map(boardId => 
+              pictureBoards.find(board => board.id === boardId)
+            ).filter(Boolean)}
+            onSelectBoard={(boardId) => selectBoard(currentTeamSelecting, boardId)}
+            boardType="picture-board"
+          />
         </div>
       </div>
     );
