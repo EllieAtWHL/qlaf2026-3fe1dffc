@@ -10,15 +10,6 @@
       "icon": "Globe"
     },
     {
-      "id": "just-one",
-      "name": "Just One",
-      "description": "Give a unique answer",
-      "timerDuration": null,
-      "isTeamRound": false,
-      "component": "GenericRound",
-      "icon": "Users"
-    },
-    {
       "id": "picture-board",
       "name": "Picture Board",
       "description": "Identify the sportstar(s)",
@@ -26,6 +17,15 @@
       "isTeamRound": true,
       "component": "PictureBoard",
       "icon": "Image"
+    },
+    {
+      "id": "distinctly-average",
+      "name": "Distinctly Average",
+      "description": "Guess the average",
+      "timerDuration": null,
+      "isTeamRound": false,
+      "component": "GenericRound",
+      "icon": "Calculator"
     },
     {
       "id": "only-connect",
@@ -37,15 +37,6 @@
       "icon": "Link"
     },
     {
-      "id": "round-robin",
-      "name": "Round Robin",
-      "description": "Take turns answering",
-      "timerDuration": null,
-      "isTeamRound": false,
-      "component": "GenericRound",
-      "icon": "RotateCcw"
-    },
-    {
       "id": "daves-dozen",
       "name": "Dave's Dozen",
       "description": "Auction-style bidding",
@@ -53,6 +44,15 @@
       "isTeamRound": true,
       "component": "DavesDozen",
       "icon": "Gavel"
+    },
+    {
+      "id": "just-one",
+      "name": "Just One",
+      "description": "Give a unique answer",
+      "timerDuration": null,
+      "isTeamRound": false,
+      "component": "GenericRound",
+      "icon": "Users"
     },
     {
       "id": "one-minute-round",
@@ -73,15 +73,6 @@
       "icon": "Tv"
     },
     {
-      "id": "distinctly-average",
-      "name": "Distinctly Average",
-      "description": "Guess the average",
-      "timerDuration": null,
-      "isTeamRound": false,
-      "component": "GenericRound",
-      "icon": "Calculator"
-    },
-    {
       "id": "wipeout",
       "name": "Wipeout",
       "description": "Risk vs reward",
@@ -89,6 +80,15 @@
       "isTeamRound": true,
       "component": "Wipeout",
       "icon": "Skull"
+    },
+    {
+      "id": "round-robin",
+      "name": "Round Robin",
+      "description": "Take turns answering",
+      "timerDuration": null,
+      "isTeamRound": false,
+      "component": "GenericRound",
+      "icon": "RotateCcw"
     },
     {
       "id": "chris-stadia",
