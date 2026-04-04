@@ -18,17 +18,35 @@ import { useEffect } from 'react';
 import questionsData from '@/data/questions.json';
 
 // Preload all images for the quiz
-const preloadAllImages = () => {
+const preloadAllImages = async () => {
   let totalImages = 0;
+  let loadedImages = 0;
+  
+  const preloadImage = (src: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        loadedImages++;
+        resolve();
+      };
+      img.onerror = () => {
+        console.warn(`Failed to preload image: ${src}`);
+        loadedImages++; // Count as loaded even on error to avoid hanging
+        resolve();
+      };
+      img.src = src;
+      totalImages++;
+    });
+  };
+  
+  const imagePromises: Promise<void>[] = [];
   
   // Preload World Rankings images
   const worldRankings = questionsData['world-rankings']?.questions || [];
   worldRankings.forEach((question: any) => {
     question.options?.forEach((option: any) => {
       if (option.imageUrl) {
-        const img = document.createElement('img');
-        img.src = option.imageUrl;
-        totalImages++;
+        imagePromises.push(preloadImage(option.imageUrl));
       }
     });
   });
@@ -38,17 +56,13 @@ const preloadAllImages = () => {
   pictureBoards.forEach((board: any) => {
     // Preload board thumbnail
     if (board.imageUrl) {
-      const boardImg = document.createElement('img');
-      boardImg.src = board.imageUrl;
-      totalImages++;
+      imagePromises.push(preloadImage(board.imageUrl));
     }
     
     // Preload all pictures in the board
     board.pictures?.forEach((picture: any) => {
       if (picture.imageUrl) {
-        const pictureImg = document.createElement('img');
-        pictureImg.src = picture.imageUrl;
-        totalImages++;
+        imagePromises.push(preloadImage(picture.imageUrl));
       }
     });
   });
@@ -57,12 +71,25 @@ const preloadAllImages = () => {
   const elliesTellies = questionsData['ellies-tellies']?.questions || [];
   elliesTellies.forEach((question: any) => {
     if (question.imageUrl) {
-      const img = document.createElement('img');
-      img.src = question.imageUrl;
-      totalImages++;
+      imagePromises.push(preloadImage(question.imageUrl));
     }
   });
   
+  // Preload One Minute Round logo images
+  const oneMinuteBoards = questionsData['one-minute-round']?.boards || [];
+  oneMinuteBoards.forEach((board: any) => {
+    if (board.logoQuestion?.imageUrl) {
+      imagePromises.push(preloadImage(board.logoQuestion.imageUrl));
+    }
+  });
+  
+  // Preload placeholder image
+  imagePromises.push(preloadImage('/placeholder.svg'));
+  
+  // Wait for all images to load
+  await Promise.all(imagePromises);
+  
+  console.log(`Preloaded ${loadedImages}/${totalImages} images successfully`);
   return totalImages;
 };
 
@@ -85,7 +112,7 @@ export const MainDisplay = () => {
   
   // Preload images on mount
   useEffect(() => {
-    preloadAllImages();
+    preloadAllImages().catch(console.error);
   }, []);
   
   // MainDisplay should NEVER call useQuizSync - only CoHostInterface should broadcast
