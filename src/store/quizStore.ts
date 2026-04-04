@@ -707,7 +707,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   advanceF1Car: (teamId: number, amount: number) => {
     const { f1Positions } = get();
     const newPositions = [...f1Positions];
-    newPositions[teamId - 1] = Math.min(100, newPositions[teamId - 1] + amount);
+    newPositions[teamId - 1] = Math.min(100, Math.max(0, newPositions[teamId - 1] + amount));
     set({ f1Positions: newPositions });
   },
   

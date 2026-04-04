@@ -69,10 +69,9 @@ export const F1GrandPrix = () => {
 
               {/* Car */}
               <motion.div
+                key={`car-${team.id}-${f1Positions[index]}`}
                 className="f1-car absolute top-1/2 -translate-y-1/2 z-10"
                 style={{ left: `${Math.min(f1Positions[index], 95)}%` }}
-                initial={{ left: 0 }}
-                animate={{ left: `${Math.min(f1Positions[index], 95)}%` }}
                 transition={{ type: 'spring', stiffness: 100, damping: 15 }}
               >
                 <div className={`relative ${teamColors[index].bg} rounded-lg p-2 shadow-lg ${teamColors[index].glow}`}>

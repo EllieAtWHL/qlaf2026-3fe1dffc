@@ -1326,21 +1326,23 @@ export const CoHostInterface = () => {
                 
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => syncedAdvanceF1Car(team.id, 5)}
-                    className="control-btn py-2 px-4 bg-qlaf-success/20 text-qlaf-success text-sm"
+                    onClick={() => syncedAdvanceF1Car(team.id, -5)}
+                    disabled={Math.min(100, Math.max(0, f1Positions[index])) === 0}
+                    className="control-btn py-2 px-4 bg-qlaf-warning/20 text-qlaf-warning text-sm disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    +5%
+                    -5%
                   </button>
                   <button
-                    onClick={() => syncedAdvanceF1Car(team.id, 10)}
-                    className="control-btn py-2 px-4 bg-qlaf-success/30 text-qlaf-success text-sm"
+                    onClick={() => syncedAdvanceF1Car(team.id, 5)}
+                    disabled={Math.min(100, Math.max(0, f1Positions[index])) === 100}
+                    className="control-btn py-2 px-4 bg-qlaf-success/20 text-qlaf-success text-sm disabled:opacity-30 disabled:cursor-not-allowed"
                   >
-                    +10%
+                    +5%
                   </button>
                 </div>
                 
                 <span className="font-display text-lg font-bold w-12 text-right">
-                  {Math.round(f1Positions[index])}%
+                  {Math.round(Math.min(100, Math.max(0, f1Positions[index])))}%
                 </span>
               </div>
             ))}
