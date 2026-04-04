@@ -426,7 +426,7 @@
       },
       {
         "id": "dd-2",
-        "content": "Name every current Scottich Premiership team",
+        "content": "Name every current Scottish Premiership team",
         "answers": [
           { "number": 1, "text": "Hearts", "imageUrl": "/images/daves-dozen/hearts.png" },
           { "number": 2, "text": "Celtic", "imageUrl": "/images/daves-dozen/celtic.png" },
