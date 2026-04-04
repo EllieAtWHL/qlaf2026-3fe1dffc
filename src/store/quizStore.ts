@@ -286,6 +286,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         showAnswer: false,
         questions: [], // Clear questions during transition
         isTransitioning: true, // Explicitly mark as transitioning
+        timerValue: 60, // Reset timer to 60 seconds when changing rounds
+        isTimerRunning: false, // Stop timer during transition
         // Always reset currentBoard when changing rounds
         currentBoard: null
       });
@@ -308,6 +310,9 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         currentQuestionIndex: 0,
         showAnswer: false,
         questions: [], // Clear questions during transition
+        timerValue: 60, // Reset timer to 60 seconds when changing rounds
+        isTimerRunning: false, // Stop timer during transition
+        currentBoard: null // Always reset currentBoard when changing rounds
       });
     }
   },
@@ -326,6 +331,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       currentQuestionIndex: 0,
       showAnswer: false,
       questions: [], // Clear questions during transition
+      timerValue: 60, // Reset timer to 60 seconds when changing rounds
+      isTimerRunning: false, // Stop timer during transition
       // Always reset currentBoard when changing rounds
       currentBoard: null
     });
