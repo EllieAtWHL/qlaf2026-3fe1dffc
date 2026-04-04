@@ -75,12 +75,25 @@ export const CoHostInterface = () => {
     currentBoard,
     currentPictureIndex,
     showAllPictures,
+    lastTeamTimeUpCall,
+    // One Minute Round specific
+    oneMinuteBoards,
+    logoBlurLevel,
+    revealedFillBlanks,
     initializePictureBoards,
     selectBoard,
     teamTimeUp,
     nextPicture,
     previousPicture,
     resetPictureBoard,
+    // One Minute Round specific
+    initializeOneMinuteBoards,
+    selectOneMinuteBoard,
+    nextOneMinuteQuestion,
+    previousOneMinuteQuestion,
+    revealLogo,
+    revealFillBlank,
+    resetOneMinuteRound,
     // Only Connect specific
     onlyConnectRevealedOptions,
     revealOnlyConnectOption,
@@ -331,32 +344,61 @@ export const CoHostInterface = () => {
     const cards = currentQuestion?.cards as Array<{ id: number; visitType: string }>;
     const card = cards?.find(c => c.id === cardId);
     
-    if (!currentRevealed.includes(cardId)) {
-      const newRevealed = [...currentRevealed, cardId];
-      setChrisStadiaRevealedCards(newRevealed);
-      broadcastAction('revealChrisStadiaCard', { cards: newRevealed });
+    if (card && !currentRevealed.includes(cardId)) {
+      setChrisStadiaRevealedCards([...currentRevealed, cardId]);
+      broadcastAction('revealChrisStadiaCard', { cardId });
       
-      // Reset showAnswer state when new card is clicked
-      if (showAnswer) {
-        toggleAnswer();
-        broadcastAction('toggleAnswer');
-      }
-      
-      // If this is a sporting_event card, set it as the current sporting event
-      if (card?.visitType === 'sporting_event') {
-        setChrisStadiaCurrentSportingEvent(cardId);
-      } else {
-        // If not a sporting_event card, clear the current sporting event
-        setChrisStadiaCurrentSportingEvent(null);
+      // Auto-reveal watch reasons for watch-type cards
+      if (card.visitType === 'watch') {
+        const currentWatchRevealed = chrisStadiaWatchRevealed || [];
+        if (!currentWatchRevealed.includes(cardId)) {
+          setChrisStadiaWatchRevealed([...currentWatchRevealed, cardId]);
+          broadcastAction('revealChrisStadiaWatchReason', { cardId });
+        }
       }
     }
+    
+    return false;
   };
 
   const syncedResetChrisStadia = () => {
     setChrisStadiaRevealedCards([]);
     setChrisStadiaWatchRevealed([]);
+    setChrisStadiaWatchShownOnScreen([]);
     setChrisStadiaCurrentSportingEvent(null);
     broadcastAction('resetChrisStadia');
+    return false;
+  };
+
+  // One Minute Round synced functions
+  const syncedSelectOneMinuteBoard = (boardId: string) => {
+    selectOneMinuteBoard(boardId);
+    broadcastAction('selectOneMinuteBoard', { boardId });
+  };
+
+  const syncedNextOneMinuteQuestion = () => {
+    nextOneMinuteQuestion();
+    broadcastAction('nextOneMinuteQuestion');
+  };
+
+  const syncedPreviousOneMinuteQuestion = () => {
+    previousOneMinuteQuestion();
+    broadcastAction('previousOneMinuteQuestion');
+  };
+
+  const syncedRevealLogo = () => {
+    revealLogo();
+    broadcastAction('revealLogo');
+  };
+
+  const syncedRevealFillBlank = (personalityId: number) => {
+    revealFillBlank(personalityId);
+    broadcastAction('revealFillBlank', { personalityId });
+  };
+
+  const syncedResetOneMinuteRound = () => {
+    resetOneMinuteRound();
+    broadcastAction('resetOneMinuteRound');
   };
 
   const canAdvanceToNextRound = () => {
@@ -717,7 +759,6 @@ export const CoHostInterface = () => {
                           onClick={() => syncedSelectBoard(currentTeamSelecting, boardId)}
                           className="control-btn bg-secondary text-foreground text-left justify-start"
                         >
-                          <Image className="w-4 h-4 mr-2" />
                           {board.name}
                         </button>
                       );
@@ -846,6 +887,203 @@ export const CoHostInterface = () => {
                 Next Round
               </button>
             </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* One Minute Round Controls */}
+      {currentRound?.id === 'one-minute-round' && gameState === 'round' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12 }}
+          className="glass-card rounded-xl p-4 mb-4"
+        >
+          <h3 className="font-display text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            One Minute Round - Current Selection
+          </h3>
+          
+          {!currentBoard ? (
+            <>
+              {/* Debug info */}
+              <div className="text-xs text-muted-foreground mb-2">
+                Available boards: {availableBoards?.length || 0} | One Minute boards loaded: {oneMinuteBoards.length}
+              </div>
+              
+              {/* Board Selection */}
+              {availableBoards && availableBoards.length > 0 && (
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground">Select a board for the current player:</p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {availableBoards.map((boardId: string) => {
+                      const board = oneMinuteBoards.find(b => b.id === boardId);
+                      if (!board) return null;
+                      
+                      return (
+                        <button
+                          key={boardId}
+                          onClick={() => syncedSelectOneMinuteBoard(boardId)}
+                          className="control-btn bg-secondary text-foreground text-left justify-start"
+                        >
+                          <Clock className="w-4 h-4 mr-2" />
+                          {board.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              {/* Current Board Display */}
+              <div className="space-y-3">
+                <div className="bg-secondary/30 rounded-lg p-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    Current Board: {(currentBoard as OneMinuteBoard)?.name}
+                  </p>
+                </div>
+                
+                {/* Question Progress */}
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    Question {currentQuestionIndex + 1} of 9
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      onClick={syncedPreviousOneMinuteQuestion}
+                      disabled={currentQuestionIndex <= 0}
+                      className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
+                    >
+                      Previous Question
+                    </button>
+                    <button
+                      onClick={syncedNextOneMinuteQuestion}
+                      disabled={currentQuestionIndex >= 8}
+                      className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs"
+                    >
+                      Next Question
+                    </button>
+                    <button
+                      onClick={syncedResetOneMinuteRound}
+                      className="control-btn bg-secondary text-foreground text-xs"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Team Selection Status */}
+                <div className="mt-3 pt-3 border-t border-border">
+                  <p className="text-xs text-muted-foreground mb-2">Team Selection Status:</p>
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    {[1, 2, 3].map(teamId => (
+                      <div key={teamId} className="text-center">
+                        <div className="font-semibold">Team {teamId}</div>
+                        <div className={currentTeamSelecting === teamId ? 'text-qlaf-success' : 'text-muted-foreground'}>
+                          {currentTeamSelecting === teamId 
+                            ? 'Playing Now' 
+                            : selectedBoards[teamId] 
+                              ? (oneMinuteBoards.find(b => b.id === selectedBoards[teamId])?.name || 'Selected')
+                              : currentTeamSelecting > teamId 
+                                ? 'Completed'
+                                : 'Waiting'
+                          }
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Team Progression Button */}
+                <div className="mt-4 pt-3 border-t border-border">
+                  <button
+                    onClick={currentTeamSelecting === 3 ? syncedNextRound : syncedTeamTimeUp}
+                    className={`control-btn ${currentTeamSelecting === 3 ? 'bg-qlaf-success' : 'bg-qlaf-warning'} text-white w-full`}
+                  >
+                    {currentTeamSelecting === 3 ? (
+                      <>
+                        <SkipForward className="w-4 h-4 inline mr-2" />
+                        Next Round
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="w-4 h-4 inline mr-2" />
+                        Next Team
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                {/* Phase-specific controls */}
+                {currentQuestionIndex >= 6 && (
+                  <div className="space-y-2">
+                    <p className="text-xs text-muted-foreground">Fill in the Blank Answers:</p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(currentBoard as OneMinuteBoard)?.fillInTheBlank?.personalities.map((personality) => (
+                        <button
+                          key={personality.id}
+                          onClick={() => syncedRevealFillBlank(personality.id)}
+                          disabled={revealedFillBlanks.includes(personality.id)}
+                          className="control-btn bg-secondary text-foreground disabled:opacity-30 text-xs p-2"
+                        >
+                          {revealedFillBlanks.includes(personality.id) ? (
+                            <span className="line-through">{personality.blankPart}</span>
+                          ) : (
+                            personality.blankPart
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Current Question Answer */}
+                {currentQuestionIndex < 3 && (
+                  <>
+                    <div className="bg-qlaf-info/10 border border-qlaf-info/30 rounded-lg p-3 mb-3">
+                      <p className="text-xs font-semibold text-qlaf-info mb-1">Question:</p>
+                      <p className="text-sm text-foreground font-medium">
+                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex]?.content || "No question"}
+                      </p>
+                    </div>
+                    <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+                      <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
+                      <p className="text-sm text-foreground font-medium">
+                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex]?.answer || "No answer"}
+                      </p>
+                    </div>
+                  </>
+                )}
+                
+                {currentQuestionIndex === 3 && logoBlurLevel === 0 && (
+                  <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+                    <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
+                    <p className="text-sm text-foreground font-medium">
+                      {(currentBoard as OneMinuteBoard)?.logoQuestion?.answer || "No answer"}
+                    </p>
+                  </div>
+                )}
+                
+                {currentQuestionIndex >= 4 && currentQuestionIndex < 6 && (
+                  <>
+                    <div className="bg-qlaf-info/10 border border-qlaf-info/30 rounded-lg p-3 mb-3">
+                      <p className="text-xs font-semibold text-qlaf-info mb-1">Question:</p>
+                      <p className="text-sm text-foreground font-medium">
+                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex]?.content || "No question"}
+                      </p>
+                    </div>
+                    <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
+                      <p className="text-xs font-semibold text-qlaf-success mb-1">Answer:</p>
+                      <p className="text-sm text-foreground font-medium">
+                        {(currentBoard as OneMinuteBoard)?.oralQuestions[currentQuestionIndex]?.answer || "No answer"}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+            </>
           )}
         </motion.div>
       )}

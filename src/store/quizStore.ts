@@ -35,6 +35,31 @@ export interface Team {
   f1Position: number; // for F1 finale (0-100%)
 }
 
+export interface OneMinuteBoard {
+  id: string;
+  name: string;
+  oralQuestions: Array<{
+    id: string;
+    content: string;
+    answer: string;
+  }>;
+  logoQuestion: {
+    id: string;
+    content: string;
+    imageUrl: string;
+    answer: string;
+  };
+  fillInTheBlank: {
+    id: string;
+    category: string;
+    personalities: Array<{
+      id: number;
+      visiblePart: string;
+      blankPart: string;
+    }>;
+  };
+}
+
 export interface PictureBoard {
   id: string;
   name: string;
@@ -80,7 +105,7 @@ interface QuizState {
   selectedBoards: { [key: number]: string };
   currentTeamSelecting: number;
   pictureBoards: PictureBoard[];
-  currentBoard: PictureBoard | null;
+  currentBoard: PictureBoard | OneMinuteBoard | null;
   currentPictureIndex: number;
   showAllPictures: boolean;
   lastTeamTimeUpCall: number | null;
@@ -103,6 +128,11 @@ interface QuizState {
   chrisStadiaWatchRevealed: number[];
   chrisStadiaWatchShownOnScreen: number[];
   chrisStadiaCurrentSportingEvent: number | null;
+  
+  // One Minute Round specific
+  oneMinuteBoards: OneMinuteBoard[];
+  logoBlurLevel: number;
+  revealedFillBlanks: number[];
   
   // Actions
   startGame: () => void;
@@ -160,6 +190,15 @@ interface QuizState {
   setChrisStadiaWatchShownOnScreen: (cardIds: number[]) => void;
   setChrisStadiaCurrentSportingEvent: (cardId: number | null) => void;
   
+  // One Minute Round actions
+  initializeOneMinuteBoards: () => void;
+  selectOneMinuteBoard: (boardId: string) => void;
+  nextOneMinuteQuestion: () => void;
+  previousOneMinuteQuestion: () => void;
+  revealLogo: () => void;
+  revealFillBlank: (personalityId: number) => void;
+  resetOneMinuteRound: () => void;
+  
   // Game actions
   // Reset
   resetGame: () => void;
@@ -209,6 +248,11 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   chrisStadiaWatchShownOnScreen: [],
   chrisStadiaCurrentSportingEvent: null,
   
+  // One Minute Round initial state
+  oneMinuteBoards: [],
+  logoBlurLevel: 20,
+  revealedFillBlanks: [],
+  
   startGame: () => {
     set({ gameState: 'round-transition', currentRoundIndex: 0 });
     // Don't load questions yet - wait until round starts
@@ -216,9 +260,24 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   
   nextRound: () => {
     const { currentRoundIndex } = get();
+    console.log('nextRound called, currentRoundIndex:', currentRoundIndex);
     
     if (currentRoundIndex < ROUNDS.length - 1) {
       const newRoundIndex = currentRoundIndex + 1;
+      const nextRoundId = getRoundIdByIndex(newRoundIndex);
+      console.log('nextRound: transitioning to', nextRoundId);
+      
+      // Reset available boards when transitioning to One Minute Round
+      if (nextRoundId === 'one-minute-round') {
+        console.log('Resetting available boards for One Minute Round in nextRound');
+        set({ 
+          availableBoards: ['board-1', 'board-2', 'board-3'],
+          currentBoard: null, // Explicitly reset currentBoard
+          currentQuestionIndex: 0,
+          logoBlurLevel: 20,
+          revealedFillBlanks: []
+        });
+      }
       
       set({ 
         currentRoundIndex: newRoundIndex, 
@@ -227,10 +286,13 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         showAnswer: false,
         questions: [], // Clear questions during transition
         isTransitioning: true, // Explicitly mark as transitioning
+        // Always reset currentBoard when changing rounds
+        currentBoard: null
       });
       
       // Load questions after a brief delay to ensure transition state is set first
       setTimeout(() => {
+        console.log('nextRound: calling loadQuestionsForCurrentRound');
         get().loadQuestionsForCurrentRound();
         set({ isTransitioning: false }); // End transition after questions are loaded
       }, 100);
@@ -251,12 +313,21 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
   
   goToRound: (index: number) => {
+    const targetRoundId = getRoundIdByIndex(index);
+    
+    // Reset available boards when going to One Minute Round
+    if (targetRoundId === 'one-minute-round') {
+      set({ availableBoards: ['board-1', 'board-2', 'board-3'] });
+    }
+    
     set({ 
       currentRoundIndex: index,
       gameState: 'round-transition',
       currentQuestionIndex: 0,
       showAnswer: false,
       questions: [], // Clear questions during transition
+      // Always reset currentBoard when changing rounds
+      currentBoard: null
     });
     // Don't load questions yet - wait until round starts
   },
@@ -377,21 +448,37 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     const currentRoundId = getRoundIdByIndex(currentRoundIndex);
     
     // Use imported questions data
-    const data = questionsData as any;
-    const currentRoundData = data[currentRoundId];
-    const questions = currentRoundData?.questions || [];
+    const data = questionsData as unknown;
+    const currentRoundData = (data as Record<string, unknown>)[currentRoundId];
+    const questions = (currentRoundData as any)?.questions || [];
     set({ questions });
     
-    // Auto-initialize picture boards if this is the picture board round
+    // Auto-initialize picture boards if this is picture board round
     if (currentRoundId === 'picture-board') {
-      const pictureBoardData = data['picture-board'];
-      const boards = pictureBoardData?.boards || [];
+      const pictureBoardData = (data as Record<string, unknown>)['picture-board'];
+      const boards = (pictureBoardData as any)?.boards || [];
       set({ 
         pictureBoards: boards,
         availableBoards: ['board-1', 'board-2', 'board-3'],
         selectedBoards: {},
         currentTeamSelecting: 1,
         currentBoard: null
+      });
+    }
+    
+    // Auto-initialize one minute boards if this is one minute round
+    if (currentRoundId === 'one-minute-round') {
+      console.log('Initializing One Minute Round in loadQuestionsForCurrentRound');
+      const oneMinuteData = (data as Record<string, unknown>)['one-minute-round'];
+      const boards = (oneMinuteData as any)?.boards || [];
+      console.log('One Minute boards found:', boards.length);
+      set({ 
+        oneMinuteBoards: boards,
+        availableBoards: ['board-1', 'board-2', 'board-3'],
+        currentBoard: null,
+        currentQuestionIndex: 0,
+        logoBlurLevel: 20,
+        revealedFillBlanks: []
       });
     }
   },
@@ -437,7 +524,8 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   },
   
   teamTimeUp: () => {
-    const { currentTeamSelecting, selectedBoards, pictureBoards } = get();
+    const { currentRoundIndex, currentTeamSelecting, selectedBoards, pictureBoards, oneMinuteBoards } = get();
+    const currentRoundId = getRoundIdByIndex(currentRoundIndex);
     
     if (currentTeamSelecting === 4) {
       return; // Already at completion
@@ -454,21 +542,47 @@ export const useQuizStore = create<QuizState>((set, get) => ({
       set({ 
         currentTeamSelecting: nextTeam,
         lastTeamTimeUpCall: Date.now(),
-        // Reset picture board progress for next team
-        currentPictureIndex: 0,
-        showAllPictures: false,
+        // Reset progress for next team based on round type
         showAnswer: false
       });
       
-      // Set the current board for the next team
-      const nextTeamBoardId = selectedBoards[nextTeam];
-      if (nextTeamBoardId) {
-        const nextTeamBoard = pictureBoards.find(board => board.id === nextTeamBoardId);
-        if (nextTeamBoard) {
-          set({ currentBoard: nextTeamBoard });
+      // Handle different round types
+      if (currentRoundId === 'picture-board') {
+        // Reset picture board progress for next team
+        set({
+          currentPictureIndex: 0,
+          showAllPictures: false
+        });
+        
+        // Set the current board for the next team
+        const nextTeamBoardId = selectedBoards[nextTeam];
+        if (nextTeamBoardId) {
+          const nextTeamBoard = pictureBoards.find(board => board.id === nextTeamBoardId);
+          if (nextTeamBoard) {
+            set({ currentBoard: nextTeamBoard });
+          }
+        } else {
+          set({ currentBoard: null });
         }
-      } else {
-        set({ currentBoard: null });
+      } else if (currentRoundId === 'one-minute-round') {
+        // Reset one minute round progress for next team
+        set({
+          currentQuestionIndex: 0,
+          logoBlurLevel: 20,
+          revealedFillBlanks: [],
+          isTimerRunning: false
+        });
+        
+        // Set the current board for the next team
+        const nextTeamBoardId = selectedBoards[nextTeam];
+        if (nextTeamBoardId) {
+          const nextTeamBoard = oneMinuteBoards.find(board => board.id === nextTeamBoardId);
+          if (nextTeamBoard) {
+            set({ currentBoard: nextTeamBoard });
+          }
+        } else {
+          set({ currentBoard: null });
+        }
       }
     } else {
       // All teams have played, round is complete
@@ -479,7 +593,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
   nextPicture: () => {
     const { currentBoard, currentPictureIndex } = get();
     
-    if (currentBoard) {
+    if (currentBoard && 'pictures' in currentBoard) {
       if (currentPictureIndex < currentBoard.pictures.length - 1) {
         set({ currentPictureIndex: currentPictureIndex + 1 });
       } else if (currentPictureIndex === currentBoard.pictures.length - 1) {
@@ -502,6 +616,84 @@ export const useQuizStore = create<QuizState>((set, get) => ({
     set({ 
       currentPictureIndex: 0, 
       showAllPictures: false 
+    });
+  },
+  
+  // One Minute Round actions
+  initializeOneMinuteBoards: () => {
+    const data = questionsData as unknown;
+    const oneMinuteData = (data as Record<string, unknown>)['one-minute-round'];
+    const boards = (oneMinuteData as any)?.boards || [];
+    console.log('initializeOneMinuteBoards: setting', boards.length, 'boards and available boards');
+    set({ 
+      oneMinuteBoards: boards,
+      availableBoards: ['board-1', 'board-2', 'board-3'], // Add missing available boards reset
+      currentBoard: null,
+      currentQuestionIndex: 0,
+      logoBlurLevel: 20,
+      revealedFillBlanks: []
+    });
+  },
+  
+  selectOneMinuteBoard: (boardId: string) => {
+    console.log('selectOneMinuteBoard called with boardId:', boardId);
+    const { oneMinuteBoards, availableBoards, selectedBoards, currentTeamSelecting } = get();
+    const selectedBoard = oneMinuteBoards.find(board => board.id === boardId);
+    console.log('selectOneMinuteBoard - found board:', selectedBoard?.name);
+    if (selectedBoard) {
+      console.log('selectOneMinuteBoard - setting currentBoard and starting timer');
+      
+      // Track the board selection for the current team
+      const newSelectedBoards = { ...selectedBoards, [currentTeamSelecting]: boardId };
+      const newAvailableBoards = availableBoards.filter(id => id !== boardId);
+      
+      set({ 
+        selectedBoards: newSelectedBoards,
+        availableBoards: newAvailableBoards,
+        currentBoard: selectedBoard,
+        currentQuestionIndex: 0,
+        logoBlurLevel: 20,
+        revealedFillBlanks: [],
+        timerValue: 60,
+        isTimerRunning: true
+      });
+    } else {
+      console.log('selectOneMinuteBoard - board not found!');
+    }
+  },
+  
+  nextOneMinuteQuestion: () => {
+    const { currentQuestionIndex } = get();
+    set({ currentQuestionIndex: currentQuestionIndex + 1 });
+  },
+  
+  previousOneMinuteQuestion: () => {
+    const { currentQuestionIndex } = get();
+    if (currentQuestionIndex > 0) {
+      set({ currentQuestionIndex: currentQuestionIndex - 1 });
+    }
+  },
+  
+  revealLogo: () => {
+    const { logoBlurLevel } = get();
+    if (logoBlurLevel > 0) {
+      set({ logoBlurLevel: Math.max(0, logoBlurLevel - 5) });
+    }
+  },
+  
+  revealFillBlank: (personalityId: number) => {
+    const { revealedFillBlanks } = get();
+    if (!revealedFillBlanks.includes(personalityId)) {
+      set({ revealedFillBlanks: [...revealedFillBlanks, personalityId] });
+    }
+  },
+  
+  resetOneMinuteRound: () => {
+    set({ 
+      currentBoard: null,
+      currentQuestionIndex: 0,
+      logoBlurLevel: 20,
+      revealedFillBlanks: []
     });
   },
   

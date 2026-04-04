@@ -161,28 +161,28 @@
     "type": "picture",
     "boards": [
       {
-        "id": "board-1",
-        "name": "Sporting A",
-        "imageUrl": "/images/picture-board/boardA.png",
+        "id": "board-3",
+        "name": "C Sport",
+        "imageUrl": "/images/boardC.jpg",
         "pictures": [
-          { "id": 1, "answer": "Bob and Mike Bryan", "imageUrl": "/images/picture-board/BobMikeBryan.png" },
-          { "id": 2, "answer": "Jack Leach", "imageUrl": "/images/picture-board/JackLeach.png" },
-          { "id": 3, "answer": "Jordan Ayew", "imageUrl": "/images/picture-board/JordanAyew.png" },
-          { "id": 4, "answer": "Keeley Hodgkinson", "imageUrl": "/images/picture-board/KeelyHodgkinson.png" },
-          { "id": 5, "answer": "Tony McCoy", "imageUrl": "/images/picture-board/TonyMcCoy.png" },
-          { "id": 6, "answer": "Carolina Kluft", "imageUrl": "/images/picture-board/CarolinaKluft.png" },
-          { "id": 7, "answer": "Andy Murray", "imageUrl": "/images/picture-board/AndyMurray.png" },
+          { "id": 1, "answer": "Keely Hodgkinson", "imageUrl": "/images/picture-board/KeelyHodgkinson.png" },
+          { "id": 2, "answer": "Glenn Hoddle", "imageUrl": "/images/picture-board/GlennHoddle.png" },
+          { "id": 3, "answer": "Jack Leach", "imageUrl": "/images/picture-board/JackLeach.png" },
+          { "id": 4, "answer": "Jess Naz", "imageUrl": "/images/picture-board/JessNaz.png" },
+          { "id": 5, "answer": "Jessica Jennifer Gadirova", "imageUrl": "/images/picture-board/JessicaJenniferGadirova.png" },
+          { "id": 6, "answer": "Jordan Ayew", "imageUrl": "/images/picture-board/JordanAyew.png" },
+          { "id": 7, "answer": "Liam Lawson", "imageUrl": "/images/picture-board/LiamLawson.png" },
           { "id": 8, "answer": "LeBron James", "imageUrl": "/images/picture-board/LeBronJames.png" },
-          { "id": 9, "answer": "Aggie Beevers-Jones", "imageUrl": "/images/picture-board/AggieBeeversJones.png" },
-          { "id": 10, "answer": "Liam Lawson", "imageUrl": "/images/picture-board/LiamLawson.png" },
-          { "id": 11, "answer": "Gary Lineker", "imageUrl": "/images/picture-board/GaryLineker.png" },
-          { "id": 12, "answer": "Lindsey Vonn", "imageUrl": "/images/picture-board/LindseyVonn.png" }
+          { "id": 9, "answer": "Luke Littler", "imageUrl": "/images/picture-board/LukeLittler.png" },
+          { "id": 10, "answer": "Neymar", "imageUrl": "/images/picture-board/Neymar.png" },
+          { "id": 11, "answer": "Oliver Bearman", "imageUrl": "/images/picture-board/OliverBearman.png" },
+          { "id": 12, "answer": "Ollie Pope", "imageUrl": "/images/picture-board/OlliePope.png" }
         ]
       },
       {
         "id": "board-2",
         "name": "B Sports",
-        "imageUrl": "/images/picture-board/boardB.jpg",
+        "imageUrl": "/images/boardB.jpg",
         "pictures": [
           { "id": 1, "answer": "Bruce Mouat", "imageUrl": "/images/picture-board/BruceMouat.png" },
           { "id": 2, "answer": "Dinara Safina", "imageUrl": "/images/picture-board/DinaraSafina.png" },
@@ -199,22 +199,22 @@
         ]
       },
       {
-        "id": "board-3",
-        "name": "C Sport",
-        "imageUrl": "/images/picture-board/boardC.jpg",
+        "id": "board-1",
+        "name": "Sporting A",
+        "imageUrl": "/images/boardA.png",
         "pictures": [
-          { "id": 1, "answer": "Oliver Bearman", "imageUrl": "/images/picture-board/OliverBearman.png" },
-          { "id": 2, "answer": "Dennis Taylor", "imageUrl": "/images/picture-board/DennisTaylor.png" },
-          { "id": 3, "answer": "Jessica Naz", "imageUrl": "/images/picture-board/JessNaz.png" },
-          { "id": 4, "answer": "Roger Federer", "imageUrl": "/images/picture-board/RogerFederer.png" },
-          { "id": 5, "answer": "Tom and Ben Curry", "imageUrl": "/images/picture-board/TomBenCurry.png" },
-          { "id": 6, "answer": "Rachel Blackmore", "imageUrl": "/images/picture-board/RachelBlackmore.png" },
-          { "id": 7, "answer": "Ally McCoist", "imageUrl": "/images/picture-board/AllyMcCoist.png" },
-          { "id": 8, "answer": "Neymar", "imageUrl": "/images/picture-board/Neymar.png" },
-          { "id": 9, "answer": "Caitlin Clark", "imageUrl": "/images/picture-board/CaitlinClark.png" },
-          { "id": 10, "answer": "Ollie Pope", "imageUrl": "/images/picture-board/OlliePope.png" },
-          { "id": 11, "answer": "Andy Roddick", "imageUrl": "/images/picture-board/AndyRoddick.png" },
-          { "id": 12, "answer": "Saido Berahino", "imageUrl": "/images/picture-board/SaidoBerahino.png" }
+          { "id": 1, "answer": "Aggie Beevers-Jones", "imageUrl": "/images/picture-board/AggieBeeversJones.png" },
+          { "id": 2, "answer": "Allyson Felix", "imageUrl": "/images/picture-board/AllysonFelix.png" },
+          { "id": 3, "answer": "Andy Murray", "imageUrl": "/images/picture-board/AndyMurray.png" },
+          { "id": 4, "answer": "Andy Roddick", "imageUrl": "/images/picture-board/AndyRoddick.png" },
+          { "id": 5, "answer": "Bob Mike Bryan", "imageUrl": "/images/picture-board/BobMikeBryan.png" },
+          { "id": 6, "answer": "Caitlin Clark", "imageUrl": "/images/picture-board/CaitlinClark.png" },
+          { "id": 7, "answer": "Carolina Kluft", "imageUrl": "/images/picture-board/CarolinaKluft.png" },
+          { "id": 8, "answer": "Chris Woakes", "imageUrl": "/images/picture-board/ChrisWoakes.png" },
+          { "id": 9, "answer": "Frankie Dettori", "imageUrl": "/images/picture-board/FrankieDettori.png" },
+          { "id": 10, "answer": "Gary Lineker", "imageUrl": "/images/picture-board/GaryLineker.png" },
+          { "id": 11, "answer": "Lindsey Vonn", "imageUrl": "/images/picture-board/LindseyVonn.png" },
+          { "id": 12, "answer": "LeBron James", "imageUrl": "/images/picture-board/LeBronJames.png" }
         ]
       }
     ]
@@ -541,22 +541,199 @@
     ]
   },
   "one-minute-round": {
-    "type": "quickfire",
-    "questions": [
+    "type": "one-minute",
+    "boards": [
       {
-        "id": "omr-1",
-        "content": "Sport with a shuttlecock?",
-        "answer": "Badminton"
+        "id": "board-1",
+        "name": "Sporting A",
+        "imageUrl": "/images/boardA.png",
+        "oralQuestions": [
+          {
+            "id": "omr-1-1",
+            "content": "Sport with a shuttlecock?",
+            "answer": "Badminton"
+          },
+          {
+            "id": "omr-1-2", 
+            "content": "How many holes in a full round of golf?",
+            "answer": "18"
+          },
+          {
+            "id": "omr-1-3",
+            "content": "Which country won 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-1-4",
+            "content": "Which country won 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-1-5",
+            "content": "Which country won 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          }
+        ],
+        "logoQuestion": {
+          "id": "omr-1-6",
+          "imageUrl": "/images/one-minute-round/grizzlies.png",
+          "question": "Name this sports team",
+          "answer": "Memphis Grizzlies"
+        },
+        "fillInTheBlank": {
+          "id": "omr-1-7",
+          "category": "Avian Species",
+          "personalities": [
+            {
+              "id": 1,
+              "name": "Robin Cousins",
+              "visiblePart": "_____ Cousins",
+              "blankPart": "Robin"
+            },
+            {
+              "id": 2,
+              "name": "Tony Hawk", 
+              "visiblePart": "Tony _____ ",
+              "blankPart": "Hawk"
+            },
+            {
+              "id": 3,
+              "name": "Larry Bird",
+              "visiblePart": "Larry _____ ",
+              "blankPart": "Bird"
+            }
+          ]
+        }
       },
       {
-        "id": "omr-2",
-        "content": "How many holes in a full round of golf?",
-        "answer": "18"
+        "id": "board-2",
+        "name": "B Sports",
+        "imageUrl": "/images/boardB.jpg",
+        "oralQuestions": [
+          {
+            "id": "omr-2-1",
+            "content": "Which country won't 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-2-2", 
+            "content": "How many holes in a full round of golf?",
+            "answer": "18"
+          },
+          {
+            "id": "omr-2-3",
+            "content": "Which country won't 2023 Rugby World Cup Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-2-4",
+            "content": "Which country won't 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-2-5",
+            "content": "Which country won't 2023 Rugby World Cup Cup?",
+            "answer": "South Africa"
+          }
+        ],
+        "logoQuestion": {
+          "id": "omr-2-6",
+          "imageUrl": "/images/one-minute-round/guardians.png",
+          "question": "Name this sports team",
+          "answer": "Cleveland Guardians"
+        },
+        "fillInTheBlank": {
+          "id": "omr-2-7",
+          "category": "Sports Personalities",
+          "personalities": [
+            {
+              "id": 1,
+              "name": "Person X",
+              "visiblePart": "_____ ",
+              "blankPart": "Answer",
+              "answer": "Answer X"
+            },
+            {
+              "id": 2,
+              "name": "Person Y", 
+              "visiblePart": "_____ ",
+              "blankPart": "Answer",
+              "answer": "Answer Y"
+            },
+            {
+              "id": 3,
+              "name": "Person Z",
+              "visiblePart": "_____ ",
+              "blankPart": "Answer",
+              "answer": "Answer Z"
+            }
+          ]
+        }
       },
       {
-        "id": "omr-3",
-        "content": "Which country won the 2023 Rugby World Cup?",
-        "answer": "South Africa"
+        "id": "board-3",
+        "name": "C Sport",
+        "imageUrl": "/images/boardC.jpg",
+        "oralQuestions": [
+          {
+            "id": "omr-3-1",
+            "content": "Which country won't 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-3-2", 
+            "content": "How many holes in a full round of golf?",
+            "answer": "18"
+          },
+          {
+            "id": "omr-3-3",
+            "content": "Which country won't 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-3-4",
+            "content": "Which country won't 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          },
+          {
+            "id": "omr-3-5",
+            "content": "Which country won't 2023 Rugby World Cup?",
+            "answer": "South Africa"
+          }
+        ],
+        "logoQuestion": {
+          "id": "omr-3-6",
+          "imageUrl": "/images/one-minute-round/flyers.png",
+          "question": "Name this sports team",
+          "answer": "Philadelphia Flyers"
+        },
+        "fillInTheBlank": {
+          "id": "omr-3-7",
+          "category": "Sports Personalities",
+          "personalities": [
+            {
+              "id": 1,
+              "name": "Person Alpha",
+              "visiblePart": "_____ ",
+              "blankPart": "Answer",
+              "answer": "Answer Alpha"
+            },
+            {
+              "id": 2,
+              "name": "Person Beta", 
+              "visiblePart": "_____ ",
+              "blankPart": "Answer",
+              "answer": "Answer Beta"
+            },
+            {
+              "id": 3,
+              "name": "Person Gamma",
+              "visiblePart": "_____ ",
+              "blankPart": "Answer",
+              "answer": "Answer Gamma"
+            }
+          ]
+        }
       }
     ]
   },

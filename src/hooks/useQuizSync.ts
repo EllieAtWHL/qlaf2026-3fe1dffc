@@ -311,6 +311,25 @@ function applyStateUpdate(action: string, data: any) {
     case 'revealChrisStadiaWatchShownOnScreen':
       store.setChrisStadiaWatchShownOnScreen(data.cardIds || []);
       break;
+    case 'selectOneMinuteBoard':
+      console.log('useQuizSync - selectOneMinuteBoard action received:', data.boardId);
+      store.selectOneMinuteBoard(data.boardId);
+      break;
+    case 'nextOneMinuteQuestion':
+      store.nextOneMinuteQuestion();
+      break;
+    case 'previousOneMinuteQuestion':
+      store.previousOneMinuteQuestion();
+      break;
+    case 'revealLogo':
+      store.revealLogo();
+      break;
+    case 'revealFillBlank':
+      store.revealFillBlank(data.personalityId);
+      break;
+    case 'resetOneMinuteRound':
+      store.resetOneMinuteRound();
+      break;
     default:
       console.warn('Unknown action:', action);
   }
