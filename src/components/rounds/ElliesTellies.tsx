@@ -234,8 +234,8 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                       scale: 1,
                     },
                     left: {
-                      x: "-25%",
-                      scale: 0.8,
+                      x: "-35%",
+                      scale: 0.7,
                     }
                   }}
                   transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -371,7 +371,7 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.4, duration: 0.4 }}
-                      className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-8 w-full max-w-lg text-left"
+                      className="bg-qlaf-success/20 border-2 border-qlaf-success rounded-xl p-6 w-full max-w-md text-left"
                     >
                       <span className="font-display text-lg text-qlaf-success uppercase tracking-wider">
                         Answer
