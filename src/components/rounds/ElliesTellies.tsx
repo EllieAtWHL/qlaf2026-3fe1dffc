@@ -249,8 +249,8 @@ export const ElliesTellies = ({ roundId }: ElliesTelliesProps) => {
                     />
                     
                     {/* TV Screen Container - positioned exactly where screen should be */}
-                    <div className="relative w-full h-full flex items-start justify-center z-20 pt-8 -mt-4">
-                      <div className="relative w-[81%] h-[91%] max-w-3xl overflow-hidden bg-black shadow-2xl border-4 border-gray-800 -ml-1">
+                    <div className="relative w-full h-full flex items-start justify-center z-20 pt-20 -mt-4">
+                      <div className="relative w-[95%] h-[85%] max-w-5xl overflow-hidden bg-black shadow-2xl border-4 border-gray-800 -ml-1">
                         {/* Authentic CRT TV Static Effect */}
                         <motion.div
                           className="absolute inset-0 bg-black z-20"
