@@ -670,7 +670,7 @@ export const useQuizStore = create<QuizState>((set, get) => ({
         currentQuestionIndex: 0,
         // Reset timer to 60 seconds when selecting One Minute Round board
         timerValue: 60,
-        isTimerRunning: false // Don't auto-start timer for One Minute Round
+        isTimerRunning: true // Auto-start timer for One Minute Round
       });
     } else {
       console.log('selectOneMinuteBoard - board not found! Available boards:', oneMinuteBoards?.map(b => b.id));
