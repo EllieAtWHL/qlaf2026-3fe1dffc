@@ -158,6 +158,7 @@ interface QuizState {
   
   // Team actions
   updateTeamScore: (teamId: number, roundIndex: number, score: number) => void;
+  updateTeamName: (teamId: number, name: string) => void;
   addToTeamScore: (teamId: number, points: number) => void;
   advanceF1Car: (teamId: number, amount: number) => void;
   
@@ -381,6 +382,20 @@ export const useQuizStore = create<QuizState>((set, get) => ({
           ...team,
           scores: newScores,
           totalScore: newScores.reduce((a, b) => a + b, 0),
+        };
+      }
+      return team;
+    });
+    set({ teams: updatedTeams });
+  },
+  
+  updateTeamName: (teamId: number, name: string) => {
+    const { teams } = get();
+    const updatedTeams = teams.map(team => {
+      if (team.id === teamId) {
+        return {
+          ...team,
+          name,
         };
       }
       return team;

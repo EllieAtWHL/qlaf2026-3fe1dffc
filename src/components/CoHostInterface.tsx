@@ -60,6 +60,7 @@ export const CoHostInterface = () => {
     pauseTimer,
     resetTimer,
     updateTeamScore,
+    updateTeamName,
     advanceF1Car,
     toggleAnswer,
     nextQuestion,
@@ -121,6 +122,8 @@ export const CoHostInterface = () => {
   const hasPreviousQuestionCalc = currentQuestionIndex > 0;
 
   const [scoreInputs, setScoreInputs] = useState<{ [key: string]: string }>({});
+  const [teamNameInputs, setTeamNameInputs] = useState<{ [key: number]: string }>({});
+  const [isDebugPanelMinimized, setIsDebugPanelMinimized] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
   const [showSetupReminder, setShowSetupReminder] = useState(false);
 
@@ -348,6 +351,12 @@ export const CoHostInterface = () => {
       setChrisStadiaRevealedCards([...currentRevealed, cardId]);
       broadcastAction('revealChrisStadiaCard', { cardId });
       
+      // Reset showAnswer when new card is revealed to prevent automatic reason display
+      if (showAnswer) {
+        toggleAnswer();
+        broadcastAction('toggleAnswer');
+      }
+      
       // Auto-reveal watch reasons for watch-type cards
       if (card.visitType === 'watch') {
         const currentWatchRevealed = chrisStadiaWatchRevealed || [];
@@ -441,6 +450,15 @@ export const CoHostInterface = () => {
     setScoreInputs(inputs);
   }, [currentRoundIndex, teams]);
 
+  // Initialize team name inputs when teams change
+  useEffect(() => {
+    const inputs: { [key: number]: string } = {};
+    teams.forEach(team => {
+      inputs[team.id] = team.name;
+    });
+    setTeamNameInputs(inputs);
+  }, [teams]);
+
   const handleScoreChange = (teamId: number, value: string) => {
     const key = `${teamId}-${currentRoundIndex}`;
     setScoreInputs(prev => ({ ...prev, [key]: value }));
@@ -454,6 +472,12 @@ export const CoHostInterface = () => {
     const currentValue = parseInt(scoreInputs[key]) || 0;
     const newValue = Math.max(0, currentValue + delta);
     handleScoreChange(teamId, newValue.toString());
+  };
+
+  const handleTeamNameChange = (teamId: number, name: string) => {
+    setTeamNameInputs(prev => ({ ...prev, [teamId]: name }));
+    updateTeamName(teamId, name);
+    broadcastAction('updateTeamName', { teamId, name });
   };
 
   const teamColors = ['bg-team-1', 'bg-team-2', 'bg-team-3'];
@@ -689,31 +713,42 @@ export const CoHostInterface = () => {
           
           <div className="bg-qlaf-success/10 border border-qlaf-success/30 rounded-lg p-3">
             <p className="text-sm text-foreground font-medium">
-              {currentRoundType === 'ranking' && currentQuestion.options
-                ? (currentQuestion.options as any[])
-                    .sort((a, b) => (a.order || 999) - (b.order || 999))
-                    .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer || 'No answer'})`)
-                    .join(' → ')
-                : currentRoundType === 'wipeout' && currentQuestion.options
-                  ? (currentQuestion.options as Array<WipeoutOption>)
-                      .filter(option => !option.correct)
-                      .map(option => `🟥 ${option.text}`)
-                      .join(' | ')
-                : currentRound?.id === 'chris-stadia' && chrisStadiaCurrentSportingEvent
-                  ? (() => {
-                      const card = currentQuestion?.cards?.find((c: any) => c.id === chrisStadiaCurrentSportingEvent);
-                      return card && card.visitType === 'sporting_event' && card.reason 
-                        ? `${card.stadium}: ${card.reason}`
-                        : null;
-                    })()
-                : Array.isArray(currentQuestion.answer) 
-                  ? currentQuestion.answer.map((answer: any) => {
-                      if (answer && typeof answer === 'object' && 'name' in answer) {
-                        return answer.name || answer.answer || 'No answer';
-                      }
-                      return answer || 'No answer';
-                    }).join(', ')
-                  : currentQuestion.answer || 'No answer available'}
+              {(() => {
+                const answer = 
+                  currentRoundType === 'ranking' && currentQuestion.options
+                    ? (currentQuestion.options as any[])
+                        .sort((a, b) => (a.order || 999) - (b.order || 999))
+                        .map((opt, index) => `${index + 1}. ${opt.label} (${opt.answer || 'No answer'})`)
+                        .join(' → ')
+                    : currentRoundType === 'wipeout' && currentQuestion.options
+                      ? (currentQuestion.options as Array<WipeoutOption>)
+                          .filter(option => !option.correct)
+                          .map(option => `🟥 ${option.text}`)
+                          .join(' | ')
+                    : currentRound?.id === 'chris-stadia' && chrisStadiaRevealedCards && chrisStadiaRevealedCards.length > 0
+                      ? (() => {
+                          // Get the most recently revealed card (last in array)
+                          const mostRecentCardId = chrisStadiaRevealedCards[chrisStadiaRevealedCards.length - 1];
+                          const card = currentQuestion?.cards?.find((c: any) => c.id === mostRecentCardId);
+                          
+                          // Only show if it's a sporting event with a reason
+                          if (card && card.visitType === 'sporting_event' && card.reason) {
+                            return `${card.stadium}: ${card.reason}`;
+                          }
+                          
+                          return 'NO_REASON';
+                        })()
+                    : Array.isArray(currentQuestion.answer) 
+                      ? currentQuestion.answer.map((answer: any) => {
+                          if (answer && typeof answer === 'object' && 'name' in answer) {
+                            return answer.name || answer.answer || 'No answer';
+                          }
+                          return answer || 'No answer';
+                        }).join(', ')
+                      : currentQuestion.answer || 'No answer available';
+                
+                return answer === 'NO_REASON' ? '' : answer;
+              })()}
             </p>
             {currentQuestion.points && (
               <p className="text-xs text-qlaf-success/70 mt-2">
@@ -1271,7 +1306,13 @@ export const CoHostInterface = () => {
           {teams.map((team, index) => (
             <div key={team.id} className="flex items-center gap-3">
               <div className={`w-3 h-3 rounded-full ${teamColors[index]}`} />
-              <span className="font-display text-sm flex-1">{team.name}</span>
+              <input
+                type="text"
+                value={teamNameInputs[team.id] || team.name}
+                onChange={(e) => handleTeamNameChange(team.id, e.target.value)}
+                className="font-display text-sm flex-1 bg-transparent border-b border-border/50 focus:border-primary outline-none px-1 py-0.5 text-foreground"
+                placeholder="Team name"
+              />
               
               <div className="flex items-center gap-2">
                 <button
@@ -1362,101 +1403,113 @@ export const CoHostInterface = () => {
             <Bug className="w-4 h-4" />
             Debug Panel
           </h3>
-          <span className="text-xs text-muted-foreground">For testing only</span>
-        </div>
-        
-        {/* State Information */}
-        <div className="space-y-2 mb-4">
-          <div className="bg-secondary/30 rounded-lg p-2">
-            <p className="text-xs font-mono text-muted-foreground">
-              Game State: <span className="text-foreground font-semibold">{gameState}</span>
-            </p>
-            <p className="text-xs font-mono text-muted-foreground">
-              Round: <span className="text-foreground font-semibold">{currentRoundIndex + 1}/{ROUNDS.length} ({currentRound?.id})</span>
-            </p>
-            <p className="text-xs font-mono text-muted-foreground">
-              Question: <span className="text-foreground font-semibold">{currentQuestionIndex + 1}/{totalQuestions || 0}</span>
-            </p>
-                        <p className="text-xs font-mono text-muted-foreground">
-              Show Answer: <span className="text-foreground font-semibold">{showAnswer ? 'true' : 'false'}</span>
-            </p>
-            {currentRound?.id === 'picture-board' && (
-              <>
-                <p className="text-xs font-mono text-muted-foreground">
-                  Team Selecting: <span className="text-foreground font-semibold">{currentTeamSelecting}</span>
-                </p>
-                <p className="text-xs font-mono text-muted-foreground">
-                  Picture Index: <span className="text-foreground font-semibold">{currentPictureIndex}</span>
-                </p>
-                <p className="text-xs font-mono text-muted-foreground">
-                  Show All Pictures: <span className="text-foreground font-semibold">{showAllPictures ? 'true' : 'false'}</span>
-                </p>
-              </>
-            )}
-            {currentRound?.id === 'only-connect' && (
-              <p className="text-xs font-mono text-muted-foreground">
-                Revealed Options: <span className="text-foreground font-semibold">{onlyConnectRevealedOptions}/4</span>
-              </p>
-            )}
-          </div>
-        </div>
-        
-        {/* Round Jump Controls */}
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground font-semibold">Jump to Round:</p>
-          <div className="grid grid-cols-2 gap-1">
-            {ROUNDS.map((round, index) => (
-              <button
-                key={round.id}
-                onClick={() => syncedGoToRound(index)}
-                className={`control-btn text-xs p-2 ${
-                  currentRoundIndex === index 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-secondary text-foreground'
-                }`}
-              >
-                {index + 1}. {round.name}
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        {/* Quick Actions */}
-        <div className="mt-4 pt-3 border-t border-border">
-          <p className="text-xs text-muted-foreground font-semibold mb-2">Quick Actions:</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">For testing only</span>
             <button
-              onClick={() => syncedGoToRound(0)}
-              className="control-btn bg-secondary text-foreground text-xs"
+              onClick={() => setIsDebugPanelMinimized(!isDebugPanelMinimized)}
+              className="p-1 rounded-lg bg-secondary/20 text-secondary-foreground hover:bg-secondary/30 transition-colors"
             >
-              First Round
-            </button>
-            <button
-              onClick={() => syncedGoToRound(ROUNDS.length - 1)}
-              className="control-btn bg-secondary text-foreground text-xs"
-            >
-              Last Round
-            </button>
-            <button
-              onClick={() => {
-                syncedToggleAnswer();
-                syncedToggleAnswer(); // Toggle twice to ensure it's shown
-              }}
-              className="control-btn bg-qlaf-success/20 text-qlaf-success text-xs"
-            >
-              Force Show Answer
-            </button>
-            <button
-              onClick={() => {
-                syncedToggleAnswer();
-                if (showAnswer) syncedToggleAnswer(); // Hide if currently shown
-              }}
-              className="control-btn bg-destructive/20 text-destructive text-xs"
-            >
-              Force Hide Answer
+              {isDebugPanelMinimized ? <Plus className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
             </button>
           </div>
         </div>
+        
+        {!isDebugPanelMinimized && (
+          <>
+            {/* State Information */}
+            <div className="space-y-2 mb-4">
+              <div className="bg-secondary/30 rounded-lg p-2">
+                <p className="text-xs font-mono text-muted-foreground">
+                  Game State: <span className="text-foreground font-semibold">{gameState}</span>
+                </p>
+                <p className="text-xs font-mono text-muted-foreground">
+                  Round: <span className="text-foreground font-semibold">{currentRoundIndex + 1}/{ROUNDS.length} ({currentRound?.id})</span>
+                </p>
+                <p className="text-xs font-mono text-muted-foreground">
+                  Question: <span className="text-foreground font-semibold">{currentQuestionIndex + 1}/{totalQuestions || 0}</span>
+                </p>
+                            <p className="text-xs font-mono text-muted-foreground">
+                  Show Answer: <span className="text-foreground font-semibold">{showAnswer ? 'true' : 'false'}</span>
+                </p>
+                {currentRound?.id === 'picture-board' && (
+                  <>
+                    <p className="text-xs font-mono text-muted-foreground">
+                      Team Selecting: <span className="text-foreground font-semibold">{currentTeamSelecting}</span>
+                    </p>
+                    <p className="text-xs font-mono text-muted-foreground">
+                      Picture Index: <span className="text-foreground font-semibold">{currentPictureIndex}</span>
+                    </p>
+                    <p className="text-xs font-mono text-muted-foreground">
+                      Show All Pictures: <span className="text-foreground font-semibold">{showAllPictures ? 'true' : 'false'}</span>
+                    </p>
+                  </>
+                )}
+                {currentRound?.id === 'only-connect' && (
+                  <p className="text-xs font-mono text-muted-foreground">
+                    Revealed Options: <span className="text-foreground font-semibold">{onlyConnectRevealedOptions}/4</span>
+                  </p>
+                )}
+              </div>
+            </div>
+            
+            {/* Round Jump Controls */}
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground font-semibold">Jump to Round:</p>
+              <div className="grid grid-cols-2 gap-1">
+                {ROUNDS.map((round, index) => (
+                  <button
+                    key={round.id}
+                    onClick={() => syncedGoToRound(index)}
+                    className={`control-btn text-xs p-2 ${
+                      currentRoundIndex === index 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-secondary text-foreground'
+                    }`}
+                  >
+                    {index + 1}. {round.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="mt-4 pt-3 border-t border-border">
+              <p className="text-xs text-muted-foreground font-semibold mb-2">Quick Actions:</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => syncedGoToRound(0)}
+                  className="control-btn bg-secondary text-foreground text-xs"
+                >
+                  First Round
+                </button>
+                <button
+                  onClick={() => syncedGoToRound(ROUNDS.length - 1)}
+                  className="control-btn bg-secondary text-foreground text-xs"
+                >
+                  Last Round
+                </button>
+                <button
+                  onClick={() => {
+                    syncedToggleAnswer();
+                    syncedToggleAnswer(); // Toggle twice to ensure it's shown
+                  }}
+                  className="control-btn bg-qlaf-success/20 text-qlaf-success text-xs"
+                >
+                  Force Show Answer
+                </button>
+                <button
+                  onClick={() => {
+                    syncedToggleAnswer();
+                    if (showAnswer) syncedToggleAnswer(); // Hide if currently shown
+                  }}
+                  className="control-btn bg-destructive/20 text-destructive text-xs"
+                >
+                  Force Hide Answer
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </motion.div>
 
       {/* Setup Reminder Modal */}
